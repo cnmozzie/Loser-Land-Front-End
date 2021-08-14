@@ -1,0 +1,28 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "loserpunk",
+    "texture": "020a0c96-7ed0-4ee2-a830-62c44c0d3748",
+    "atlas": "",
+    "rect": [
+      70,
+      10,
+      360,
+      490
+    ],
+    "offset": [
+      0,
+      -5
+    ],
+    "originalSize": [
+      500,
+      500
+    ],
+    "capInsets": [
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+}

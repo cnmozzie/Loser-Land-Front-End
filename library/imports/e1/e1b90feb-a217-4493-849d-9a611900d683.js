@@ -1,6 +1,6 @@
 "use strict";
-cc._RF.push(module, 'e1b90/rohdEk4SdmmEZANaD', 'Helloworld');
-// Script/Helloworld.ts
+cc._RF.push(module, 'e1b90/rohdEk4SdmmEZANaD', 'Game');
+// Script/Game.ts
 
 "use strict";
 var __extends = (this && this.__extends) || (function () {
@@ -61,46 +61,96 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var _a = cc._decorator, ccclass = _a.ccclass, property = _a.property;
 var ethers_umd_min_js_1 = require("ethers/dist/ethers.umd.min.js");
-var Helloworld = /** @class */ (function (_super) {
-    __extends(Helloworld, _super);
-    function Helloworld() {
+var Game = /** @class */ (function (_super) {
+    __extends(Game, _super);
+    function Game() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.label = null;
+        _this.button = null;
         _this.text = 'hello';
+        _this.grassPrefab = null;
+        // Player 节点，用于获取主角的位置
+        _this.player = null;
+        // Camera 节点，用于获取摄像头的位置
+        _this.camera = null;
         return _this;
     }
-    Helloworld.prototype.gainScore = function () {
+    Game.prototype.spawnNewGrass = function (x, y) {
+        // 使用给定的模板在场景中生成一个新节点
+        var newGrass = cc.instantiate(this.grassPrefab);
+        // 将新增的节点添加到 Canvas 节点下面
+        this.node.addChild(newGrass);
+        // 设置草地的位置
+        newGrass.setPosition(cc.v2(x, y));
+        // 在草地脚本组件上保存 Player 对象的引用
+        newGrass.getComponent('Grass').player = this.player;
+    };
+    Game.prototype.gainScore = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var provider, a;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var provider, _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
                     case 0:
                         provider = new ethers_umd_min_js_1.ethers.providers.JsonRpcProvider("https://data-seed-prebsc-1-s2.binance.org:8545/");
+                        _a = this;
                         return [4 /*yield*/, provider.getBlockNumber()];
                     case 1:
-                        a = _a.sent();
-                        cc.log(a);
+                        _a.text = _b.sent();
+                        this.label.string = this.text;
+                        cc.log(this.text);
                         return [2 /*return*/];
                 }
             });
         });
     };
-    Helloworld.prototype.start = function () {
+    Game.prototype.onClick = function (e, msg) {
+        cc.log(msg);
+        cc.log(this.camera.x);
+    };
+    Game.prototype.update = function (dt) {
+        this.camera.x = this.player.x;
+        this.camera.y = this.player.y;
+    };
+    Game.prototype.onLoad = function () {
+        this.label.node.zIndex = 1;
+        this.button.node.zIndex = 1;
+        // 生成草地
+        var windowSize = cc.view.getVisibleSize();
+        cc.log("width=" + windowSize.width + ",height=" + windowSize.height);
+        for (var i = -7; i <= 7; i++) {
+            for (var j = -5; j <= 5; j++) {
+                this.spawnNewGrass(i * 64, j * 64);
+            }
+        }
+    };
+    Game.prototype.start = function () {
         // init logic
         this.label.string = this.text;
         this.gainScore();
     };
     __decorate([
         property(cc.Label)
-    ], Helloworld.prototype, "label", void 0);
+    ], Game.prototype, "label", void 0);
+    __decorate([
+        property(cc.Button)
+    ], Game.prototype, "button", void 0);
     __decorate([
         property
-    ], Helloworld.prototype, "text", void 0);
-    Helloworld = __decorate([
+    ], Game.prototype, "text", void 0);
+    __decorate([
+        property(cc.Prefab)
+    ], Game.prototype, "grassPrefab", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Game.prototype, "player", void 0);
+    __decorate([
+        property(cc.Node)
+    ], Game.prototype, "camera", void 0);
+    Game = __decorate([
         ccclass
-    ], Helloworld);
-    return Helloworld;
+    ], Game);
+    return Game;
 }(cc.Component));
-exports.default = Helloworld;
+exports.default = Game;
 
 cc._RF.pop();

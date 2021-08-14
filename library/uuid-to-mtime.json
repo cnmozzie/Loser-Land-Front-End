@@ -505,18 +505,18 @@
     "relativePath": "Scene"
   },
   "4734c20c-0db8-4eb2-92ea-e692f4d70934": {
-    "asset": 1628487779138,
-    "meta": 1628487795967,
+    "asset": 1628912855077,
+    "meta": 1628923250129,
     "relativePath": "Script"
   },
   "7b81d4e8-ec84-4716-968d-500ac1d78a54": {
-    "asset": 1628487779152,
-    "meta": 1628487795970,
+    "asset": 1628912068183,
+    "meta": 1628923250131,
     "relativePath": "Texture"
   },
   "2d2f792f-a40c-49bb-a189-ed176a246e49": {
-    "asset": 1628487796019,
-    "meta": 1628487796021,
+    "asset": 1628951615299,
+    "meta": 1628951615309,
     "relativePath": "Scene\\helloworld.fire"
   },
   "a8027877-d8d6-4645-97a0-52d4a0123dba": {
@@ -529,9 +529,34 @@
     "meta": 1628487796053,
     "relativePath": "Texture\\HelloWorld.png"
   },
+  "e57d6660-d971-44c8-b63b-894c4fcf3dc3": {
+    "asset": 1628909854828,
+    "meta": 1628909896095,
+    "relativePath": "Texture\\grass.png"
+  },
+  "020a0c96-7ed0-4ee2-a830-62c44c0d3748": {
+    "asset": 1623486526668,
+    "meta": 1628927139260,
+    "relativePath": "Texture\\loserpunk.png"
+  },
+  "09701752-406c-4df6-8b8c-bf959550f0d1": {
+    "asset": 1628949097944,
+    "meta": 1628949097950,
+    "relativePath": "grass.prefab"
+  },
+  "eded14fa-c545-47e8-911b-d76639334ad2": {
+    "asset": 1628950323589,
+    "meta": 1628950326866,
+    "relativePath": "Script\\Player.ts"
+  },
   "e1b90feb-a217-4493-849d-9a611900d683": {
-    "asset": 1628488416025,
-    "meta": 1628488417241,
-    "relativePath": "Script\\Helloworld.ts"
+    "asset": 1628950755653,
+    "meta": 1628950758380,
+    "relativePath": "Script\\Game.ts"
+  },
+  "15f5a84e-bd12-4795-ad83-cbf2bae98509": {
+    "asset": 1628951427430,
+    "meta": 1628951430942,
+    "relativePath": "Script\\Grass.ts"
   }
 }
