@@ -1,7 +1,7 @@
 [
   {
     "__type__": "cc.SceneAsset",
-    "_name": "helloworld",
+    "_name": "game",
     "_objFlags": 0,
     "_native": "",
     "scene": {
@@ -674,8 +674,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "button",
-    "_N$string": "button",
+    "_string": "Account",
+    "_N$string": "Account",
     "_fontSize": 20,
     "_lineHeight": 40,
     "_enableWrapText": false,
@@ -988,6 +988,9 @@
     "text": "hello",
     "grassPrefab": {
       "__uuid__": "09701752-406c-4df6-8b8c-bf959550f0d1"
+    },
+    "chestPrefab": {
+      "__uuid__": "ccec5b5a-cc5b-4179-851a-ebe8303ee978"
     },
     "player": {
       "__id__": 18

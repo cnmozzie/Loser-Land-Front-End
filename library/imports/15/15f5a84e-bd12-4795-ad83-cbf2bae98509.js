@@ -30,16 +30,16 @@ var Grass = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Grass.prototype.update = function (dt) {
-        if (this.player.x - this.node.x > 7 * 64) {
+        if (this.camera.x - this.node.x > 7 * 64) {
             this.node.x = this.node.x + 15 * 64;
         }
-        else if (this.player.x - this.node.x < -7 * 64) {
+        else if (this.camera.x - this.node.x < -7 * 64) {
             this.node.x = this.node.x - 15 * 64;
         }
-        else if (this.player.y - this.node.y > 5 * 64) {
+        else if (this.camera.y - this.node.y > 5 * 64) {
             this.node.y = this.node.y + 11 * 64;
         }
-        else if (this.player.y - this.node.y < -5 * 64) {
+        else if (this.camera.y - this.node.y < -5 * 64) {
             this.node.y = this.node.y - 11 * 64;
         }
     };

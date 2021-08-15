@@ -69,6 +69,7 @@ var Game = /** @class */ (function (_super) {
         _this.button = null;
         _this.text = 'hello';
         _this.grassPrefab = null;
+        _this.chestPrefab = null;
         // Player 节点，用于获取主角的位置
         _this.player = null;
         // Camera 节点，用于获取摄像头的位置
@@ -82,8 +83,17 @@ var Game = /** @class */ (function (_super) {
         this.node.addChild(newGrass);
         // 设置草地的位置
         newGrass.setPosition(cc.v2(x, y));
-        // 在草地脚本组件上保存 Player 对象的引用
-        newGrass.getComponent('Grass').player = this.player;
+        // 在草地脚本组件上保存 Camera 对象的引用
+        newGrass.getComponent('Grass').camera = this.camera;
+    };
+    Game.prototype.spawnNewChest = function (x, y) {
+        // 使用给定的模板在场景中生成一个新节点
+        var newChest = cc.instantiate(this.chestPrefab);
+        // 将新增的节点添加到 Canvas 节点下面
+        this.node.addChild(newChest);
+        newChest.zIndex = 1;
+        // 设置宝箱的位置
+        newChest.setPosition(cc.v2(x, y));
     };
     Game.prototype.gainScore = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -105,11 +115,15 @@ var Game = /** @class */ (function (_super) {
     };
     Game.prototype.onClick = function (e, msg) {
         cc.log(msg);
-        cc.log(this.camera.x);
+        cc.director.loadScene("user");
     };
     Game.prototype.update = function (dt) {
-        this.camera.x = this.player.x;
-        this.camera.y = this.player.y;
+        if (Math.abs(this.player.x) < 9 * 64) {
+            this.camera.x = this.player.x;
+        }
+        if (Math.abs(this.player.y) < 12 * 64) {
+            this.camera.y = this.player.y;
+        }
     };
     Game.prototype.onLoad = function () {
         this.label.node.zIndex = 1;
@@ -122,6 +136,7 @@ var Game = /** @class */ (function (_super) {
                 this.spawnNewGrass(i * 64, j * 64);
             }
         }
+        this.spawnNewChest(64, 64);
     };
     Game.prototype.start = function () {
         // init logic
@@ -140,6 +155,9 @@ var Game = /** @class */ (function (_super) {
     __decorate([
         property(cc.Prefab)
     ], Game.prototype, "grassPrefab", void 0);
+    __decorate([
+        property(cc.Prefab)
+    ], Game.prototype, "chestPrefab", void 0);
     __decorate([
         property(cc.Node)
     ], Game.prototype, "player", void 0);

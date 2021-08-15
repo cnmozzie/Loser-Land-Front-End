@@ -16,6 +16,9 @@ export default class Game extends cc.Component {
 	@property(cc.Prefab)
     grassPrefab: cc.Prefab = null;
 	
+	@property(cc.Prefab)
+    chestPrefab: cc.Prefab = null;
+	
 	// Player 节点，用于获取主角的位置
 	@property(cc.Node)
     player: cc.Node = null;
@@ -31,8 +34,18 @@ export default class Game extends cc.Component {
         this.node.addChild(newGrass);
         // 设置草地的位置
         newGrass.setPosition(cc.v2(x,y));
-		// 在草地脚本组件上保存 Player 对象的引用
-        newGrass.getComponent('Grass').player = this.player;
+		// 在草地脚本组件上保存 Camera 对象的引用
+        newGrass.getComponent('Grass').camera = this.camera;
+    },
+	
+	spawnNewChest (x, y) {
+        // 使用给定的模板在场景中生成一个新节点
+        var newChest = cc.instantiate(this.chestPrefab);
+        // 将新增的节点添加到 Canvas 节点下面
+        this.node.addChild(newChest);
+		newChest.zIndex = 1;
+        // 设置宝箱的位置
+        newChest.setPosition(cc.v2(x,y));
     },
 	
 	async gainScore () {
@@ -44,13 +57,17 @@ export default class Game extends cc.Component {
 	
 	onClick (e, msg) {
         cc.log(msg);
-		cc.log(this.camera.x)
+		cc.director.loadScene("user");
     },
 	
 	
     update(dt) {
-		this.camera.x = this.player.x
-		this.camera.y = this.player.y
+		if (Math.abs(this.player.x) < 9*64) {
+			this.camera.x = this.player.x
+		}
+		if (Math.abs(this.player.y) < 12*64) {
+			this.camera.y = this.player.y
+		}
 	}
 	
 	onLoad () {
@@ -64,7 +81,7 @@ export default class Game extends cc.Component {
 				this.spawnNewGrass(i*64, j*64);
 			}
 		}
-		
+		this.spawnNewChest(64, 64)
     },
 
     start () {

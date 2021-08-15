@@ -505,19 +505,19 @@
     "relativePath": "Scene"
   },
   "4734c20c-0db8-4eb2-92ea-e692f4d70934": {
-    "asset": 1628912855077,
-    "meta": 1628923250129,
+    "asset": 1628948570831,
+    "meta": 1628994476553,
     "relativePath": "Script"
   },
   "7b81d4e8-ec84-4716-968d-500ac1d78a54": {
-    "asset": 1628912068183,
-    "meta": 1628923250131,
+    "asset": 1628927139172,
+    "meta": 1628994476556,
     "relativePath": "Texture"
   },
   "2d2f792f-a40c-49bb-a189-ed176a246e49": {
-    "asset": 1628951615299,
-    "meta": 1628951615309,
-    "relativePath": "Scene\\helloworld.fire"
+    "asset": 1629024009718,
+    "meta": 1629024009729,
+    "relativePath": "Scene\\game.fire"
   },
   "a8027877-d8d6-4645-97a0-52d4a0123dba": {
     "asset": 1628342208456,
@@ -544,19 +544,39 @@
     "meta": 1628949097950,
     "relativePath": "grass.prefab"
   },
+  "15f5a84e-bd12-4795-ad83-cbf2bae98509": {
+    "asset": 1628994788060,
+    "meta": 1628994791359,
+    "relativePath": "Script\\Grass.ts"
+  },
+  "608a846d-bc03-4c5c-95f5-8e087bd67e93": {
+    "asset": 1629008488184,
+    "meta": 1629008497181,
+    "relativePath": "Texture\\chest.png"
+  },
+  "ccec5b5a-cc5b-4179-851a-ebe8303ee978": {
+    "asset": 1629008561340,
+    "meta": 1629008561347,
+    "relativePath": "chest.prefab"
+  },
   "eded14fa-c545-47e8-911b-d76639334ad2": {
-    "asset": 1628950323589,
-    "meta": 1628950326866,
+    "asset": 1629009030270,
+    "meta": 1629009032051,
     "relativePath": "Script\\Player.ts"
   },
+  "c2b3affe-5176-4c67-9ea4-5b03fcfd6f7d": {
+    "asset": 1629028736339,
+    "meta": 1629028736351,
+    "relativePath": "Scene\\user.fire"
+  },
   "e1b90feb-a217-4493-849d-9a611900d683": {
-    "asset": 1628950755653,
-    "meta": 1628950758380,
+    "asset": 1629023992879,
+    "meta": 1629024003205,
     "relativePath": "Script\\Game.ts"
   },
-  "15f5a84e-bd12-4795-ad83-cbf2bae98509": {
-    "asset": 1628951427430,
-    "meta": 1628951430942,
-    "relativePath": "Script\\Grass.ts"
+  "70da30a3-3312-4397-9c19-c4501f929bf8": {
+    "asset": 1629041347007,
+    "meta": 1629041361370,
+    "relativePath": "Script\\User.ts"
   }
 }

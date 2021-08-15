@@ -1,6 +1,6 @@
 
 (function () {
-var scripts = [{"deps":{"./assets/Script/Player":4,"./assets/Script/Grass":5,"./assets/Script/Game":1},"path":"preview-scripts/__qc_index__.js"},{"deps":{"ethers/dist/ethers.umd.min.js":2},"path":"preview-scripts/assets/Script/Game.js"},{"deps":{"../../../../../../../../CocosDashboard_1.0.17/resources/.editors/Creator/2.4.6/resources/app.asar/node_modules/process/browser.js":3},"path":"preview-scripts/__node_modules/ethers/dist/ethers.umd.min.js"},{"deps":{},"path":"preview-scripts/__node_modules/process/browser.js"},{"deps":{},"path":"preview-scripts/assets/Script/Player.js"},{"deps":{},"path":"preview-scripts/assets/Script/Grass.js"}];
+var scripts = [{"deps":{"./assets/Script/Game":3,"./assets/Script/Grass":1,"./assets/Script/User":6,"./assets/Script/Player":2},"path":"preview-scripts/__qc_index__.js"},{"deps":{},"path":"preview-scripts/assets/Script/Grass.js"},{"deps":{},"path":"preview-scripts/assets/Script/Player.js"},{"deps":{"ethers/dist/ethers.umd.min.js":4},"path":"preview-scripts/assets/Script/Game.js"},{"deps":{"../../../../../../../../CocosDashboard_1.0.17/resources/.editors/Creator/2.4.6/resources/app.asar/node_modules/process/browser.js":5},"path":"preview-scripts/__node_modules/ethers/dist/ethers.umd.min.js"},{"deps":{},"path":"preview-scripts/__node_modules/process/browser.js"},{"deps":{"ethers/dist/ethers.umd.min.js":4},"path":"preview-scripts/assets/Script/User.js"}];
 var entries = ["preview-scripts/__qc_index__.js"];
 var bundleScript = 'preview-scripts/__qc_bundle__.js';
 
