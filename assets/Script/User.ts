@@ -8,8 +8,13 @@ export default class User extends cc.Component {
 	
 	privateKey: string = '';
 	
+	rogueLandAddress: string = '0xb96Dcc78667C9E76b4459abE6771cC3172663471';
+	
 	@property(cc.EditBox)
     editbox: cc.EditBox = null;
+	
+	@property(cc.JsonAsset)
+    rogueLandJson: cc.JsonAsset = null;
 	
 	startGame (e, msg) {
         cc.log(msg);
@@ -42,6 +47,20 @@ export default class User extends cc.Component {
 		
     },
 	
+	async gainScore () {
+		const provider = new ethers.providers.JsonRpcProvider("https://data-seed-prebsc-1-s2.binance.org:8545/");
+		const rogueLandContract = new ethers.Contract(this.rogueLandAddress, this.rogueLandJson.json.abi, provider)
+        const punkId = await rogueLandContract.getAuthorizedId(this.address)
+		if (punkId >= 0) {
+			const punkInfo = await rogueLandContract.getPunkInfo(this.address)
+			cc.log(punkInfo)
+		}
+		else {
+			cc.log("you are a visitor")
+		}
+		
+    },
+	
 	onLoad () {
 		let walletData = JSON.parse(cc.sys.localStorage.getItem('wallet'));
 		if (!walletData) {
@@ -54,6 +73,7 @@ export default class User extends cc.Component {
 		}
 		
 		this.showAddress()
+		this.gainScore()
     },
 
     start () {
