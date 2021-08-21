@@ -95,6 +95,19 @@ var Game = /** @class */ (function (_super) {
         // 设置宝箱的位置
         newChest.setPosition(cc.v2(x, y));
     };
+    Game.prototype.loadPunk = function () {
+        var myPunk = JSON.parse(cc.sys.localStorage.getItem('myPunk'));
+        if (myPunk) {
+            var sprite_1 = this.node.getChildByName('Player').getComponent(cc.Sprite);
+            cc.assetManager.loadRemote(myPunk.uri, { ext: '.png', cacheEnabled: true }, function (err, pic) {
+                if (err) {
+                    cc.log('LoadNetImg load error,error:' + err);
+                    return;
+                }
+                sprite_1.spriteFrame = new cc.SpriteFrame(pic);
+            });
+        }
+    };
     Game.prototype.gainScore = function () {
         return __awaiter(this, void 0, void 0, function () {
             var provider, _a;
@@ -141,6 +154,7 @@ var Game = /** @class */ (function (_super) {
     Game.prototype.start = function () {
         // init logic
         this.label.string = this.text;
+        this.loadPunk();
         this.gainScore();
     };
     __decorate([

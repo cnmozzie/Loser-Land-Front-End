@@ -68,8 +68,11 @@ var User = /** @class */ (function (_super) {
         _this.address = '';
         _this.privateKey = '';
         _this.rogueLandAddress = '0xb96Dcc78667C9E76b4459abE6771cC3172663471';
+        //punkInfo: any = null;
+        _this.label = null;
         _this.editbox = null;
         _this.rogueLandJson = null;
+        _this.punk = null;
         return _this;
     }
     User.prototype.startGame = function (e, msg) {
@@ -92,17 +95,19 @@ var User = /** @class */ (function (_super) {
         try {
             var wallet = new ethers_umd_min_js_1.ethers.Wallet(this.editbox.string);
             this.setWallet(wallet);
+            this.setUserInfo();
         }
         catch (err) {
             cc.log(err);
         }
     };
-    User.prototype.gainScore = function () {
+    User.prototype.setUserInfo = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var provider, rogueLandContract, punkId, punkInfo;
+            var provider, rogueLandContract, punkId, punkInfo, remoteUrl, sprite_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        cc.sys.localStorage.removeItem('myPunk');
                         provider = new ethers_umd_min_js_1.ethers.providers.JsonRpcProvider("https://data-seed-prebsc-1-s2.binance.org:8545/");
                         rogueLandContract = new ethers_umd_min_js_1.ethers.Contract(this.rogueLandAddress, this.rogueLandJson.json.abi, provider);
                         return [4 /*yield*/, rogueLandContract.getAuthorizedId(this.address)];
@@ -112,7 +117,17 @@ var User = /** @class */ (function (_super) {
                         return [4 /*yield*/, rogueLandContract.getPunkInfo(this.address)];
                     case 2:
                         punkInfo = _a.sent();
-                        cc.log(punkInfo);
+                        this.label.string = "Welcome, " + punkInfo.name;
+                        remoteUrl = "https://www.losernft.org" + punkInfo.uri.slice(15);
+                        cc.sys.localStorage.setItem('myPunk', JSON.stringify({ id: punkInfo.id, name: punkInfo.name, uri: remoteUrl }));
+                        sprite_1 = this.node.getChildByName('punk_image').getComponent(cc.Sprite);
+                        cc.assetManager.loadRemote(remoteUrl, { ext: '.png', cacheEnabled: true }, function (err, pic) {
+                            if (err) {
+                                cc.log('LoadNetImg load error,error:' + err);
+                                return;
+                            }
+                            sprite_1.spriteFrame = new cc.SpriteFrame(pic);
+                        });
                         return [3 /*break*/, 4];
                     case 3:
                         cc.log("you are a visitor");
@@ -133,16 +148,22 @@ var User = /** @class */ (function (_super) {
             this.privateKey = walletData.privateKey;
         }
         this.showAddress();
-        this.gainScore();
+        this.setUserInfo();
     };
     User.prototype.start = function () {
     };
+    __decorate([
+        property(cc.Label)
+    ], User.prototype, "label", void 0);
     __decorate([
         property(cc.EditBox)
     ], User.prototype, "editbox", void 0);
     __decorate([
         property(cc.JsonAsset)
     ], User.prototype, "rogueLandJson", void 0);
+    __decorate([
+        property(cc.Node)
+    ], User.prototype, "punk", void 0);
     User = __decorate([
         ccclass
     ], User);

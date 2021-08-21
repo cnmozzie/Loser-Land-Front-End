@@ -351,7 +351,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "HelloWorld",
+    "_name": "punk_image",
     "_objFlags": 0,
     "_parent": {
       "__id__": 2
@@ -2457,7 +2457,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "label",
+    "_name": "welcome_label",
     "_objFlags": 0,
     "_parent": {
       "__id__": 2
@@ -2564,7 +2564,7 @@
       "height": 640
     },
     "_fitWidth": false,
-    "_fitHeight": false,
+    "_fitHeight": true,
     "_id": "59Cd0ovbdF4byw5sbjJDx7"
   },
   {
@@ -2602,11 +2602,17 @@
       "__id__": 2
     },
     "_enabled": true,
+    "label": {
+      "__id__": 53
+    },
     "editbox": {
       "__id__": 27
     },
     "rogueLandJson": {
       "__uuid__": "28be3bdb-ea43-4115-b7f6-f9c864cb35b6"
+    },
+    "punk": {
+      "__id__": 7
     },
     "_id": "4aRvS9hABKsoHeLe3hQwVK"
   }

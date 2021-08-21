@@ -48,6 +48,20 @@ export default class Game extends cc.Component {
         newChest.setPosition(cc.v2(x,y));
     },
 	
+	loadPunk () {
+        let myPunk = JSON.parse(cc.sys.localStorage.getItem('myPunk'))
+		if (myPunk) {
+		  let sprite = this.node.getChildByName('Player').getComponent(cc.Sprite)
+	      cc.assetManager.loadRemote<cc.Texture2D>(myPunk.uri, { ext: '.png', cacheEnabled: true }, function (err, pic) {
+            if (err) {
+              cc.log('LoadNetImg load error,error:' + err)
+              return
+            }
+            sprite.spriteFrame = new cc.SpriteFrame(pic)
+          });
+		}
+    },
+	
 	async gainScore () {
 		const provider = new ethers.providers.JsonRpcProvider("https://data-seed-prebsc-1-s2.binance.org:8545/");
 		this.text = await provider.getBlockNumber()
@@ -86,8 +100,8 @@ export default class Game extends cc.Component {
 
     start () {
         // init logic
-        this.label.string = this.text;
-		
-		this.gainScore();
+        this.label.string = this.text
+		this.loadPunk()
+		this.gainScore()
     }
 }
