@@ -6,8 +6,7 @@ export default class User extends cc.Component {
 
 	address: string = '';
 	privateKey: string = '';
-	rogueLandAddress: string = '0xb96Dcc78667C9E76b4459abE6771cC3172663471';
-	//punkInfo: any = null;
+	rogueLandAddress: string = '0xE9f1e59d52d66a0fF973B85f8f4744350c15E924';
 	
 	@property(cc.Label)
     label: cc.Label = null;
@@ -58,11 +57,11 @@ export default class User extends cc.Component {
 		const provider = new ethers.providers.JsonRpcProvider("https://data-seed-prebsc-1-s2.binance.org:8545/");
 		const rogueLandContract = new ethers.Contract(this.rogueLandAddress, this.rogueLandJson.json.abi, provider)
         const punkId = await rogueLandContract.getAuthorizedId(this.address)
-		if (punkId >= 0) {
-			const punkInfo = await rogueLandContract.getPunkInfo(this.address)
+		if (punkId > 0) {
+			const punkInfo = await rogueLandContract.getPlayerInfo(this.address)
 			this.label.string = "Welcome, " + punkInfo.name
 			let remoteUrl = "https://www.losernft.org"+punkInfo.uri.slice(15)
-			cc.sys.localStorage.setItem('myPunk', JSON.stringify({id: punkInfo.id, name: punkInfo.name, uri: remoteUrl}));
+			cc.sys.localStorage.setItem('myPunk', JSON.stringify({id: punkInfo.id.toString(), name: punkInfo.name, uri: remoteUrl}));
 			let sprite = this.node.getChildByName('punk_image').getComponent(cc.Sprite)
 			cc.assetManager.loadRemote<cc.Texture2D>(remoteUrl, { ext: '.png', cacheEnabled: true }, function (err, pic) {
               if (err) {

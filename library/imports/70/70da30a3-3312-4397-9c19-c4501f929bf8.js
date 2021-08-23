@@ -67,8 +67,7 @@ var User = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.address = '';
         _this.privateKey = '';
-        _this.rogueLandAddress = '0xb96Dcc78667C9E76b4459abE6771cC3172663471';
-        //punkInfo: any = null;
+        _this.rogueLandAddress = '0xE9f1e59d52d66a0fF973B85f8f4744350c15E924';
         _this.label = null;
         _this.editbox = null;
         _this.rogueLandJson = null;
@@ -113,13 +112,13 @@ var User = /** @class */ (function (_super) {
                         return [4 /*yield*/, rogueLandContract.getAuthorizedId(this.address)];
                     case 1:
                         punkId = _a.sent();
-                        if (!(punkId >= 0)) return [3 /*break*/, 3];
-                        return [4 /*yield*/, rogueLandContract.getPunkInfo(this.address)];
+                        if (!(punkId > 0)) return [3 /*break*/, 3];
+                        return [4 /*yield*/, rogueLandContract.getPlayerInfo(this.address)];
                     case 2:
                         punkInfo = _a.sent();
                         this.label.string = "Welcome, " + punkInfo.name;
                         remoteUrl = "https://www.losernft.org" + punkInfo.uri.slice(15);
-                        cc.sys.localStorage.setItem('myPunk', JSON.stringify({ id: punkInfo.id, name: punkInfo.name, uri: remoteUrl }));
+                        cc.sys.localStorage.setItem('myPunk', JSON.stringify({ id: punkInfo.id.toString(), name: punkInfo.name, uri: remoteUrl }));
                         sprite_1 = this.node.getChildByName('punk_image').getComponent(cc.Sprite);
                         cc.assetManager.loadRemote(remoteUrl, { ext: '.png', cacheEnabled: true }, function (err, pic) {
                             if (err) {

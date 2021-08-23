@@ -515,8 +515,8 @@
     "relativePath": "Texture"
   },
   "2d2f792f-a40c-49bb-a189-ed176a246e49": {
-    "asset": 1629553610603,
-    "meta": 1629553610621,
+    "asset": 1629648310231,
+    "meta": 1629648310248,
     "relativePath": "Scene\\game.fire"
   },
   "a8027877-d8d6-4645-97a0-52d4a0123dba": {
@@ -559,11 +559,6 @@
     "meta": 1629008561347,
     "relativePath": "chest.prefab"
   },
-  "eded14fa-c545-47e8-911b-d76639334ad2": {
-    "asset": 1629009030270,
-    "meta": 1629009032051,
-    "relativePath": "Script\\Player.ts"
-  },
   "c2b3affe-5176-4c67-9ea4-5b03fcfd6f7d": {
     "asset": 1629538049631,
     "meta": 1629538049645,
@@ -575,18 +570,28 @@
     "relativePath": "Contract"
   },
   "28be3bdb-ea43-4115-b7f6-f9c864cb35b6": {
-    "asset": 1629268855418,
-    "meta": 1629269243496,
+    "asset": 1629642097755,
+    "meta": 1629642531538,
     "relativePath": "Contract\\RogueLand.json"
   },
-  "e1b90feb-a217-4493-849d-9a611900d683": {
-    "asset": 1629555563424,
-    "meta": 1629555568299,
-    "relativePath": "Script\\Game.ts"
+  "b1f1fec3-bf23-4258-ae8c-ccc2e4c71fd9": {
+    "asset": 1629644969648,
+    "meta": 1629645037157,
+    "relativePath": "number.prefab"
+  },
+  "eded14fa-c545-47e8-911b-d76639334ad2": {
+    "asset": 1629697727368,
+    "meta": 1629697729155,
+    "relativePath": "Script\\Player.ts"
   },
   "70da30a3-3312-4397-9c19-c4501f929bf8": {
-    "asset": 1629555507184,
-    "meta": 1629555568364,
+    "asset": 1629698855293,
+    "meta": 1629698858952,
     "relativePath": "Script\\User.ts"
+  },
+  "e1b90feb-a217-4493-849d-9a611900d683": {
+    "asset": 1629700747761,
+    "meta": 1629700749029,
+    "relativePath": "Script\\Game.ts"
   }
 }

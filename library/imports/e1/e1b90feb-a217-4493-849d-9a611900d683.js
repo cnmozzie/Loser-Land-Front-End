@@ -61,22 +61,56 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var _a = cc._decorator, ccclass = _a.ccclass, property = _a.property;
 var ethers_umd_min_js_1 = require("ethers/dist/ethers.umd.min.js");
+var Status;
+(function (Status) {
+    Status[Status["Schedule"] = 0] = "Schedule";
+    Status[Status["Committing"] = 1] = "Committing";
+    Status[Status["Committed"] = 2] = "Committed";
+    Status[Status["Confirmmed"] = 3] = "Confirmmed";
+})(Status || (Status = {}));
+;
+var Action;
+(function (Action) {
+    Action[Action["SitStill"] = 0] = "SitStill";
+    Action[Action["GoLeft"] = 1] = "GoLeft";
+    Action[Action["GoRight"] = 2] = "GoRight";
+    Action[Action["GoUp"] = 3] = "GoUp";
+    Action[Action["GoDown"] = 4] = "GoDown";
+    Action[Action["GoLeftUp"] = 5] = "GoLeftUp";
+    Action[Action["GoLeftDown"] = 6] = "GoLeftDown";
+    Action[Action["GoRightUp"] = 7] = "GoRightUp";
+    Action[Action["GoRightDown"] = 8] = "GoRightDown";
+})(Action || (Action = {}));
+;
 var Game = /** @class */ (function (_super) {
     __extends(Game, _super);
     function Game() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.id = 0;
+        _this.t = 0;
+        _this.currentSchedule = 0;
+        _this.toCommit = 0;
+        _this.mode = "view";
+        _this.rogueLandAddress = '0xE9f1e59d52d66a0fF973B85f8f4744350c15E924';
+        _this.rogueLandContract = null;
+        _this.provider = null;
+        _this.wallet = null;
+        _this.numberList = [];
         _this.label = null;
-        _this.button = null;
+        _this.accountButton = null;
+        _this.modeButton = null;
         _this.text = 'hello';
         _this.grassPrefab = null;
         _this.chestPrefab = null;
+        _this.numberPrefab = null;
+        _this.rogueLandJson = null;
         // Player 节点，用于获取主角的位置
         _this.player = null;
         // Camera 节点，用于获取摄像头的位置
         _this.camera = null;
         return _this;
     }
-    Game.prototype.spawnNewGrass = function (x, y) {
+    Game.prototype.spawnNewGrass = function (x, y, action) {
         // 使用给定的模板在场景中生成一个新节点
         var newGrass = cc.instantiate(this.grassPrefab);
         // 将新增的节点添加到 Canvas 节点下面
@@ -95,40 +129,137 @@ var Game = /** @class */ (function (_super) {
         // 设置宝箱的位置
         newChest.setPosition(cc.v2(x, y));
     };
-    Game.prototype.loadPunk = function () {
-        var myPunk = JSON.parse(cc.sys.localStorage.getItem('myPunk'));
-        if (myPunk) {
-            var sprite_1 = this.node.getChildByName('Player').getComponent(cc.Sprite);
-            cc.assetManager.loadRemote(myPunk.uri, { ext: '.png', cacheEnabled: true }, function (err, pic) {
-                if (err) {
-                    cc.log('LoadNetImg load error,error:' + err);
-                    return;
-                }
-                sprite_1.spriteFrame = new cc.SpriteFrame(pic);
-            });
-        }
+    Game.prototype.spawnNewNumber = function (x, y, action) {
+        // 使用给定的模板在场景中生成一个新节点
+        var newNumber = cc.instantiate(this.numberPrefab);
+        // 将新增的节点添加到 Canvas 节点下面
+        this.node.addChild(newNumber);
+        newNumber.zIndex = 1;
+        // 设置数字的位置
+        newNumber.setPosition(cc.v2(x, y));
+        var color = new cc.Color(242, 129, 27);
+        newNumber.color = color;
+        newNumber.getComponent(cc.Label).string = Number(this.t) + 1;
+        this.numberList[this.t - this.currentSchedule] = { time: Number(this.t) + 1, action: action, status: Status.Schedule, number: newNumber };
     };
-    Game.prototype.gainScore = function () {
+    Game.prototype.setLabel = function (t, x, y) {
+        this.text = this.mode + "  T" + t + " (" + x + ", " + y + ")";
+        this.label.string = this.text;
+    };
+    Game.prototype.commit = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var provider, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var action, rogueLandSigner;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        provider = new ethers_umd_min_js_1.ethers.providers.JsonRpcProvider("https://data-seed-prebsc-1-s2.binance.org:8545/");
-                        _a = this;
-                        return [4 /*yield*/, provider.getBlockNumber()];
+                        action = this.numberList[this.toCommit - this.currentSchedule];
+                        action.status = Status.Committing;
+                        rogueLandSigner = this.rogueLandContract.connect(this.wallet);
+                        return [4 /*yield*/, rogueLandSigner.scheduleAction(this.id, action.action)];
                     case 1:
-                        _a.text = _b.sent();
-                        this.label.string = this.text;
-                        cc.log(this.text);
+                        _a.sent();
+                        action.status = Status.Committed;
+                        this.toCommit++;
+                        cc.log('commit');
                         return [2 /*return*/];
                 }
             });
         });
     };
-    Game.prototype.onClick = function (e, msg) {
-        cc.log(msg);
+    Game.prototype.loadPunk = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var myPunk, sprite_1;
+            return __generator(this, function (_a) {
+                myPunk = JSON.parse(cc.sys.localStorage.getItem('myPunk'));
+                if (myPunk) {
+                    this.id = myPunk.id;
+                    sprite_1 = this.node.getChildByName('Player').getComponent(cc.Sprite);
+                    cc.assetManager.loadRemote(myPunk.uri, { ext: '.png', cacheEnabled: true }, function (err, pic) {
+                        if (err) {
+                            cc.log('LoadNetImg load error,error:' + err);
+                            return;
+                        }
+                        sprite_1.spriteFrame = new cc.SpriteFrame(pic);
+                    });
+                }
+                return [2 /*return*/];
+            });
+        });
+    };
+    Game.prototype.getStatus = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var walletData, walletPrivateKey, balance, currentTime;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        walletData = JSON.parse(cc.sys.localStorage.getItem('wallet'));
+                        walletPrivateKey = new ethers_umd_min_js_1.ethers.Wallet(walletData.privateKey);
+                        this.provider = new ethers_umd_min_js_1.ethers.providers.JsonRpcProvider("https://data-seed-prebsc-1-s2.binance.org:8545/");
+                        this.wallet = walletPrivateKey.connect(this.provider);
+                        this.rogueLandContract = new ethers_umd_min_js_1.ethers.Contract(this.rogueLandAddress, this.rogueLandJson.json.abi, this.provider);
+                        return [4 /*yield*/, this.wallet.getBalance()];
+                    case 1:
+                        balance = _a.sent();
+                        cc.log(balance / 1e18);
+                        if (!(this.id > 0)) return [3 /*break*/, 2];
+                        this.goViewMode();
+                        return [3 /*break*/, 4];
+                    case 2: return [4 /*yield*/, this.rogueLandContract.getCurrentTime()];
+                    case 3:
+                        currentTime = _a.sent();
+                        this.t = currentTime;
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Game.prototype.loadAccount = function (e, msg) {
         cc.director.loadScene("user");
+    };
+    Game.prototype.goViewMode = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var statusInfo;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.rogueLandContract.getCurrentStatus(this.id)];
+                    case 1:
+                        statusInfo = _a.sent();
+                        this.mode = "view";
+                        this.t = statusInfo.t;
+                        this.player.x = statusInfo.x * 64;
+                        this.player.y = statusInfo.y * 64;
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Game.prototype.goScheduleMode = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var statusInfo;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.rogueLandContract.getScheduleInfo(this.id)];
+                    case 1:
+                        statusInfo = _a.sent();
+                        this.mode = "schedule";
+                        this.t = statusInfo.t;
+                        this.currentSchedule = statusInfo.t;
+                        this.toCommit = statusInfo.t;
+                        this.player.x = statusInfo.x * 64;
+                        this.player.y = statusInfo.y * 64;
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Game.prototype.switchMode = function (e, msg) {
+        if (this.mode == "view") {
+            this.goScheduleMode();
+        }
+        else if (this.mode == "schedule") {
+            this.goViewMode();
+        }
     };
     Game.prototype.update = function (dt) {
         if (Math.abs(this.player.x) < 9 * 64) {
@@ -137,10 +268,49 @@ var Game = /** @class */ (function (_super) {
         if (Math.abs(this.player.y) < 12 * 64) {
             this.camera.y = this.player.y;
         }
+        this.setLabel(this.t, this.player.x / 64, this.player.y / 64);
+    };
+    Game.prototype.onKeyDown = function (event) {
+        // set a flag when key pressed
+        switch (event.keyCode) {
+            case cc.macro.KEY.a:
+            case cc.macro.KEY.left:
+                if (this.mode == "schedule") {
+                    this.spawnNewNumber(this.player.x, this.player.y, Action.GoLeft);
+                    this.t++;
+                }
+                this.player.getComponent('Player').moveLeft();
+                break;
+            case cc.macro.KEY.d:
+            case cc.macro.KEY.right:
+                if (this.mode == "schedule") {
+                    this.spawnNewNumber(this.player.x, this.player.y, Action.GoRight);
+                    this.t++;
+                }
+                this.player.getComponent('Player').moveRight();
+                break;
+            case cc.macro.KEY.s:
+            case cc.macro.KEY.down:
+                if (this.mode == "schedule") {
+                    this.spawnNewNumber(this.player.x, this.player.y, Action.GoDown);
+                    this.t++;
+                }
+                this.player.getComponent('Player').moveDown();
+                break;
+            case cc.macro.KEY.w:
+            case cc.macro.KEY.up:
+                if (this.mode == "schedule") {
+                    this.spawnNewNumber(this.player.x, this.player.y, Action.GoUp);
+                    this.t++;
+                }
+                this.player.getComponent('Player').moveUp();
+                break;
+        }
     };
     Game.prototype.onLoad = function () {
         this.label.node.zIndex = 1;
-        this.button.node.zIndex = 1;
+        this.accountButton.node.zIndex = 1;
+        this.modeButton.node.zIndex = 1;
         // 生成草地
         var windowSize = cc.view.getVisibleSize();
         cc.log("width=" + windowSize.width + ",height=" + windowSize.height);
@@ -150,19 +320,24 @@ var Game = /** @class */ (function (_super) {
             }
         }
         this.spawnNewChest(64, 64);
+        // 初始化键盘输入监听
+        cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
     };
     Game.prototype.start = function () {
         // init logic
         this.label.string = this.text;
         this.loadPunk();
-        this.gainScore();
+        this.getStatus();
     };
     __decorate([
         property(cc.Label)
     ], Game.prototype, "label", void 0);
     __decorate([
         property(cc.Button)
-    ], Game.prototype, "button", void 0);
+    ], Game.prototype, "accountButton", void 0);
+    __decorate([
+        property(cc.Button)
+    ], Game.prototype, "modeButton", void 0);
     __decorate([
         property
     ], Game.prototype, "text", void 0);
@@ -172,6 +347,12 @@ var Game = /** @class */ (function (_super) {
     __decorate([
         property(cc.Prefab)
     ], Game.prototype, "chestPrefab", void 0);
+    __decorate([
+        property(cc.Prefab)
+    ], Game.prototype, "numberPrefab", void 0);
+    __decorate([
+        property(cc.JsonAsset)
+    ], Game.prototype, "rogueLandJson", void 0);
     __decorate([
         property(cc.Node)
     ], Game.prototype, "player", void 0);
