@@ -505,8 +505,8 @@
     "relativePath": "Scene"
   },
   "4734c20c-0db8-4eb2-92ea-e692f4d70934": {
-    "asset": 1629023552236,
-    "meta": 1629265381592,
+    "asset": 1629706119770,
+    "meta": 1629726150489,
     "relativePath": "Script"
   },
   "7b81d4e8-ec84-4716-968d-500ac1d78a54": {
@@ -515,8 +515,8 @@
     "relativePath": "Texture"
   },
   "2d2f792f-a40c-49bb-a189-ed176a246e49": {
-    "asset": 1629648310231,
-    "meta": 1629648310248,
+    "asset": 1629731726666,
+    "meta": 1629731726685,
     "relativePath": "Scene\\game.fire"
   },
   "a8027877-d8d6-4645-97a0-52d4a0123dba": {
@@ -544,11 +544,6 @@
     "meta": 1628949097950,
     "relativePath": "grass.prefab"
   },
-  "15f5a84e-bd12-4795-ad83-cbf2bae98509": {
-    "asset": 1628994788060,
-    "meta": 1628994791359,
-    "relativePath": "Script\\Grass.ts"
-  },
   "608a846d-bc03-4c5c-95f5-8e087bd67e93": {
     "asset": 1629008488184,
     "meta": 1629008497181,
@@ -565,8 +560,8 @@
     "relativePath": "Scene\\user.fire"
   },
   "0155f2be-7b43-43e0-9162-9b8ee4ee6c70": {
-    "asset": 1629265815954,
-    "meta": 1629526760292,
+    "asset": 1629725651056,
+    "meta": 1629726150486,
     "relativePath": "Contract"
   },
   "28be3bdb-ea43-4115-b7f6-f9c864cb35b6": {
@@ -579,19 +574,34 @@
     "meta": 1629645037157,
     "relativePath": "number.prefab"
   },
-  "eded14fa-c545-47e8-911b-d76639334ad2": {
-    "asset": 1629697727368,
-    "meta": 1629697729155,
-    "relativePath": "Script\\Player.ts"
+  "a4ac4309-ee86-428d-b0d7-37566b253ee3": {
+    "asset": 1629714986476,
+    "meta": 1629715000465,
+    "relativePath": "punk.prefab"
+  },
+  "104a13d2-72d0-447c-a16e-c02e1d55a457": {
+    "asset": 1623568616570,
+    "meta": 1629725651074,
+    "relativePath": "Contract\\loserpunk.json"
   },
   "70da30a3-3312-4397-9c19-c4501f929bf8": {
-    "asset": 1629698855293,
-    "meta": 1629698858952,
+    "asset": 1629730927461,
+    "meta": 1629730929233,
     "relativePath": "Script\\User.ts"
   },
-  "e1b90feb-a217-4493-849d-9a611900d683": {
-    "asset": 1629700747761,
-    "meta": 1629700749029,
+  "eded14fa-c545-47e8-911b-d76639334ad2": {
+    "asset": 1629731561716,
+    "meta": 1629731608151,
+    "relativePath": "Script\\Player.ts"
+  },
+  "15f5a84e-bd12-4795-ad83-cbf2bae98509": {
+    "asset": 1629732021517,
+    "meta": 1629732098671,
+    "relativePath": "Script\\Grass.ts"
+  },
+  "02631bfe-2098-4a21-83dd-703ea26c5e57": {
+    "asset": 1629734083956,
+    "meta": 1629734142532,
     "relativePath": "Script\\Game.ts"
   }
 }

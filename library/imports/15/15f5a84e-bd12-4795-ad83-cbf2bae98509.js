@@ -44,6 +44,7 @@ var Grass = /** @class */ (function (_super) {
         }
     };
     Grass.prototype.onLoad = function () {
+        this.node.zIndex = 1;
     };
     Grass.prototype.start = function () {
     };

@@ -20,7 +20,7 @@ export default class Player extends cc.Component {
 	}
 	
 	onLoad () {
-        this.node.zIndex = 2;
+        
     },
 
     start () {

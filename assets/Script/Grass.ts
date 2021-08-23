@@ -19,7 +19,7 @@ export default class Grass extends cc.Component {
     },
 	
 	onLoad () {
-        
+        this.node.zIndex = 1;
     },
 
     start () {

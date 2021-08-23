@@ -42,7 +42,6 @@ var Player = /** @class */ (function (_super) {
         this.node.y = this.node.y > -15 * 64 ? this.node.y - 64 : this.node.y;
     };
     Player.prototype.onLoad = function () {
-        this.node.zIndex = 2;
     };
     Player.prototype.start = function () {
     };

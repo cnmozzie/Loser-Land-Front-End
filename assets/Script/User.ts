@@ -6,7 +6,7 @@ export default class User extends cc.Component {
 
 	address: string = '';
 	privateKey: string = '';
-	rogueLandAddress: string = '0xE9f1e59d52d66a0fF973B85f8f4744350c15E924';
+	rogueLandAddress: string = '0x157502aC3C7Cfec9d844604120dDC00B688c65F5';
 	
 	@property(cc.Label)
     label: cc.Label = null;
@@ -21,7 +21,7 @@ export default class User extends cc.Component {
     punk: cc.Node = null;
 	
 	startGame (e, msg) {
-        cc.log(msg);
+        //cc.log(msg);
 		cc.director.loadScene("game");
     },
 	

@@ -67,7 +67,7 @@ var User = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.address = '';
         _this.privateKey = '';
-        _this.rogueLandAddress = '0xE9f1e59d52d66a0fF973B85f8f4744350c15E924';
+        _this.rogueLandAddress = '0x157502aC3C7Cfec9d844604120dDC00B688c65F5';
         _this.label = null;
         _this.editbox = null;
         _this.rogueLandJson = null;
@@ -75,7 +75,7 @@ var User = /** @class */ (function (_super) {
         return _this;
     }
     User.prototype.startGame = function (e, msg) {
-        cc.log(msg);
+        //cc.log(msg);
         cc.director.loadScene("game");
     };
     User.prototype.setWallet = function (wallet) {
