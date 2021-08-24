@@ -92,12 +92,13 @@ var Game = /** @class */ (function (_super) {
         _this.toCommit = 0;
         _this.balance = 0;
         _this.mode = "view";
-        _this.rogueLandAddress = '0x157502aC3C7Cfec9d844604120dDC00B688c65F5';
+        _this.rogueLandAddress = '0x07de2043d322b48113dd04e7e2eec77232acf3e8';
         _this.rogueLandContract = null;
         _this.provider = null;
         _this.wallet = null;
         _this.numberList = [];
         _this.punks = [];
+        _this.chests = [];
         _this.label = null;
         _this.accountButton = null;
         _this.modeButton = null;
@@ -133,6 +134,7 @@ var Game = /** @class */ (function (_super) {
         newChest.zIndex = 2;
         // 设置宝箱的位置
         newChest.setPosition(cc.v2(x, y));
+        this.chests.push(newChest);
     };
     Game.prototype.spawnNewPunk = function (x, y, id) {
         cc.log(x, y, id.toString());
@@ -254,7 +256,7 @@ var Game = /** @class */ (function (_super) {
     };
     Game.prototype.updateMap = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var x1, x2, y1, y2, map, node, i, x, y;
+            var x1, x2, y1, y2, map, node, node, i, x, y;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -262,16 +264,15 @@ var Game = /** @class */ (function (_super) {
                         x2 = this.player.x / 64 + 7;
                         y1 = this.player.y / 64 - 5;
                         y2 = this.player.y / 64 + 5;
-                        return [4 /*yield*/, this.rogueLandContract.getEvents(x1, y1, x2, y2, this.t)
-                            //cc.log(x1,y1,x2,y2,this.t)
-                            //cc.log(this.punks)
-                        ];
+                        return [4 /*yield*/, this.rogueLandContract.getEvents(x1, y1, x2, y2, this.t)];
                     case 1:
                         map = _a.sent();
-                        //cc.log(x1,y1,x2,y2,this.t)
-                        //cc.log(this.punks)
                         while (this.punks.length > 0) {
                             node = this.punks.pop();
+                            node.destroy();
+                        }
+                        while (this.chests.length > 0) {
+                            node = this.chests.pop();
                             node.destroy();
                         }
                         i = 0;
@@ -280,6 +281,10 @@ var Game = /** @class */ (function (_super) {
                                 if (map[i].movingPunk != 0 && !(this.mode == "schedule" && map[i].movingPunk == this.id)) {
                                     //cc.log(map[i].movingPunk, x, y)
                                     this.spawnNewPunk(x * 64, y * 64, map[i].movingPunk);
+                                }
+                                if (map[i].monster > 0) {
+                                    //cc.log(map[i].monster/1e18, x, y)
+                                    this.spawnNewChest(x * 64, y * 64);
                                 }
                                 i++;
                             }
@@ -413,7 +418,6 @@ var Game = /** @class */ (function (_super) {
                 this.spawnNewGrass(i * 64, j * 64);
             }
         }
-        this.spawnNewChest(64, 64);
         // 初始化键盘输入监听
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);
     };

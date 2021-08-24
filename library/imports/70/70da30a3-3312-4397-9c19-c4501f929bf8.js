@@ -67,7 +67,7 @@ var User = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.address = '';
         _this.privateKey = '';
-        _this.rogueLandAddress = '0x157502aC3C7Cfec9d844604120dDC00B688c65F5';
+        _this.rogueLandAddress = '0x07de2043d322b48113dd04e7e2eec77232acf3e8';
         _this.label = null;
         _this.editbox = null;
         _this.rogueLandJson = null;
