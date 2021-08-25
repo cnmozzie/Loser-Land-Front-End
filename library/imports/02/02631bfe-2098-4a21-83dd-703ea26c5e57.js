@@ -92,7 +92,8 @@ var Game = /** @class */ (function (_super) {
         _this.toCommit = 0;
         _this.balance = 0;
         _this.mode = "view";
-        _this.rogueLandAddress = '0x07de2043d322b48113dd04e7e2eec77232acf3e8';
+        _this.hasEvents = false;
+        _this.rogueLandAddress = '0x0E66931d3c7bd5cCC9991667cBBC673de21122fF';
         _this.rogueLandContract = null;
         _this.provider = null;
         _this.wallet = null;
@@ -103,6 +104,7 @@ var Game = /** @class */ (function (_super) {
         _this.accountButton = null;
         _this.modeButton = null;
         _this.commitButton = null;
+        _this.pickButton = null;
         _this.text = 'hello';
         _this.grassPrefab = null;
         _this.chestPrefab = null;
@@ -194,7 +196,7 @@ var Game = /** @class */ (function (_super) {
                         action = this.numberList[this.toCommit - this.currentSchedule];
                         action.status = Status.Committing;
                         rogueLandSigner = this.rogueLandContract.connect(this.wallet);
-                        return [4 /*yield*/, rogueLandSigner.scheduleAction(this.id, action.action)];
+                        return [4 /*yield*/, rogueLandSigner.scheduleAction(this.id, action.action, { gasLimit: 300000 })];
                     case 1:
                         tx = _a.sent();
                         action.status = Status.Committed;
@@ -202,6 +204,24 @@ var Game = /** @class */ (function (_super) {
                         this.toCommit++;
                         this.balance = this.balance - tx.gasPrice * tx.gasLimit;
                         cc.log(tx.gasPrice / 1e9 * tx.gasLimit);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Game.prototype.pick = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var rogueLandSigner, tx;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        rogueLandSigner = this.rogueLandContract.connect(this.wallet);
+                        return [4 /*yield*/, rogueLandSigner.getGold(this.player.x / 64, this.player.y / 64, { gasLimit: 150000 })];
+                    case 1:
+                        tx = _a.sent();
+                        this.balance = this.balance - tx.gasPrice * tx.gasLimit;
+                        cc.log(tx.gasPrice / 1e9 * tx.gasLimit);
+                        this.getEvent();
                         return [2 /*return*/];
                 }
             });
@@ -239,7 +259,7 @@ var Game = /** @class */ (function (_super) {
                         this.wallet = walletPrivateKey.connect(this.provider);
                         this.rogueLandContract = new ethers_umd_min_js_1.ethers.Contract(this.rogueLandAddress, this.rogueLandJson.json.abi, this.provider);
                         if (!(this.id > 0)) return [3 /*break*/, 1];
-                        this.goViewMode();
+                        this.getEvent();
                         return [3 /*break*/, 3];
                     case 1: return [4 /*yield*/, this.rogueLandContract.getCurrentTime()];
                     case 2:
@@ -294,13 +314,47 @@ var Game = /** @class */ (function (_super) {
             });
         });
     };
+    Game.prototype.getEvent = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var statusInfo;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.rogueLandContract.getEvent(this.id)
+                        //cc.log(statusInfo)
+                    ];
+                    case 1:
+                        statusInfo = _a.sent();
+                        //cc.log(statusInfo)
+                        if (statusInfo.t != 0) {
+                            this.t = statusInfo.t;
+                            this.player.zIndex = 3;
+                            this.player.x = statusInfo.x * 64;
+                            this.player.y = statusInfo.y * 64;
+                            this.updateMap();
+                            this.hasEvents = true;
+                            this.pickButton.node.zIndex = 2;
+                        }
+                        else {
+                            this.hasEvents = false;
+                            this.pickButton.node.zIndex = 0;
+                            this.goViewMode();
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     Game.prototype.goViewMode = function () {
         return __awaiter(this, void 0, void 0, function () {
             var statusInfo;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.rogueLandContract.getCurrentStatus(this.id)];
-                    case 1:
+                    case 0:
+                        if (!this.hasEvents) return [3 /*break*/, 1];
+                        this.getEvent();
+                        return [3 /*break*/, 3];
+                    case 1: return [4 /*yield*/, this.rogueLandContract.getCurrentStatus(this.id)];
+                    case 2:
                         statusInfo = _a.sent();
                         this.mode = "view";
                         this.t = statusInfo.t;
@@ -308,7 +362,8 @@ var Game = /** @class */ (function (_super) {
                         this.player.x = statusInfo.x * 64;
                         this.player.y = statusInfo.y * 64;
                         this.updateMap();
-                        return [2 /*return*/];
+                        _a.label = 3;
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -356,35 +411,60 @@ var Game = /** @class */ (function (_super) {
         this.setLabel(this.t, this.player.x / 64, this.player.y / 64);
     };
     Game.prototype.onKeyDown = function (event) {
-        // set a flag when key pressed
+        // 任何都会导致punk无法拾取lowb
+        this.pickButton.node.zIndex = 0;
         switch (event.keyCode) {
-            case cc.macro.KEY.a:
+            case cc.macro.KEY.h:
             case cc.macro.KEY.left:
                 if (this.mode == "schedule") {
                     this.spawnNewNumber(this.player.x, this.player.y, Action.GoLeft);
                 }
-                this.player.getComponent('Player').moveLeft();
+                this.player.getComponent('Player').moveWest();
                 break;
-            case cc.macro.KEY.d:
+            case cc.macro.KEY.l:
             case cc.macro.KEY.right:
                 if (this.mode == "schedule") {
                     this.spawnNewNumber(this.player.x, this.player.y, Action.GoRight);
                 }
-                this.player.getComponent('Player').moveRight();
+                this.player.getComponent('Player').moveEast();
                 break;
-            case cc.macro.KEY.s:
+            case cc.macro.KEY.k:
             case cc.macro.KEY.down:
                 if (this.mode == "schedule") {
                     this.spawnNewNumber(this.player.x, this.player.y, Action.GoDown);
                 }
-                this.player.getComponent('Player').moveDown();
+                this.player.getComponent('Player').moveSouth();
                 break;
-            case cc.macro.KEY.w:
+            case cc.macro.KEY.j:
             case cc.macro.KEY.up:
                 if (this.mode == "schedule") {
                     this.spawnNewNumber(this.player.x, this.player.y, Action.GoUp);
                 }
-                this.player.getComponent('Player').moveUp();
+                this.player.getComponent('Player').moveNorth();
+                break;
+            case cc.macro.KEY.y:
+                if (this.mode == "schedule") {
+                    this.spawnNewNumber(this.player.x, this.player.y, Action.GoLeftUp);
+                }
+                this.player.getComponent('Player').moveNorthWest();
+                break;
+            case cc.macro.KEY.n:
+                if (this.mode == "schedule") {
+                    this.spawnNewNumber(this.player.x, this.player.y, Action.GoRightDown);
+                }
+                this.player.getComponent('Player').moveSouthEast();
+                break;
+            case cc.macro.KEY.u:
+                if (this.mode == "schedule") {
+                    this.spawnNewNumber(this.player.x, this.player.y, Action.GoRightUp);
+                }
+                this.player.getComponent('Player').moveNorthEast();
+                break;
+            case cc.macro.KEY.b:
+                if (this.mode == "schedule") {
+                    this.spawnNewNumber(this.player.x, this.player.y, Action.GoLeftDown);
+                }
+                this.player.getComponent('Player').moveSouthWest();
                 break;
             case cc.macro.KEY['+']:
                 if (this.mode == "view") {
@@ -439,6 +519,9 @@ var Game = /** @class */ (function (_super) {
     __decorate([
         property(cc.Button)
     ], Game.prototype, "commitButton", void 0);
+    __decorate([
+        property(cc.Button)
+    ], Game.prototype, "pickButton", void 0);
     __decorate([
         property
     ], Game.prototype, "text", void 0);

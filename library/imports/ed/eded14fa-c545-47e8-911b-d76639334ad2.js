@@ -29,17 +29,33 @@ var Player = /** @class */ (function (_super) {
     function Player() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    Player.prototype.moveLeft = function () {
+    Player.prototype.moveWest = function () {
         this.node.x = this.node.x > -15 * 64 ? this.node.x - 64 : this.node.x;
     };
-    Player.prototype.moveRight = function () {
+    Player.prototype.moveEast = function () {
         this.node.x = this.node.x < 15 * 64 ? this.node.x + 64 : this.node.x;
     };
-    Player.prototype.moveUp = function () {
+    Player.prototype.moveNorth = function () {
         this.node.y = this.node.y < 15 * 64 ? this.node.y + 64 : this.node.y;
     };
-    Player.prototype.moveDown = function () {
+    Player.prototype.moveSouth = function () {
         this.node.y = this.node.y > -15 * 64 ? this.node.y - 64 : this.node.y;
+    };
+    Player.prototype.moveNorthWest = function () {
+        this.moveNorth();
+        this.moveWest();
+    };
+    Player.prototype.moveSouthEast = function () {
+        this.moveSouth();
+        this.moveEast();
+    };
+    Player.prototype.moveNorthEast = function () {
+        this.moveNorth();
+        this.moveEast();
+    };
+    Player.prototype.moveSouthWest = function () {
+        this.moveSouth();
+        this.moveWest();
     };
     Player.prototype.onLoad = function () {
     };

@@ -6,7 +6,7 @@ export default class User extends cc.Component {
 
 	address: string = '';
 	privateKey: string = '';
-	rogueLandAddress: string = '0x07de2043d322b48113dd04e7e2eec77232acf3e8';
+	rogueLandAddress: string = '0x0E66931d3c7bd5cCC9991667cBBC673de21122fF';
 	
 	@property(cc.Label)
     label: cc.Label = null;

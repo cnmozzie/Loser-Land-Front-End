@@ -13,7 +13,8 @@ export default class Game extends cc.Component {
 	toCommit: number = 0;
 	balance: number = 0;
 	mode: string = "view";
-	rogueLandAddress: string = '0x07de2043d322b48113dd04e7e2eec77232acf3e8';
+	hasEvents: bool = false;
+	rogueLandAddress: string = '0x0E66931d3c7bd5cCC9991667cBBC673de21122fF';
 	rogueLandContract: any = null;
 	provider: any = null;
 	wallet: any = null;
@@ -32,6 +33,9 @@ export default class Game extends cc.Component {
 	
 	@property(cc.Button)
     commitButton: cc.Button = null;
+	
+	@property(cc.Button)
+    pickButton: cc.Button = null;
 
     @property
     text: string = 'hello';
@@ -142,12 +146,20 @@ export default class Game extends cc.Component {
         let action = this.numberList[this.toCommit-this.currentSchedule]
 		action.status = Status.Committing
 		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
-		const tx = await rogueLandSigner.scheduleAction(this.id, action.action)
+		const tx = await rogueLandSigner.scheduleAction(this.id, action.action, {gasLimit: 300000})
 		action.status = Status.Committed
 		action.number.destroy()
 		this.toCommit ++;
 		this.balance = this.balance - tx.gasPrice*tx.gasLimit
 		cc.log(tx.gasPrice/1e9*tx.gasLimit)
+    },
+	
+	async pick () {
+        const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
+		const tx = await rogueLandSigner.getGold(this.player.x/64, this.player.y/64, {gasLimit: 150000})
+		this.balance = this.balance - tx.gasPrice*tx.gasLimit
+		cc.log(tx.gasPrice/1e9*tx.gasLimit)
+		this.getEvent()
     },
 	
 	async loadPunk () {
@@ -172,7 +184,7 @@ export default class Game extends cc.Component {
 		this.wallet = walletPrivateKey.connect(this.provider)
 		this.rogueLandContract = new ethers.Contract(this.rogueLandAddress, this.rogueLandJson.json.abi, this.provider)
 		if (this.id > 0) {
-			this.goViewMode()
+			this.getEvent()
 		}
 		else {
 			const currentTime = await this.rogueLandContract.getCurrentTime()
@@ -216,14 +228,38 @@ export default class Game extends cc.Component {
 		//cc.log(this.punks)
 	}
 	
+	async getEvent() {
+		const statusInfo = await this.rogueLandContract.getEvent(this.id)
+		//cc.log(statusInfo)
+		if (statusInfo.t != 0) {
+			this.t = statusInfo.t
+		    this.player.zIndex = 3
+		    this.player.x = statusInfo.x * 64
+		    this.player.y = statusInfo.y * 64
+		    this.updateMap()
+			this.hasEvents = true
+			this.pickButton.node.zIndex = 2
+		}
+		else {
+			this.hasEvents = false
+			this.pickButton.node.zIndex = 0
+			this.goViewMode()
+		}
+	}
+	
 	async goViewMode() {
-		const statusInfo = await this.rogueLandContract.getCurrentStatus(this.id)
-		this.mode = "view"
-		this.t = statusInfo.t
-		this.player.zIndex = 0
-		this.player.x = statusInfo.x * 64
-		this.player.y = statusInfo.y * 64
-		this.updateMap()
+		if (this.hasEvents) {
+			this.getEvent()
+		}
+		else {
+			const statusInfo = await this.rogueLandContract.getCurrentStatus(this.id)
+		    this.mode = "view"
+			this.t = statusInfo.t
+		    this.player.zIndex = 0
+		    this.player.x = statusInfo.x * 64
+		    this.player.y = statusInfo.y * 64
+		    this.updateMap()
+		}
 	}
 	
 	async goScheduleMode() {
@@ -260,36 +296,60 @@ export default class Game extends cc.Component {
 	}
 	
 	onKeyDown (event) {
-		// set a flag when key pressed
-        
+		// 任何都会导致punk无法拾取lowb
+        this.pickButton.node.zIndex = 0
 		switch(event.keyCode) {
-            case cc.macro.KEY.a:
+            case cc.macro.KEY.h:
 			case cc.macro.KEY.left:
 			    if (this.mode == "schedule") {
 			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoLeft)
 		        }
-				this.player.getComponent('Player').moveLeft()
+				this.player.getComponent('Player').moveWest()
                 break;
-            case cc.macro.KEY.d:
+            case cc.macro.KEY.l:
 			case cc.macro.KEY.right:
 			    if (this.mode == "schedule") {
 			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoRight)
 		        }
-                this.player.getComponent('Player').moveRight()
+                this.player.getComponent('Player').moveEast()
                 break;
-		    case cc.macro.KEY.s:
+		    case cc.macro.KEY.k:
 			case cc.macro.KEY.down:
                 if (this.mode == "schedule") {
 			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoDown)
 		        }
-				this.player.getComponent('Player').moveDown()
+				this.player.getComponent('Player').moveSouth()
                 break;
-            case cc.macro.KEY.w:
+            case cc.macro.KEY.j:
 			case cc.macro.KEY.up:
                 if (this.mode == "schedule") {
 			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoUp)
 		        }
-				this.player.getComponent('Player').moveUp()
+				this.player.getComponent('Player').moveNorth()
+                break;
+			case cc.macro.KEY.y:
+			    if (this.mode == "schedule") {
+			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoLeftUp)
+		        }
+				this.player.getComponent('Player').moveNorthWest()
+                break;
+            case cc.macro.KEY.n:
+			    if (this.mode == "schedule") {
+			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoRightDown)
+		        }
+                this.player.getComponent('Player').moveSouthEast()
+                break;
+		    case cc.macro.KEY.u:
+                if (this.mode == "schedule") {
+			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoRightUp)
+		        }
+				this.player.getComponent('Player').moveNorthEast()
+                break;
+            case cc.macro.KEY.b:
+                if (this.mode == "schedule") {
+			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoLeftDown)
+		        }
+				this.player.getComponent('Player').moveSouthWest()
                 break;
 			case cc.macro.KEY['+']:
                 if (this.mode == "view") {
