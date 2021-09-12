@@ -4,19 +4,19 @@ const {ccclass, property} = cc._decorator;
 export default class Player extends cc.Component {
 	
 	moveWest () {
-		this.node.x = this.node.x > -15*64? this.node.x - 64: this.node.x
+		this.node.x = this.node.x - 64
 	}
 	
 	moveEast () {
-		this.node.x = this.node.x < 15*64? this.node.x + 64: this.node.x
+		this.node.x = this.node.x + 64
 	}
 	
 	moveNorth () {
-		this.node.y = this.node.y < 15*64? this.node.y + 64: this.node.y
+		this.node.y = this.node.y + 64
 	}
 	
 	moveSouth () {
-		this.node.y = this.node.y > -15*64? this.node.y - 64: this.node.y
+		this.node.y = this.node.y - 64
 	}
 	
 	moveNorthWest () {

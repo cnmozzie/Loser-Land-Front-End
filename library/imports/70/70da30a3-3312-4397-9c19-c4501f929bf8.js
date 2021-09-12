@@ -67,9 +67,11 @@ var User = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.address = '';
         _this.privateKey = '';
-        _this.rogueLandAddress = '0x0E66931d3c7bd5cCC9991667cBBC673de21122fF';
+        _this.rogueLandAddress = '0x7066F9F9C8130405C32Ae1045AeFb4B45b11C30f';
         _this.label = null;
-        _this.editbox = null;
+        _this.showAddressEditbox = null;
+        _this.showKeyEditbox = null;
+        _this.importKeyEditbox = null;
         _this.rogueLandJson = null;
         _this.punk = null;
         return _this;
@@ -84,17 +86,30 @@ var User = /** @class */ (function (_super) {
         this.address = walletData.address;
         this.privateKey = walletData.privateKey;
     };
+    User.prototype.set_zh = function () {
+        cc.sys.localStorage.setItem('lang', 'zh');
+        cc.director.loadScene("user");
+    };
+    User.prototype.set_en = function () {
+        cc.sys.localStorage.setItem('lang', 'en');
+        cc.director.loadScene("user");
+    };
+    User.prototype.newAccount = function () {
+        cc.sys.localStorage.removeItem('wallet');
+        cc.director.loadScene("user");
+    };
     User.prototype.showAddress = function () {
-        this.editbox.string = this.address;
+        this.showAddressEditbox.string = this.address;
     };
     User.prototype.showPrivateKey = function () {
-        this.editbox.string = this.privateKey;
+        this.showKeyEditbox.string = this.privateKey;
     };
     User.prototype.importPrivateKey = function () {
         try {
-            var wallet = new ethers_umd_min_js_1.ethers.Wallet(this.editbox.string);
+            var wallet = new ethers_umd_min_js_1.ethers.Wallet(this.importKeyEditbox.string);
             this.setWallet(wallet);
             this.setUserInfo();
+            this.showAddress();
         }
         catch (err) {
             cc.log(err);
@@ -102,36 +117,33 @@ var User = /** @class */ (function (_super) {
     };
     User.prototype.setUserInfo = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var provider, rogueLandContract, punkId, punkInfo, remoteUrl, sprite_1;
+            var provider, rogueLandContract, punkInfo, remoteUrl, sprite_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        cc.sys.localStorage.removeItem('myPunk');
-                        provider = new ethers_umd_min_js_1.ethers.providers.JsonRpcProvider("https://data-seed-prebsc-1-s2.binance.org:8545/");
+                        provider = new ethers_umd_min_js_1.ethers.providers.JsonRpcProvider("https://exchaintestrpc.okex.org");
                         rogueLandContract = new ethers_umd_min_js_1.ethers.Contract(this.rogueLandAddress, this.rogueLandJson.json.abi, provider);
-                        return [4 /*yield*/, rogueLandContract.getAuthorizedId(this.address)];
-                    case 1:
-                        punkId = _a.sent();
-                        if (!(punkId > 0)) return [3 /*break*/, 3];
                         return [4 /*yield*/, rogueLandContract.getPlayerInfo(this.address)];
-                    case 2:
+                    case 1:
                         punkInfo = _a.sent();
-                        this.label.string = "Welcome, " + punkInfo.name;
-                        remoteUrl = "https://www.losernft.org" + punkInfo.uri.slice(15);
-                        cc.sys.localStorage.setItem('myPunk', JSON.stringify({ id: punkInfo.id.toString(), name: punkInfo.name, uri: remoteUrl }));
-                        sprite_1 = this.node.getChildByName('punk_image').getComponent(cc.Sprite);
-                        cc.assetManager.loadRemote(remoteUrl, { ext: '.png', cacheEnabled: true }, function (err, pic) {
-                            if (err) {
-                                cc.log('LoadNetImg load error,error:' + err);
-                                return;
-                            }
-                            sprite_1.spriteFrame = new cc.SpriteFrame(pic);
-                        });
-                        return [3 /*break*/, 4];
-                    case 3:
-                        cc.log("you are a visitor");
-                        _a.label = 4;
-                    case 4: return [2 /*return*/];
+                        if (punkInfo.id > 0) {
+                            this.label.string = "Welcome, " + punkInfo.name;
+                            remoteUrl = "https://www.losernft.org" + punkInfo.uri.slice(15);
+                            cc.sys.localStorage.setItem('myPunk', JSON.stringify({ id: punkInfo.id.toString(), name: punkInfo.name, uri: remoteUrl }));
+                            sprite_1 = this.node.getChildByName('punk_image').getComponent(cc.Sprite);
+                            cc.assetManager.loadRemote(remoteUrl, { ext: '.png', cacheEnabled: true }, function (err, pic) {
+                                if (err) {
+                                    cc.log('LoadNetImg load error,error:' + err);
+                                    return;
+                                }
+                                sprite_1.spriteFrame = new cc.SpriteFrame(pic);
+                            });
+                        }
+                        else {
+                            cc.log("you are a visitor");
+                            cc.sys.localStorage.setItem('myPunk', JSON.stringify({ id: 0 }));
+                        }
+                        return [2 /*return*/];
                 }
             });
         });
@@ -156,7 +168,13 @@ var User = /** @class */ (function (_super) {
     ], User.prototype, "label", void 0);
     __decorate([
         property(cc.EditBox)
-    ], User.prototype, "editbox", void 0);
+    ], User.prototype, "showAddressEditbox", void 0);
+    __decorate([
+        property(cc.EditBox)
+    ], User.prototype, "showKeyEditbox", void 0);
+    __decorate([
+        property(cc.EditBox)
+    ], User.prototype, "importKeyEditbox", void 0);
     __decorate([
         property(cc.JsonAsset)
     ], User.prototype, "rogueLandJson", void 0);

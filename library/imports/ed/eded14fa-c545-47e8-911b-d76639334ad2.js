@@ -30,16 +30,16 @@ var Player = /** @class */ (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Player.prototype.moveWest = function () {
-        this.node.x = this.node.x > -15 * 64 ? this.node.x - 64 : this.node.x;
+        this.node.x = this.node.x - 64;
     };
     Player.prototype.moveEast = function () {
-        this.node.x = this.node.x < 15 * 64 ? this.node.x + 64 : this.node.x;
+        this.node.x = this.node.x + 64;
     };
     Player.prototype.moveNorth = function () {
-        this.node.y = this.node.y < 15 * 64 ? this.node.y + 64 : this.node.y;
+        this.node.y = this.node.y + 64;
     };
     Player.prototype.moveSouth = function () {
-        this.node.y = this.node.y > -15 * 64 ? this.node.y - 64 : this.node.y;
+        this.node.y = this.node.y - 64;
     };
     Player.prototype.moveNorthWest = function () {
         this.moveNorth();

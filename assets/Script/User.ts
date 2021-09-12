@@ -6,13 +6,19 @@ export default class User extends cc.Component {
 
 	address: string = '';
 	privateKey: string = '';
-	rogueLandAddress: string = '0x0E66931d3c7bd5cCC9991667cBBC673de21122fF';
+	rogueLandAddress: string = '0x7066F9F9C8130405C32Ae1045AeFb4B45b11C30f';
 	
 	@property(cc.Label)
     label: cc.Label = null;
 	
 	@property(cc.EditBox)
-    editbox: cc.EditBox = null;
+    showAddressEditbox: cc.EditBox = null;
+	
+	@property(cc.EditBox)
+    showKeyEditbox: cc.EditBox = null;
+	
+	@property(cc.EditBox)
+    importKeyEditbox: cc.EditBox = null;
 	
 	@property(cc.JsonAsset)
     rogueLandJson: cc.JsonAsset = null;
@@ -32,19 +38,35 @@ export default class User extends cc.Component {
 		this.privateKey = walletData.privateKey
     },
 	
+	set_zh () {
+		cc.sys.localStorage.setItem('lang', 'zh');
+		cc.director.loadScene("user");
+    },
+	
+	set_en () {
+		cc.sys.localStorage.setItem('lang', 'en');
+		cc.director.loadScene("user");
+    },
+	
+	newAccount () {
+		cc.sys.localStorage.removeItem('wallet')
+		cc.director.loadScene("user")
+    },
+	
 	showAddress () {
-		this.editbox.string = this.address
+		this.showAddressEditbox.string = this.address
     },
 	
 	showPrivateKey () {
-		this.editbox.string = this.privateKey
+		this.showKeyEditbox.string = this.privateKey
     },
 	
 	importPrivateKey () {
 		try {
-			const wallet = new ethers.Wallet(this.editbox.string)
+			const wallet = new ethers.Wallet(this.importKeyEditbox.string)
 		    this.setWallet(wallet)
 			this.setUserInfo()
+			this.showAddress()
 		}
 		catch (err) {
 			cc.log(err)
@@ -53,12 +75,11 @@ export default class User extends cc.Component {
     },
 	
 	async setUserInfo () {
-		cc.sys.localStorage.removeItem('myPunk');
-		const provider = new ethers.providers.JsonRpcProvider("https://data-seed-prebsc-1-s2.binance.org:8545/");
+		
+		const provider = new ethers.providers.JsonRpcProvider("https://exchaintestrpc.okex.org");
 		const rogueLandContract = new ethers.Contract(this.rogueLandAddress, this.rogueLandJson.json.abi, provider)
-        const punkId = await rogueLandContract.getAuthorizedId(this.address)
-		if (punkId > 0) {
-			const punkInfo = await rogueLandContract.getPlayerInfo(this.address)
+        const punkInfo = await rogueLandContract.getPlayerInfo(this.address)
+		if (punkInfo.id > 0) {
 			this.label.string = "Welcome, " + punkInfo.name
 			let remoteUrl = "https://www.losernft.org"+punkInfo.uri.slice(15)
 			cc.sys.localStorage.setItem('myPunk', JSON.stringify({id: punkInfo.id.toString(), name: punkInfo.name, uri: remoteUrl}));
@@ -73,15 +94,17 @@ export default class User extends cc.Component {
 		}
 		else {
 			cc.log("you are a visitor")
+			cc.sys.localStorage.setItem('myPunk', JSON.stringify({id: 0})
 		}
 		
     },
 	
 	onLoad () {
+		
 		let walletData = JSON.parse(cc.sys.localStorage.getItem('wallet'));
 		if (!walletData) {
 			const wallet = new ethers.Wallet.createRandom()
-			this.setWallet(wallet)
+		    this.setWallet(wallet)
 		}
 		else {
 			this.address = walletData.address

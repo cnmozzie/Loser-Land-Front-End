@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "label",
+    "_name": "number",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -36,7 +36,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 22.25,
+      "width": 43.01,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -48,8 +48,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        705,
-        294,
+        474.849,
+        38.967,
         0,
         0,
         0,
@@ -88,9 +88,9 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "3",
-    "_N$string": "3",
-    "_fontSize": 40,
+    "_string": "1132",
+    "_N$string": "1132",
+    "_fontSize": 20,
     "_lineHeight": 40,
     "_enableWrapText": true,
     "_N$file": null,
