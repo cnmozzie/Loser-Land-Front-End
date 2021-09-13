@@ -505,8 +505,8 @@
     "relativePath": "Scene"
   },
   "4734c20c-0db8-4eb2-92ea-e692f4d70934": {
-    "asset": 1629706119770,
-    "meta": 1629726150489,
+    "asset": 1631432895459,
+    "meta": 1631539692640,
     "relativePath": "Script"
   },
   "7b81d4e8-ec84-4716-968d-500ac1d78a54": {
@@ -580,8 +580,8 @@
     "relativePath": "Contract\\RogueLand.json"
   },
   "e2ec0cea-6ade-427d-97d1-fec1473734f0": {
-    "asset": 1630828813290,
-    "meta": 1630828813297,
+    "asset": 1631419203190,
+    "meta": 1631539693115,
     "relativePath": "Texture\\arrowsheet"
   },
   "3e6a5857-de56-4c74-a8d1-86f107da9a5e": {
@@ -685,8 +685,8 @@
     "relativePath": "Script\\PickGoldDialog.ts"
   },
   "f8f40ae0-557e-458a-9a0f-453d8c799af5": {
-    "asset": 1631437180157,
-    "meta": 1631437180163,
+    "asset": 1631456750815,
+    "meta": 1631539692636,
     "relativePath": "Map"
   },
   "c80e1e39-1bf1-4dcd-833b-4954064b1cee": {
@@ -745,8 +745,8 @@
     "relativePath": "Map\\minimap.tmx"
   },
   "02631bfe-2098-4a21-83dd-703ea26c5e57": {
-    "asset": 1631458385938,
-    "meta": 1631458388075,
+    "asset": 1631459505754,
+    "meta": 1631539693111,
     "relativePath": "Script\\Game.ts"
   }
 }

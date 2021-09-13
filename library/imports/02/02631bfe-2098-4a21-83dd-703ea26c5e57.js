@@ -300,7 +300,7 @@ var Game = /** @class */ (function (_super) {
             }
         }
         else {
-            this.text = "LOWB: " + this.gold + " \n OKT " + this.balance / 1e18;
+            this.text = "LOWB: " + this.gold + " \n OKT: " + this.balance / 1e18;
         }
         this.label.string = this.text;
     };
