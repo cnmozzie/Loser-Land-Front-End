@@ -13,13 +13,15 @@ export default class Game extends cc.Component {
 	toCommit: number = 0;
 	balance: number = 0;
 	gold: number = 0;
+	endRound: number = 188;
 	minimapSize: number = 51;
 	mapSize: number = 51;
+	eventNumber: number = 0;
 	playerAddress: string = "";
 	mode: string = "view";
-	hasEvents: bool = false;
 	isBusy: bool = false;
-	rogueLandAddress: string = '0x7066F9F9C8130405C32Ae1045AeFb4B45b11C30f';
+	registerAddress: string = '0x5eFa33708a7688Fa116B6Cb3eC65D7fcE3c9f599';
+	rogueLandAddress: string = '0xFDE9DAacCbA3D802BFCBAd54039A4B0DeAA48e85';
 	rogueLandContract: any = null;
 	provider: any = null;
 	wallet: any = null;
@@ -44,9 +46,6 @@ export default class Game extends cc.Component {
 	@property(cc.Button)
     swapButton: cc.Button = null;
 	
-	@property(cc.Button)
-    pickButton: cc.Button = null;
-	
 	@property(cc.TiledMap)
     smallMap: cc.TiledMap = null;
 
@@ -70,6 +69,15 @@ export default class Game extends cc.Component {
 	
 	@property(cc.Prefab)
     putGoldPrefab: cc.Prefab = null;
+	
+	@property(cc.Prefab)
+    punkInfoPrefab: cc.Prefab = null;
+	
+	@property(cc.Prefab)
+    goldInfoPrefab: cc.Prefab = null;
+	
+	@property(cc.JsonAsset)
+    registerJson: cc.JsonAsset = null;
 	
 	@property(cc.JsonAsset)
     rogueLandJson: cc.JsonAsset = null;
@@ -103,6 +111,29 @@ export default class Game extends cc.Component {
         newDialog.setPosition(cc.v2(this.player.x, this.player.y));
 		// 在对话框脚本组件上保存 Game 对象的引用
         newDialog.getComponent('PutGoldDialog').game = this;
+    },
+	
+	async spawnNewPunkInfo (id) {
+        var newDialog = cc.instantiate(this.punkInfoPrefab);
+        this.node.addChild(newDialog);
+		newDialog.zIndex = 5;
+        newDialog.setPosition(cc.v2(this.player.x, this.player.y));
+		// 在对话框脚本组件上保存 Game 对象的引用
+        cc.log(id)
+		newDialog.getComponent('PunkInfo').game = this;
+		newDialog.getComponent('PunkInfo').setId(id);
+		const info = await this.getPunkInfo(id);
+		newDialog.getComponent('PunkInfo').setInfo(info);
+    },
+	
+	async spawnNewGoldInfo (x, y) {
+        var newDialog = cc.instantiate(this.goldInfoPrefab);
+        this.node.addChild(newDialog);
+		newDialog.zIndex = 5;
+        newDialog.setPosition(cc.v2(this.player.x, this.player.y));
+		// 在对话框脚本组件上保存 Game 对象的引用
+		const info = await this.rogueLandContract.goldOn(x, y);
+		newDialog.getComponent('GoldDialog').setLabel({amount: info.amount, punkNumber: info.punkNumber, time: info.vaildTime-this.playerInfo.t});
     },
 	
 	spawnNewGrass (x, y) {
@@ -155,8 +186,11 @@ export default class Game extends cc.Component {
 		newChest.zIndex = 2;
         // 设置宝箱的位置
         newChest.setPosition(cc.v2(x,y));
-		
 		this.chests.push(newChest)
+		
+		newChest.on(cc.Node.EventType.TOUCH_START, function(event){
+			this.spawnNewGoldInfo(x/64, y/64);
+		}, this)
     },
 	
 	spawnNewPunk (x, y, id) {
@@ -182,6 +216,10 @@ export default class Game extends cc.Component {
               sprite.spriteFrame = new cc.SpriteFrame(pic)
             });
 		}
+		
+		newPunk.on(cc.Node.EventType.TOUCH_START, function(event){
+			this.spawnNewPunkInfo(id);
+		}, this)
     },
 	
 	async spawnNewNumber (x, y, action) {
@@ -254,7 +292,6 @@ export default class Game extends cc.Component {
 	
 	setLabel (t, pos) {
 		const lang = cc.sys.localStorage.getItem('lang')
-		
 		if (this.isBusy) {
 			if (lang === 'zh') {
 			    this.text = "更新中..."
@@ -263,8 +300,30 @@ export default class Game extends cc.Component {
 				this.text = "updating..."
 			}			
 		}
+		else if (this.playerInfo.t == 0) {
+			if (lang === 'zh') {
+			    this.text = `游戏尚未开始 \n 行动点: ${this.balance}`
+		    }
+			else {
+				this.text = `Game not start yet \n ACTION POINTS: ${this.balance}`
+			}
+		}
+		else if (this.playerInfo.t == this.endRound) {
+			if (lang === 'zh') {
+			    this.text = `游戏结束 \n 行动点: ${this.balance}`
+		    }
+			else {
+				this.text = `Game Over \n ACTION POINTS: ${this.balance}`
+			}
+		}
 		else {
-			this.text = `LOWB: ${this.gold} \n OKT: ${this.balance/1e18}`
+			if (lang === 'zh') {
+			    this.text = `金币: ${this.gold} \n行动点: ${this.balance} \n${this.endRound-this.playerInfo.t}回合后游戏结束`
+		    }
+			else {
+				this.text = `GOLD: ${this.gold} \n ACTION POINTS: ${this.balance} \nGAME WILL END IN ${this.endRound-this.playerInfo.t} ROUNDS`
+			}
+			
 		}
 		this.label.string = this.text;
 	}
@@ -282,7 +341,7 @@ export default class Game extends cc.Component {
 		action.status = Status.Committed
 		action.number.destroy()
 		this.toCommit ++;
-		this.balance = this.balance - 300000e9
+		this.balance = this.balance - 3
     },
 	
 	async swap () {
@@ -294,26 +353,26 @@ export default class Game extends cc.Component {
 		catch (e) {
 			cc.log(e)
 		}
-		this.balance = (this.balance/1e18 + 0.01)*1e18
+		this.balance = this.balance + 100
 		this.gold = this.gold - 1000
 		
 		if (this.gold >= 1000) {
-			this.swapButton.interactable = true
+			//this.swapButton.interactable = true
 		}
     },
 	
 	async pick () {
         if (this.balance < 0) return;
-		this.pickButton.interactable = false
+		//this.pickButton.interactable = false
 		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
 		try {
-			const tx = await rogueLandSigner.getGold(this.toPick.x, this.toPick.y, {gasLimit: 150000, gasPrice: 1000000000})
+			const tx = await rogueLandSigner.getGold(this.toPick.x, this.toPick.y, {gasLimit: 500000, gasPrice: 1000000000})
 		}
 		catch (e) {
 			cc.log(e)
 		}
 		
-		this.balance = this.balance - 150000e9
+		this.balance = this.balance - 2
 		//cc.log(tx.gasPrice/1e9*tx.gasLimit)
 		//this.getEvent()
     },
@@ -336,12 +395,21 @@ export default class Game extends cc.Component {
 		//this.getGoldInfo()
     },
 	
+	async getPunkInfo (id) {
+        const player = await this.rogueLandContract.punkMaster(id)
+		const registerContract = new ethers.Contract(this.registerAddress, this.registerJson.json.abi, this.provider)
+		const account = await registerContract.accountInfo(player)
+		const punkInfo = await this.rogueLandContract.stillPunks(id)
+		return {name: account.name, gold: Number(punkInfo.gold), address: player}
+    },
+	
 	async loadPunk () {
-        let myPunk = JSON.parse(cc.sys.localStorage.getItem('myPunk'))
-		if (myPunk.id > 0) {
-		  this.id = myPunk.id
+        let punkId = JSON.parse(cc.sys.localStorage.getItem('myPunk'))
+		if (punkId > 0) {
+		  this.id = punkId
 		  let sprite = this.node.getChildByName('Player').getComponent(cc.Sprite)
-	      cc.assetManager.loadRemote<cc.Texture2D>(myPunk.uri, { ext: '.png', cacheEnabled: true }, function (err, pic) {
+		  let remoteUrl = "https://www.losernft.org/ipfs/"+this.loserpunkJson.json[punkId-1].hash
+	      cc.assetManager.loadRemote<cc.Texture2D>(remoteUrl, { ext: '.png', cacheEnabled: true }, function (err, pic) {
             if (err) {
               cc.log('LoadNetImg load error,error:' + err)
               return
@@ -394,7 +462,7 @@ export default class Game extends cc.Component {
 	}
 	
 	loadAccount (e, msg) {
-		cc.director.loadScene("user");
+		cc.director.loadScene("welcome");
     },
 	
 	async updateMap () {
@@ -440,29 +508,13 @@ export default class Game extends cc.Component {
 	}
 	
 	async getEvent() {
+		this.goViewMode()
 		const statusInfo = await this.rogueLandContract.getEvent(this.id)
-		//cc.log(statusInfo)
-		if (statusInfo.t != 0) {
-			this.t = statusInfo.t
-		    this.player.zIndex = 4
-		    this.player.x = statusInfo.x * 64
-		    this.player.y = statusInfo.y * 64
-		    this.resetMinimap()
-			this.updateMap()
+		if (statusInfo.t > this.eventNumber) {
 			this.toPick.x = statusInfo.x
 			this.toPick.y = statusInfo.y
-			this.hasEvents = true
-			this.pickButton.interactable = true
-			const myPunk = await this.rogueLandContract.stillPunks(this.id)
-			this.gold = myPunk.gold
-			if (this.gold >= 1000) {
-			    this.swapButton.interactable = true
-		    }
-		}
-		else {
-			this.hasEvents = false
-			this.pickButton.interactable = false
-			this.goViewMode()
+			this.eventNumber = statusInfo.t
+			this.pick()
 		}
 	}
 	
@@ -470,37 +522,38 @@ export default class Game extends cc.Component {
 		const blockNumber = await this.provider.getBlockNumber()
 		const validBlockToPutGold = await this.rogueLandContract.validBlockToPutGold()
 		cc.log(validBlockToPutGold, blockNumber)
-		if (blockNumber >= validBlockToPutGold && this.id > 0) {
+		if (blockNumber >= validBlockToPutGold && validBlockToPutGold > 0 && this.balance > 0) {
 			this.spawnNewDialog()
 		}
 	}
 	
 	async goViewMode() {
+		const statusInfo = await this.rogueLandContract.getCurrentStatus(this.id)
+		this.mode = "view"
+		this.t = statusInfo.t
+		this.playerInfo.t = statusInfo.t
+		this.playerInfo.x = statusInfo.x
+		this.playerInfo.y = statusInfo.y
+		this.player.zIndex = 0
+		this.player.x = statusInfo.x * 64
+		this.player.y = statusInfo.y * 64
+		this.minimapCenter.x = statusInfo.x
+		this.minimapCenter.y = statusInfo.y
+		this.resetMinimap()
+		this.updateMap()
+		if (this.playerInfo.t == this.endRound) {
+			this.modeButton.interactable = false
+			return;
+		}
+		const myPunk = await this.rogueLandContract.stillPunks(this.id)
+		this.gold = myPunk.gold
+        if (this.gold >= 1000) {
+		    //this.swapButton.interactable = true
+		}
+		const okt = await this.wallet.getBalance()
+		this.balance = Math.floor(ethers.utils.formatEther(okt)*10000)
 		this.getGoldInfo()
-		if (this.hasEvents) {
-			this.getEvent()
-		}
-		else {
-			const statusInfo = await this.rogueLandContract.getCurrentStatus(this.id)
-		    this.mode = "view"
-			this.t = statusInfo.t
-			this.playerInfo.t = statusInfo.t
-			this.playerInfo.x = statusInfo.x
-			this.playerInfo.y = statusInfo.y
-		    this.player.zIndex = 0
-		    this.player.x = statusInfo.x * 64
-		    this.player.y = statusInfo.y * 64
-			this.minimapCenter.x = statusInfo.x
-			this.minimapCenter.y = statusInfo.y
-		    this.resetMinimap()
-			this.updateMap()
-			const myPunk = await this.rogueLandContract.stillPunks(this.id)
-			this.gold = myPunk.gold
-            if (this.gold >= 1000) {
-			    this.swapButton.interactable = true
-		    }
-			this.balance = await this.wallet.getBalance();
-		}
+		
 	}
 	
 	async goScheduleMode() {
@@ -551,7 +604,7 @@ export default class Game extends cc.Component {
 		let x = this.player.x
 		let y = this.player.y
 		this.setPosition(this.camera, x, y)
-		this.setPosition(this.label.node, x-300, y+250)
+		this.setPosition(this.label.node, x-250, y+250)
 		this.setPosition(this.time_button_group, x, y-280)
 		this.setPosition(this.button_group_2, x+330, y+140)
 		this.setLabel(this.t, this.getPosition())
@@ -745,7 +798,7 @@ export default class Game extends cc.Component {
     },
 	
 	setMiniMap(x_, y_, gid_) {
-		cc.log(x_, y_, gid_)
+		//cc.log(x_, y_, gid_)
 		let x = x_ - this.minimapCenter.x + 25
 		let y = y_ - this.minimapCenter.y + 25
 		if (x>=0 && x<=50 && y>=0 && y<=50) {
@@ -757,7 +810,7 @@ export default class Game extends cc.Component {
 		this.label.node.zIndex = 3;
 		this.time_button_group.zIndex = 3;
 		this.button_group_2.zIndex = 3;
-		this.pickButton.interactable = false
+		//this.pickButton.interactable = false
 		this.swapButton.interactable = false
 		// 生成草地
         //let windowSize=cc.view.getVisibleSize();

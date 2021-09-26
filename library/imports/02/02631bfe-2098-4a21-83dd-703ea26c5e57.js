@@ -92,13 +92,15 @@ var Game = /** @class */ (function (_super) {
         _this.toCommit = 0;
         _this.balance = 0;
         _this.gold = 0;
+        _this.endRound = 188;
         _this.minimapSize = 51;
         _this.mapSize = 51;
+        _this.eventNumber = 0;
         _this.playerAddress = "";
         _this.mode = "view";
-        _this.hasEvents = false;
         _this.isBusy = false;
-        _this.rogueLandAddress = '0x7066F9F9C8130405C32Ae1045AeFb4B45b11C30f';
+        _this.registerAddress = '0x5eFa33708a7688Fa116B6Cb3eC65D7fcE3c9f599';
+        _this.rogueLandAddress = '0xFDE9DAacCbA3D802BFCBAd54039A4B0DeAA48e85';
         _this.rogueLandContract = null;
         _this.provider = null;
         _this.wallet = null;
@@ -114,7 +116,6 @@ var Game = /** @class */ (function (_super) {
         _this.switchLabel = null;
         _this.modeButton = null;
         _this.swapButton = null;
-        _this.pickButton = null;
         _this.smallMap = null;
         _this.text = 'hello';
         _this.grassPrefab = null;
@@ -123,6 +124,9 @@ var Game = /** @class */ (function (_super) {
         _this.numberPrefab = null;
         _this.punkPrefab = null;
         _this.putGoldPrefab = null;
+        _this.punkInfoPrefab = null;
+        _this.goldInfoPrefab = null;
+        _this.registerJson = null;
         _this.rogueLandJson = null;
         _this.loserpunkJson = null;
         // Player 节点，用于获取主角的位置
@@ -145,6 +149,48 @@ var Game = /** @class */ (function (_super) {
         newDialog.setPosition(cc.v2(this.player.x, this.player.y));
         // 在对话框脚本组件上保存 Game 对象的引用
         newDialog.getComponent('PutGoldDialog').game = this;
+    };
+    Game.prototype.spawnNewPunkInfo = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var newDialog, info;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        newDialog = cc.instantiate(this.punkInfoPrefab);
+                        this.node.addChild(newDialog);
+                        newDialog.zIndex = 5;
+                        newDialog.setPosition(cc.v2(this.player.x, this.player.y));
+                        // 在对话框脚本组件上保存 Game 对象的引用
+                        cc.log(id);
+                        newDialog.getComponent('PunkInfo').game = this;
+                        newDialog.getComponent('PunkInfo').setId(id);
+                        return [4 /*yield*/, this.getPunkInfo(id)];
+                    case 1:
+                        info = _a.sent();
+                        newDialog.getComponent('PunkInfo').setInfo(info);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Game.prototype.spawnNewGoldInfo = function (x, y) {
+        return __awaiter(this, void 0, void 0, function () {
+            var newDialog, info;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        newDialog = cc.instantiate(this.goldInfoPrefab);
+                        this.node.addChild(newDialog);
+                        newDialog.zIndex = 5;
+                        newDialog.setPosition(cc.v2(this.player.x, this.player.y));
+                        return [4 /*yield*/, this.rogueLandContract.goldOn(x, y)];
+                    case 1:
+                        info = _a.sent();
+                        newDialog.getComponent('GoldDialog').setLabel({ amount: info.amount, punkNumber: info.punkNumber, time: info.vaildTime - this.playerInfo.t });
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     Game.prototype.spawnNewGrass = function (x, y) {
         // 使用给定的模板在场景中生成一个新节点
@@ -194,6 +240,9 @@ var Game = /** @class */ (function (_super) {
         // 设置宝箱的位置
         newChest.setPosition(cc.v2(x, y));
         this.chests.push(newChest);
+        newChest.on(cc.Node.EventType.TOUCH_START, function (event) {
+            this.spawnNewGoldInfo(x / 64, y / 64);
+        }, this);
     };
     Game.prototype.spawnNewPunk = function (x, y, id) {
         //cc.log(x, y, id.toString())
@@ -217,6 +266,9 @@ var Game = /** @class */ (function (_super) {
                 sprite_1.spriteFrame = new cc.SpriteFrame(pic);
             });
         }
+        newPunk.on(cc.Node.EventType.TOUCH_START, function (event) {
+            this.spawnNewPunkInfo(id);
+        }, this);
     };
     Game.prototype.spawnNewNumber = function (x, y, action) {
         return __awaiter(this, void 0, void 0, function () {
@@ -299,8 +351,29 @@ var Game = /** @class */ (function (_super) {
                 this.text = "updating...";
             }
         }
+        else if (this.playerInfo.t == 0) {
+            if (lang === 'zh') {
+                this.text = "\u6E38\u620F\u5C1A\u672A\u5F00\u59CB \n \u884C\u52A8\u70B9: " + this.balance;
+            }
+            else {
+                this.text = "Game not start yet \n ACTION POINTS: " + this.balance;
+            }
+        }
+        else if (this.playerInfo.t == this.endRound) {
+            if (lang === 'zh') {
+                this.text = "\u6E38\u620F\u7ED3\u675F \n \u884C\u52A8\u70B9: " + this.balance;
+            }
+            else {
+                this.text = "Game Over \n ACTION POINTS: " + this.balance;
+            }
+        }
         else {
-            this.text = "LOWB: " + this.gold + " \n OKT: " + this.balance / 1e18;
+            if (lang === 'zh') {
+                this.text = "\u91D1\u5E01: " + this.gold + " \n\u884C\u52A8\u70B9: " + this.balance + " \n" + (this.endRound - this.playerInfo.t) + "\u56DE\u5408\u540E\u6E38\u620F\u7ED3\u675F";
+            }
+            else {
+                this.text = "GOLD: " + this.gold + " \n ACTION POINTS: " + this.balance + " \nGAME WILL END IN " + (this.endRound - this.playerInfo.t) + " ROUNDS";
+            }
         }
         this.label.string = this.text;
     };
@@ -328,7 +401,7 @@ var Game = /** @class */ (function (_super) {
                         action.status = Status.Committed;
                         action.number.destroy();
                         this.toCommit++;
-                        this.balance = this.balance - 300000e9;
+                        this.balance = this.balance - 3;
                         return [2 /*return*/];
                 }
             });
@@ -354,10 +427,10 @@ var Game = /** @class */ (function (_super) {
                         cc.log(e_2);
                         return [3 /*break*/, 4];
                     case 4:
-                        this.balance = (this.balance / 1e18 + 0.01) * 1e18;
+                        this.balance = this.balance + 100;
                         this.gold = this.gold - 1000;
                         if (this.gold >= 1000) {
-                            this.swapButton.interactable = true;
+                            //this.swapButton.interactable = true
                         }
                         return [2 /*return*/];
                 }
@@ -372,12 +445,11 @@ var Game = /** @class */ (function (_super) {
                     case 0:
                         if (this.balance < 0)
                             return [2 /*return*/];
-                        this.pickButton.interactable = false;
                         rogueLandSigner = this.rogueLandContract.connect(this.wallet);
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, rogueLandSigner.getGold(this.toPick.x, this.toPick.y, { gasLimit: 150000, gasPrice: 1000000000 })];
+                        return [4 /*yield*/, rogueLandSigner.getGold(this.toPick.x, this.toPick.y, { gasLimit: 500000, gasPrice: 1000000000 })];
                     case 2:
                         tx = _a.sent();
                         return [3 /*break*/, 4];
@@ -386,7 +458,7 @@ var Game = /** @class */ (function (_super) {
                         cc.log(e_3);
                         return [3 /*break*/, 4];
                     case 4:
-                        this.balance = this.balance - 150000e9;
+                        this.balance = this.balance - 2;
                         return [2 /*return*/];
                 }
             });
@@ -423,15 +495,36 @@ var Game = /** @class */ (function (_super) {
             });
         });
     };
+    Game.prototype.getPunkInfo = function (id) {
+        return __awaiter(this, void 0, void 0, function () {
+            var player, registerContract, account, punkInfo;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.rogueLandContract.punkMaster(id)];
+                    case 1:
+                        player = _a.sent();
+                        registerContract = new ethers_umd_min_js_1.ethers.Contract(this.registerAddress, this.registerJson.json.abi, this.provider);
+                        return [4 /*yield*/, registerContract.accountInfo(player)];
+                    case 2:
+                        account = _a.sent();
+                        return [4 /*yield*/, this.rogueLandContract.stillPunks(id)];
+                    case 3:
+                        punkInfo = _a.sent();
+                        return [2 /*return*/, { name: account.name, gold: Number(punkInfo.gold), address: player }];
+                }
+            });
+        });
+    };
     Game.prototype.loadPunk = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var myPunk, sprite_2;
+            var punkId, sprite_2, remoteUrl;
             return __generator(this, function (_a) {
-                myPunk = JSON.parse(cc.sys.localStorage.getItem('myPunk'));
-                if (myPunk.id > 0) {
-                    this.id = myPunk.id;
+                punkId = JSON.parse(cc.sys.localStorage.getItem('myPunk'));
+                if (punkId > 0) {
+                    this.id = punkId;
                     sprite_2 = this.node.getChildByName('Player').getComponent(cc.Sprite);
-                    cc.assetManager.loadRemote(myPunk.uri, { ext: '.png', cacheEnabled: true }, function (err, pic) {
+                    remoteUrl = "https://www.losernft.org/ipfs/" + this.loserpunkJson.json[punkId - 1].hash;
+                    cc.assetManager.loadRemote(remoteUrl, { ext: '.png', cacheEnabled: true }, function (err, pic) {
                         if (err) {
                             cc.log('LoadNetImg load error,error:' + err);
                             return;
@@ -495,7 +588,7 @@ var Game = /** @class */ (function (_super) {
         this.setMinimapBoundary();
     };
     Game.prototype.loadAccount = function (e, msg) {
-        cc.director.loadScene("user");
+        cc.director.loadScene("welcome");
     };
     Game.prototype.updateMap = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -551,39 +644,21 @@ var Game = /** @class */ (function (_super) {
     };
     Game.prototype.getEvent = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var statusInfo, myPunk;
+            var statusInfo;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.rogueLandContract.getEvent(this.id)
-                        //cc.log(statusInfo)
-                    ];
+                    case 0:
+                        this.goViewMode();
+                        return [4 /*yield*/, this.rogueLandContract.getEvent(this.id)];
                     case 1:
                         statusInfo = _a.sent();
-                        if (!(statusInfo.t != 0)) return [3 /*break*/, 3];
-                        this.t = statusInfo.t;
-                        this.player.zIndex = 4;
-                        this.player.x = statusInfo.x * 64;
-                        this.player.y = statusInfo.y * 64;
-                        this.resetMinimap();
-                        this.updateMap();
-                        this.toPick.x = statusInfo.x;
-                        this.toPick.y = statusInfo.y;
-                        this.hasEvents = true;
-                        this.pickButton.interactable = true;
-                        return [4 /*yield*/, this.rogueLandContract.stillPunks(this.id)];
-                    case 2:
-                        myPunk = _a.sent();
-                        this.gold = myPunk.gold;
-                        if (this.gold >= 1000) {
-                            this.swapButton.interactable = true;
+                        if (statusInfo.t > this.eventNumber) {
+                            this.toPick.x = statusInfo.x;
+                            this.toPick.y = statusInfo.y;
+                            this.eventNumber = statusInfo.t;
+                            this.pick();
                         }
-                        return [3 /*break*/, 4];
-                    case 3:
-                        this.hasEvents = false;
-                        this.pickButton.interactable = false;
-                        this.goViewMode();
-                        _a.label = 4;
-                    case 4: return [2 /*return*/];
+                        return [2 /*return*/];
                 }
             });
         });
@@ -600,7 +675,7 @@ var Game = /** @class */ (function (_super) {
                     case 2:
                         validBlockToPutGold = _a.sent();
                         cc.log(validBlockToPutGold, blockNumber);
-                        if (blockNumber >= validBlockToPutGold && this.id > 0) {
+                        if (blockNumber >= validBlockToPutGold && validBlockToPutGold > 0 && this.balance > 0) {
                             this.spawnNewDialog();
                         }
                         return [2 /*return*/];
@@ -610,17 +685,12 @@ var Game = /** @class */ (function (_super) {
     };
     Game.prototype.goViewMode = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var statusInfo, myPunk, _a;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        this.getGoldInfo();
-                        if (!this.hasEvents) return [3 /*break*/, 1];
-                        this.getEvent();
-                        return [3 /*break*/, 5];
-                    case 1: return [4 /*yield*/, this.rogueLandContract.getCurrentStatus(this.id)];
-                    case 2:
-                        statusInfo = _b.sent();
+            var statusInfo, myPunk, okt;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.rogueLandContract.getCurrentStatus(this.id)];
+                    case 1:
+                        statusInfo = _a.sent();
                         this.mode = "view";
                         this.t = statusInfo.t;
                         this.playerInfo.t = statusInfo.t;
@@ -633,19 +703,23 @@ var Game = /** @class */ (function (_super) {
                         this.minimapCenter.y = statusInfo.y;
                         this.resetMinimap();
                         this.updateMap();
+                        if (this.playerInfo.t == this.endRound) {
+                            this.modeButton.interactable = false;
+                            return [2 /*return*/];
+                        }
                         return [4 /*yield*/, this.rogueLandContract.stillPunks(this.id)];
-                    case 3:
-                        myPunk = _b.sent();
+                    case 2:
+                        myPunk = _a.sent();
                         this.gold = myPunk.gold;
                         if (this.gold >= 1000) {
-                            this.swapButton.interactable = true;
+                            //this.swapButton.interactable = true
                         }
-                        _a = this;
                         return [4 /*yield*/, this.wallet.getBalance()];
-                    case 4:
-                        _a.balance = _b.sent();
-                        _b.label = 5;
-                    case 5: return [2 /*return*/];
+                    case 3:
+                        okt = _a.sent();
+                        this.balance = Math.floor(ethers_umd_min_js_1.ethers.utils.formatEther(okt) * 10000);
+                        this.getGoldInfo();
+                        return [2 /*return*/];
                 }
             });
         });
@@ -704,7 +778,7 @@ var Game = /** @class */ (function (_super) {
         var x = this.player.x;
         var y = this.player.y;
         this.setPosition(this.camera, x, y);
-        this.setPosition(this.label.node, x - 300, y + 250);
+        this.setPosition(this.label.node, x - 250, y + 250);
         this.setPosition(this.time_button_group, x, y - 280);
         this.setPosition(this.button_group_2, x + 330, y + 140);
         this.setLabel(this.t, this.getPosition());
@@ -895,7 +969,7 @@ var Game = /** @class */ (function (_super) {
         }
     };
     Game.prototype.setMiniMap = function (x_, y_, gid_) {
-        cc.log(x_, y_, gid_);
+        //cc.log(x_, y_, gid_)
         var x = x_ - this.minimapCenter.x + 25;
         var y = y_ - this.minimapCenter.y + 25;
         if (x >= 0 && x <= 50 && y >= 0 && y <= 50) {
@@ -906,7 +980,7 @@ var Game = /** @class */ (function (_super) {
         this.label.node.zIndex = 3;
         this.time_button_group.zIndex = 3;
         this.button_group_2.zIndex = 3;
-        this.pickButton.interactable = false;
+        //this.pickButton.interactable = false
         this.swapButton.interactable = false;
         // 生成草地
         //let windowSize=cc.view.getVisibleSize();
@@ -942,9 +1016,6 @@ var Game = /** @class */ (function (_super) {
         property(cc.Button)
     ], Game.prototype, "swapButton", void 0);
     __decorate([
-        property(cc.Button)
-    ], Game.prototype, "pickButton", void 0);
-    __decorate([
         property(cc.TiledMap)
     ], Game.prototype, "smallMap", void 0);
     __decorate([
@@ -968,6 +1039,15 @@ var Game = /** @class */ (function (_super) {
     __decorate([
         property(cc.Prefab)
     ], Game.prototype, "putGoldPrefab", void 0);
+    __decorate([
+        property(cc.Prefab)
+    ], Game.prototype, "punkInfoPrefab", void 0);
+    __decorate([
+        property(cc.Prefab)
+    ], Game.prototype, "goldInfoPrefab", void 0);
+    __decorate([
+        property(cc.JsonAsset)
+    ], Game.prototype, "registerJson", void 0);
     __decorate([
         property(cc.JsonAsset)
     ], Game.prototype, "rogueLandJson", void 0);
