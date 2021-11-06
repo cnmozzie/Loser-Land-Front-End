@@ -13,23 +13,27 @@ export default class Game extends cc.Component {
 	toCommit: number = 0;
 	balance: number = 0;
 	gold: number = 0;
-	endRound: number = 188;
+	pendingGold: number = 0;
+	hp: number = 0;
+	hep: number = 0;
+	endRound: number = 225;
 	minimapSize: number = 51;
 	mapSize: number = 51;
 	eventNumber: number = 0;
 	playerAddress: string = "";
+	userName: string = 'vistor';
 	mode: string = "view";
 	isBusy: bool = false;
-	registerAddress: string = '0x5eFa33708a7688Fa116B6Cb3eC65D7fcE3c9f599';
-	rogueLandAddress: string = '0xFDE9DAacCbA3D802BFCBAd54039A4B0DeAA48e85';
+	registerAddress: string = '0x76f099cd22E737FC38f17FA07aA95dACe8e53e4e';
+	rogueLandAddress: string = '0x4fB911AD82321a3639626260156b0f0ea3bd0d02';
 	rogueLandContract: any = null;
 	provider: any = null;
 	wallet: any = null;
+	validToGo: any = {};
 	playerInfo: any = {x: 0, y: 0, t: 0};
 	toPick: any = {x: 0, y: 0};
 	minimapCenter: any = {x: 0, y: 0};
 	timeList: any[] = [];
-	numberList: any[] = [];
 	punks: any[] = [];
 	chests: any[] = [];
 	tiledLayer : cc.TiledLayer = null;
@@ -40,14 +44,26 @@ export default class Game extends cc.Component {
 	@property(cc.Label)
     switchLabel: cc.Label = null;
 	
+	@property(cc.Label)
+    messageLabel: cc.Label = null;
+	
 	@property(cc.Button)
     modeButton: cc.Button = null;
 	
 	@property(cc.Button)
     swapButton: cc.Button = null;
 	
+	@property(cc.Button)
+    makeButton: cc.Button = null;
+	
+	@property(cc.Button)
+    useButton: cc.Button = null;
+	
 	@property(cc.TiledMap)
     smallMap: cc.TiledMap = null;
+	
+	@property(cc.TiledMap)
+    gameMap: cc.TiledMap = null;
 
     @property
     text: string = 'hello';
@@ -68,7 +84,13 @@ export default class Game extends cc.Component {
     punkPrefab: cc.Prefab = null;
 	
 	@property(cc.Prefab)
-    putGoldPrefab: cc.Prefab = null;
+    redStarPrefab: cc.Prefab = null;
+	
+	@property(cc.Prefab)
+    blueStarPrefab: cc.Prefab = null;
+	
+	@property(cc.Prefab)
+    diePrefab: cc.Prefab = null;
 	
 	@property(cc.Prefab)
     punkInfoPrefab: cc.Prefab = null;
@@ -101,35 +123,38 @@ export default class Game extends cc.Component {
 	@property(cc.Node)
     camera: cc.Node = null;
 	
-	spawnNewDialog () {
+	spawnNewDieDialog (name) {
         // 使用给定的模板在场景中生成一个新节点
-        var newDialog = cc.instantiate(this.putGoldPrefab);
+        var newDialog = cc.instantiate(this.diePrefab);
         // 将新增的节点添加到 Canvas 节点下面
         this.node.addChild(newDialog);
-		newDialog.zIndex = 5;
+		newDialog.zIndex = 6;
         // 设置宝箱的位置
         newDialog.setPosition(cc.v2(this.player.x, this.player.y));
 		// 在对话框脚本组件上保存 Game 对象的引用
-        newDialog.getComponent('PutGoldDialog').game = this;
+        newDialog.getComponent('DieDialog').setText(name);
     },
 	
-	async spawnNewPunkInfo (id) {
+	async spawnNewPunkInfo (id, x, y) {
         var newDialog = cc.instantiate(this.punkInfoPrefab);
         this.node.addChild(newDialog);
-		newDialog.zIndex = 5;
+		newDialog.zIndex = 6;
         newDialog.setPosition(cc.v2(this.player.x, this.player.y));
-		// 在对话框脚本组件上保存 Game 对象的引用
-        cc.log(id)
+        cc.log(id, x, y, this.t)
+		cc.log(this.playerInfo)
 		newDialog.getComponent('PunkInfo').game = this;
 		newDialog.getComponent('PunkInfo').setId(id);
 		const info = await this.getPunkInfo(id);
 		newDialog.getComponent('PunkInfo').setInfo(info);
+		if (id != this.id && this.t == this.playerInfo.t && Math.abs(x-this.playerInfo.x)<=1 && Math.abs(y-this.playerInfo.y)<=1 && !info.isMoving && Math.abs(x)<25 && Math.abs(y)<25 && Math.abs(this.playerInfo.x)<25 && Math.abs(this.playerInfo.y)<25) {
+			newDialog.getComponent('PunkInfo').setAttack(true);
+		}
     },
 	
 	async spawnNewGoldInfo (x, y) {
         var newDialog = cc.instantiate(this.goldInfoPrefab);
         this.node.addChild(newDialog);
-		newDialog.zIndex = 5;
+		newDialog.zIndex = 6;
         newDialog.setPosition(cc.v2(this.player.x, this.player.y));
 		// 在对话框脚本组件上保存 Game 对象的引用
 		const info = await this.rogueLandContract.goldOn(x, y);
@@ -197,9 +222,18 @@ export default class Game extends cc.Component {
         //cc.log(x, y, id.toString())
 		// 使用给定的模板在场景中生成一个新节点
         var newPunk = cc.instantiate(this.punkPrefab);
+		let newStar;
+		if (id % 2 == 0) {
+			newStar = cc.instantiate(this.redStarPrefab);
+		}
+		else {
+			newStar = cc.instantiate(this.blueStarPrefab);
+		}
         // 将新增的节点添加到 Canvas 节点下面
         this.node.addChild(newPunk);
-		newPunk.zIndex = 2;
+		newPunk.addChild(newStar)
+		newStar.setPosition(cc.v2(20,20));
+		newPunk.zIndex = 4;
         // 设置punk的位置
         newPunk.setPosition(cc.v2(x,y));
 		this.punks.push(newPunk)
@@ -218,30 +252,35 @@ export default class Game extends cc.Component {
 		}
 		
 		newPunk.on(cc.Node.EventType.TOUCH_START, function(event){
-			this.spawnNewPunkInfo(id);
+			this.spawnNewPunkInfo(id, x/64, y/64);
 		}, this)
     },
 	
-	async spawnNewNumber (x, y, action) {
-		if (this.balance < 0) return;
-		// 使用给定的模板在场景中生成一个新节点
-        var newNumber = cc.instantiate(this.numberPrefab)
-        // 将新增的节点添加到 Canvas 节点下面
-        this.node.addChild(newNumber)
-		newNumber.zIndex = 2
-        // 设置数字的位置
-        newNumber.setPosition(cc.v2(x,y))
-		let color = new cc.Color(242,129,27)
-		newNumber.color = color
+	async commitMove (x, y, action) {
+		if (this.balance < 0) return
+		if (!this.validToGo["x"+x+"y"+y]) {
+			cc.log('invalid position')
+			return
+		}
 		// 增加1回合
 		this.t ++
-		newNumber.getComponent(cc.Label).string = this.t
-		this.numberList[this.t-this.currentSchedule-1] = {time: this.t, action: action, status: Status.Schedule, number: newNumber}
 		// 更新地图
 		this.resetMinimap()
 		this.updateMap()
 		// 自动提交
-		this.commit()
+		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
+		try {
+			const tx = await rogueLandSigner.scheduleAction(this.id, action, {gasLimit: 300000, gasPrice: 1000000000})
+		}
+		catch (e) {
+			cc.log(e)
+		}
+		this.balance = this.balance - 3
+		this.gold = Number(this.gold) + Number(this.pendingGold)
+		this.pendingGold = 0
+		if (this.gold >= 1000) {
+		    this.swapButton.interactable = true
+		}
     },
 	
 	spawnTimeButton (x, y, t) {
@@ -302,53 +341,61 @@ export default class Game extends cc.Component {
 		}
 		else if (this.playerInfo.t == 0) {
 			if (lang === 'zh') {
-			    this.text = `游戏尚未开始 \n 行动点: ${this.balance}`
+			    this.text = `游戏尚未开始 行动点: ${this.balance}`
 		    }
 			else {
-				this.text = `Game not start yet \n ACTION POINTS: ${this.balance}`
+				this.text = `Game not start yet ACTION POINTS: ${this.balance}`
 			}
 		}
 		else if (this.playerInfo.t == this.endRound) {
 			if (lang === 'zh') {
-			    this.text = `游戏结束 \n 行动点: ${this.balance}`
+			    this.text = `游戏结束 行动点: ${this.balance}`
 		    }
 			else {
-				this.text = `Game Over \n ACTION POINTS: ${this.balance}`
+				this.text = `Game Over ACTION POINTS: ${this.balance}`
 			}
 		}
 		else {
 			if (lang === 'zh') {
-			    this.text = `金币: ${this.gold} \n行动点: ${this.balance} \n${this.endRound-this.playerInfo.t}回合后游戏结束`
+			    this.text = `金币: ${this.gold}(${this.pendingGold}) 行动点: ${this.balance} 生命值: ${this.hp} 药水: ${this.hep}\n${this.endRound-this.t}回合后游戏结束`
 		    }
 			else {
-				this.text = `GOLD: ${this.gold} \n ACTION POINTS: ${this.balance} \nGAME WILL END IN ${this.endRound-this.playerInfo.t} ROUNDS`
+				this.text = `GOLD: ${this.gold}(${this.pendingGold}) ACTION POINTS: ${this.balance} HP: ${this.hp} HEP: ${this.hep}\nGame will end in {this.endRound-this.t} rounds`
 			}
 			
 		}
 		this.label.string = this.text;
 	}
 	
-	async commit () {
-		let action = this.numberList[this.toCommit-this.currentSchedule]
-		action.status = Status.Committing
-		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
-		try {
-			const tx = await rogueLandSigner.scheduleAction(this.id, action.action, {gasLimit: 300000, gasPrice: 1000000000})
+	setAttackMessage (A, B, n) {
+		const lang = cc.sys.localStorage.getItem('lang')
+		if (lang === 'zh') {
+			this.messageLabel.string = `${A}攻击了${B}，造成了${n}点伤害\n` + this.messageLabel.string
 		}
-		catch (e) {
-			cc.log(e)
+		else {
+			this.messageLabel.string = `${A} hits ${B}，deals ${n} points of damage\n` + this.messageLabel.string
 		}
-		action.status = Status.Committed
-		action.number.destroy()
-		this.toCommit ++;
-		this.balance = this.balance - 3
-    },
+	}
+	
+	setDieMessage (A, B, n) {
+		const lang = cc.sys.localStorage.getItem('lang')
+		if (lang === 'zh') {
+			this.messageLabel.string = `${A}击杀了${B}，获得了${n}个金币\n` + this.messageLabel.string
+		}
+		else {
+			this.messageLabel.string = `${A} killed ${B}，rob ${n} golds\n` + this.messageLabel.string
+		}
+		this.spawnNewDieDialog(B)
+	}
 	
 	async swap () {
 		this.swapButton.interactable = false
+		if (this.gold < 1200) {
+			this.makeButton.interactable = false
+		}
 		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
 		try {
-			const tx = await rogueLandSigner.swapGold(this.playerAddress, {gasPrice: 1000000000})
+			const tx = await rogueLandSigner.swapOKT(this.playerAddress, {gasPrice: 1000000000})
 		}
 		catch (e) {
 			cc.log(e)
@@ -357,50 +404,104 @@ export default class Game extends cc.Component {
 		this.gold = this.gold - 1000
 		
 		if (this.gold >= 1000) {
-			//this.swapButton.interactable = true
+			this.swapButton.interactable = true
 		}
+		
     },
 	
-	async pick () {
-        if (this.balance < 0) return;
-		//this.pickButton.interactable = false
+	async makeHEP () {
+		this.makeButton.interactable = false
 		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
 		try {
-			const tx = await rogueLandSigner.getGold(this.toPick.x, this.toPick.y, {gasLimit: 500000, gasPrice: 1000000000})
+			const tx = await rogueLandSigner.swapHEP({gasPrice: 1000000000})
 		}
 		catch (e) {
 			cc.log(e)
 		}
-		
 		this.balance = this.balance - 2
-		//cc.log(tx.gasPrice/1e9*tx.gasLimit)
-		//this.getEvent()
+		this.hep ++
+		this.gold = this.gold - 200
+		this.useButton.interactable = true
     },
 	
-	async put () {
-        cc.log('put gold')
+	async useHEP () {
+        this.useButton.interactable = false
+		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
+		try {
+			const tx = await rogueLandSigner.useHEP(this.id, {gasPrice: 1000000000})
+		}
+		catch (e) {
+			cc.log(e)
+		}
+		this.balance = this.balance - 2
+		this.hep --
+		this.hp = Math.min(this.hp+10, 15)
+		if (this.hep > 0) {
+			this.useButton.interactable = true
+		}
+    },
+	
+	async attack (to, _seed, _name) {
+        const abiCoder = new ethers.utils.AbiCoder();
+		cc.log(this.seed, _seed)
+		const seedA = ethers.BigNumber.from(ethers.utils.keccak256(abiCoder.encode([ "uint", "uint" ], [this.id, _seed])))
+		const seedB = ethers.BigNumber.from(ethers.utils.keccak256(abiCoder.encode([ "uint", "uint" ], [to, this.seed])))
+		this.seed = seedB
+		
 		if (this.balance < 0) return;
 		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
 		try {
-			const tx = await rogueLandSigner.putGold({gasPrice: 1000000000})
+			const tx = await rogueLandSigner.attack(this.id, to, {gasPrice: 1000000000})
 		}
 		catch (e) {
 			cc.log(e)
 		}
 		
-		//this.balance = this.balance - tx.gasPrice*tx.gasLimit
-		this.gold = Number(this.gold) + 100
+		const diceA = seedA.mod(100)
+		const diceB = seedB.mod(100)
+		cc.log(Number(diceA), Number(diceB))
+		
+		this.balance = this.balance - 5
+		
+		let _damage = 0
+		if (diceA/5+1 < 19) {
+			_damage = (diceA)%5+1
+			this.setAttackMessage(this.userName, _name, diceA%5+1)
+		}
+		else {
+			this.setAttackMessage(this.userName, _name, 0)
+		}
+		
+		if (diceB/5+1 < 19) {
+			this.hp -= ((diceB)%5+1)
+			this.setAttackMessage(_name, this.userName, diceB%5+1)
+			if (this.hp <= 0) {
+				this.setDieMessage(_name, this.userName, Number(this.gold)+Number(this.pendingGold))
+			}
+		}
+		else {
+			this.setAttackMessage(_name, this.userName, 0)
+		}
+		
+		return {damage: _damage, newSeed: seedA, name: this.userName}
+		
 		//cc.log(tx.gasPrice/1e9*tx.gasLimit)
-		this.updateMap()
+		//this.updateMap()
 		//this.getGoldInfo()
     },
 	
 	async getPunkInfo (id) {
-        const player = await this.rogueLandContract.punkMaster(id)
-		const registerContract = new ethers.Contract(this.registerAddress, this.registerJson.json.abi, this.provider)
-		const account = await registerContract.accountInfo(player)
-		const punkInfo = await this.rogueLandContract.stillPunks(id)
-		return {name: account.name, gold: Number(punkInfo.gold), address: player}
+		const punkInfo = await this.rogueLandContract.getPunkInfo(id)
+		return  {
+			        name: punkInfo.name, 
+					isMoving: Number(punkInfo.isMoving), 
+		            gold: Number(punkInfo.gold), 
+					pendingGold: Number(punkInfo.pendingGold), 
+					hp: Number(punkInfo.hp), 
+					hep: Number(punkInfo.hep), 
+					seed: punkInfo.seed.toHexString(),
+				    address: punkInfo.player
+			    }
     },
 	
 	async loadPunk () {
@@ -429,14 +530,9 @@ export default class Game extends cc.Component {
 		this.provider = new ethers.providers.JsonRpcProvider("https://exchaintestrpc.okex.org")
 		this.wallet = walletPrivateKey.connect(this.provider)
 		this.rogueLandContract = new ethers.Contract(this.rogueLandAddress, this.rogueLandJson.json.abi, this.provider)
-		if (this.id > 0) {
-			this.getEvent()
-		}
-		else {
-			this.modeButton.interactable = false
-			this.goViewMode()
-		}
-		this.mapSize = await this.rogueLandContract.mapSize()
+		//this.modeButton.interactable = false
+		this.goViewMode()
+		this.mapSize = 24
 		this.spawnNewCross(Number(this.mapSize)+1)
     },
 	
@@ -486,20 +582,24 @@ export default class Game extends cc.Component {
 		let i = 0
         for (let x=x1; x<=x2; x++) {
           for (let y=y1; y<=y2; y++) {
-            if (map[i].movingPunk != 0 && !(this.mode == "schedule" && map[i].movingPunk == this.id)) {
+            if (map[i] != 0 && !(this.mode == "schedule" && map[i] == this.id)) {
 			  //cc.log(map[i].movingPunk, x, y)
-			  this.spawnNewPunk (x*64, y*64, map[i].movingPunk)
-			  this.setMiniMap(x, y, 4)
+			  this.spawnNewPunk (x*64, y*64, map[i])
+			  if (map[i] % 2 == 0) {
+				  this.setMiniMap(x, y, 4)
+			  }
+			  else {
+				  this.setMiniMap(x, y, 5)
+			  }
+			  this.validToGo["x"+x+"y"+y] = false
             }
-			if (map[i].monster > 0) {
-			  //cc.log(map[i].monster/1e18, x, y)
-			  this.spawnNewChest (x*64, y*64)
-			  this.setMiniMap(x, y, 3)
-            }
+			else {
+			  this.validToGo["x"+x+"y"+y] = true
+			}
             i ++;
           }
         }
-		this.setMiniMap(this.playerInfo.x, this.playerInfo.y, 5)
+		this.setMiniMap(this.playerInfo.x, this.playerInfo.y, 6)
 		this.isBusy = false;
 	  }
 	  else {
@@ -515,15 +615,6 @@ export default class Game extends cc.Component {
 			this.toPick.y = statusInfo.y
 			this.eventNumber = statusInfo.t
 			this.pick()
-		}
-	}
-	
-	async getGoldInfo() {
-		const blockNumber = await this.provider.getBlockNumber()
-		const validBlockToPutGold = await this.rogueLandContract.validBlockToPutGold()
-		cc.log(validBlockToPutGold, blockNumber)
-		if (blockNumber >= validBlockToPutGold && validBlockToPutGold > 0 && this.balance > 0) {
-			this.spawnNewDialog()
 		}
 	}
 	
@@ -545,23 +636,39 @@ export default class Game extends cc.Component {
 			this.modeButton.interactable = false
 			return;
 		}
-		const myPunk = await this.rogueLandContract.stillPunks(this.id)
+		const myPunk = await this.rogueLandContract.getPunkInfo(this.id)
 		this.gold = myPunk.gold
-        if (this.gold >= 1000) {
-		    //this.swapButton.interactable = true
+		this.pendingGold = myPunk.pendingGold
+		this.hp = myPunk.hp
+		this.hep = myPunk.hep
+		if (myPunk.name == "") {
+			this.userName = myPunk.player.slice(0, 6)
+		}
+		else {
+			this.userName = myPunk.name
+		}
+		this.seed = myPunk.seed.toHexString()
+        if (this.gold >= 1000 && this.playerInfo.t < this.endRound) {
+		    this.swapButton.interactable = true
+		}
+		if (this.hep > 0 && this.playerInfo.t < this.endRound) {
+		    this.useButton.interactable = true
 		}
 		const okt = await this.wallet.getBalance()
 		this.balance = Math.floor(ethers.utils.formatEther(okt)*10000)
-		this.getGoldInfo()
+		const isCook = await await this.rogueLandContract.cooked(this.id, this.t)
+		if (!isCook && this.gold >= 200) {
+		    this.makeButton.interactable = true
+		}
 		
 	}
 	
 	async goScheduleMode() {
 		const statusInfo = await this.rogueLandContract.getScheduleInfo(this.id)
 		this.mode = "schedule"
-		this.t = statusInfo.t
+		this.t = Number(statusInfo.t) + 1
 		this.currentSchedule = statusInfo.t
-		this.player.zIndex = 4
+		this.player.zIndex = 3
 		this.toCommit = statusInfo.t
 		this.player.x = statusInfo.x * 64
 		this.player.y = statusInfo.y * 64
@@ -604,7 +711,7 @@ export default class Game extends cc.Component {
 		let x = this.player.x
 		let y = this.player.y
 		this.setPosition(this.camera, x, y)
-		this.setPosition(this.label.node, x-250, y+250)
+		this.setPosition(this.label.node, x, y+250)
 		this.setPosition(this.time_button_group, x, y-280)
 		this.setPosition(this.button_group_2, x+330, y+140)
 		this.setLabel(this.t, this.getPosition())
@@ -614,55 +721,55 @@ export default class Game extends cc.Component {
 	click_arrow (e, msg) {
 		// 任何都会导致punk无法拾取lowb
         // this.pickButton.interactable = false
-		if (this.numberList[this.toCommit-this.currentSchedule] && this.mode == "schedule") {
+		if (this.isBusy) {
 			return;
 		}
 		switch(msg) {
 			case "left":
 			    if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoLeft)
+			      this.commitMove(this.player.x/64-1, this.player.y/64, Action.GoLeft)
 		        }
 				this.player.getComponent('Player').moveWest()
                 break;
             case "right":
 			    if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoRight)
+			      this.commitMove(this.player.x/64+1, this.player.y/64, Action.GoRight)
 		        }
                 this.player.getComponent('Player').moveEast()
                 break;
 		    case "down":
                 if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoDown)
+			      this.commitMove(this.player.x/64, this.player.y/64-1, Action.GoDown)
 		        }
 				this.player.getComponent('Player').moveSouth()
                 break;
             case "up":
                 if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoUp)
+			      this.commitMove(this.player.x/64, this.player.y/64+1, Action.GoUp)
 		        }
 				this.player.getComponent('Player').moveNorth()
                 break;
 			case "left-up":
 			    if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoLeftUp)
+			      this.commitMove(this.player.x/64-1, this.player.y/64+1, Action.GoLeftUp)
 		        }
 				this.player.getComponent('Player').moveNorthWest()
                 break;
             case "right-down":
 			    if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoRightDown)
+			      this.commitMove(this.player.x/64+1, this.player.y/64-1, Action.GoRightDown)
 		        }
                 this.player.getComponent('Player').moveSouthEast()
                 break;
 		    case "right-up":
                 if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoRightUp)
+			      this.commitMove(this.player.x/64+1, this.player.y/64+1, Action.GoRightUp)
 		        }
 				this.player.getComponent('Player').moveNorthEast()
                 break;
             case "left-down":
                 if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoLeftDown)
+			      this.commitMove(this.player.x/64-1, this.player.y/64-1, Action.GoLeftDown)
 		        }
 				this.player.getComponent('Player').moveSouthWest()
                 break;
@@ -686,14 +793,14 @@ export default class Game extends cc.Component {
 	onKeyDown (event) {
 		// 任何都会导致punk无法拾取lowb
         // this.pickButton.interactable = false
-		if (this.numberList[this.toCommit-this.currentSchedule] && this.mode == "schedule") {
+		if (this.isBusy) {
 			return;
 		}
 		switch(event.keyCode) {
             case cc.macro.KEY.h:
 			case cc.macro.KEY.left:
 			    if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoLeft)
+			      this.commitMove(this.player.x/64-1, this.player.y/64, Action.GoLeft)
 		        }
 				else {
 					this.updateMap()
@@ -703,7 +810,7 @@ export default class Game extends cc.Component {
             case cc.macro.KEY.l:
 			case cc.macro.KEY.right:
 			    if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoRight)
+			      this.commitMove(this.player.x/64+1, this.player.y/64, Action.GoRight)
 		        }
 				else {
 					this.updateMap()
@@ -713,7 +820,7 @@ export default class Game extends cc.Component {
 		    case cc.macro.KEY.k:
 			case cc.macro.KEY.down:
                 if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoDown)
+			      this.commitMove(this.player.x/64, this.player.y/64-1, Action.GoDown)
 		        }
 				else {
 					this.updateMap()
@@ -723,7 +830,7 @@ export default class Game extends cc.Component {
             case cc.macro.KEY.j:
 			case cc.macro.KEY.up:
                 if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoUp)
+			      this.commitMove(this.player.x/64, this.player.y/64+1, Action.GoUp)
 		        }
 				else {
 					this.updateMap()
@@ -732,7 +839,7 @@ export default class Game extends cc.Component {
                 break;
 			case cc.macro.KEY.y:
 			    if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoLeftUp)
+			      this.commitMove(this.player.x/64-1, this.player.y/64+1, Action.GoLeftUp)
 		        }
 				else {
 					this.updateMap()
@@ -741,7 +848,7 @@ export default class Game extends cc.Component {
                 break;
             case cc.macro.KEY.n:
 			    if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoRightDown)
+			      this.commitMove(this.player.x/64+1, this.player.y/64-1, Action.GoRightDown)
 		        }
 				else {
 					this.updateMap()
@@ -750,7 +857,7 @@ export default class Game extends cc.Component {
                 break;
 		    case cc.macro.KEY.u:
                 if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoRightUp)
+			      this.commitMove(this.player.x/64+1, this.player.y/64+1, Action.GoRightUp)
 		        }
 				else {
 					this.updateMap()
@@ -759,7 +866,7 @@ export default class Game extends cc.Component {
                 break;
             case cc.macro.KEY.b:
                 if (this.mode == "schedule") {
-			      this.spawnNewNumber(this.player.x, this.player.y, Action.GoLeftDown)
+			      this.commitMove(this.player.x/64-1, this.player.y/64-1, Action.GoLeftDown)
 		        }
 				else {
 					this.updateMap()
@@ -807,11 +914,13 @@ export default class Game extends cc.Component {
 	}
 	
 	onLoad () {
-		this.label.node.zIndex = 3;
-		this.time_button_group.zIndex = 3;
-		this.button_group_2.zIndex = 3;
-		//this.pickButton.interactable = false
+		this.label.node.zIndex = 5;
+		this.time_button_group.zIndex = 5;
+		this.button_group_2.zIndex = 5;
+		this.gameMap.node.zIndex = 2;
 		this.swapButton.interactable = false
+		this.makeButton.interactable = false
+		this.useButton.interactable = false
 		// 生成草地
         //let windowSize=cc.view.getVisibleSize();
         //cc.log("width="+windowSize.width+",height="+windowSize.height);
@@ -834,7 +943,8 @@ export default class Game extends cc.Component {
 
     start () {
         // init logic
-        this.label.string = this.text
+		const lang = cc.sys.localStorage.getItem('lang')
+		this.messageLabel.string = (lang === 'zh'? '游戏消息\n' : 'Game Message\n')
 		this.loadPunk()
 		this.getStatus()
     }

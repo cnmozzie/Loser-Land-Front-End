@@ -1,0 +1,28 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "blue-star",
+    "texture": "49ea69e1-e0da-4d73-b1c6-e9cf6f038203",
+    "atlas": "",
+    "rect": [
+      0,
+      4,
+      62,
+      60
+    ],
+    "offset": [
+      -1,
+      -2
+    ],
+    "originalSize": [
+      64,
+      64
+    ],
+    "capInsets": [
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+}

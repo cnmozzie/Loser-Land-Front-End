@@ -67,10 +67,11 @@ var Welcome = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.okt = 0;
         _this.address = '';
+        _this.bindAddress = '';
         _this.privateKey = '';
         _this.newRegisterAddress = '0x76f099cd22E737FC38f17FA07aA95dACe8e53e4e';
-        _this.registerAddress = '0x5eFa33708a7688Fa116B6Cb3eC65D7fcE3c9f599';
-        _this.rogueLandAddress = '0xFDE9DAacCbA3D802BFCBAd54039A4B0DeAA48e85';
+        //registerAddress: string = '0x5eFa33708a7688Fa116B6Cb3eC65D7fcE3c9f599';
+        _this.rogueLandAddress = '0x4fB911AD82321a3639626260156b0f0ea3bd0d02';
         _this.accountInfo = null;
         _this.provider = null;
         _this.wallet = null;
@@ -87,7 +88,6 @@ var Welcome = /** @class */ (function (_super) {
         _this.registerButton = null;
         _this.giftButton = null;
         _this.phoneEditbox = null;
-        _this.registerJson = null;
         _this.newRegisterJson = null;
         _this.rogueLandJson = null;
         _this.punkJson = null;
@@ -111,10 +111,10 @@ var Welcome = /** @class */ (function (_super) {
     Welcome.prototype.setInfoLabel = function (n) {
         var lang = cc.sys.localStorage.getItem('lang');
         if (lang === 'zh') {
-            this.infoLabel.string = "\u5F53\u524D\u8D5B\u5B63\uFF1AS1  \u62A5\u540D\u4EBA\u6570\uFF1A " + n + "/666";
+            this.infoLabel.string = "\u5F53\u524D\u8D5B\u5B63\uFF1AS2a  \u62A5\u540D\u4EBA\u6570\uFF1A " + n + "/666";
         }
         else {
-            this.infoLabel.string = "Current Season: S1  Enrollment: " + n + "/666";
+            this.infoLabel.string = "Current Season: S2a  Enrollment: " + n + "/666";
         }
     };
     Welcome.prototype.setBalanceLabel = function () {
@@ -178,14 +178,13 @@ var Welcome = /** @class */ (function (_super) {
     };
     Welcome.prototype.openWithdrawDialog = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var registerContract, account, newDialog;
+            var account, newDialog;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        registerContract = new ethers_umd_min_js_1.ethers.Contract(this.newRegisterAddress, this.newRegisterJson.json.abi, this.provider);
-                        return [4 /*yield*/, registerContract.accountInfo(this.address)];
+                    case 0: return [4 /*yield*/, this.registerContract.accountInfo(this.address)];
                     case 1:
                         account = _a.sent();
+                        this.bindAddress = account.wallet;
                         newDialog = cc.instantiate(this.withdrawPrefab);
                         this.node.addChild(newDialog);
                         newDialog.setPosition(cc.v2(0, 0));
@@ -199,13 +198,12 @@ var Welcome = /** @class */ (function (_super) {
     };
     Welcome.prototype.setUserName = function (name, email, wallet) {
         return __awaiter(this, void 0, void 0, function () {
-            var registerContract, registerSigner, tx, e_2;
+            var registerSigner, tx, e_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         cc.log(name, email, wallet);
-                        registerContract = new ethers_umd_min_js_1.ethers.Contract(this.newRegisterAddress, this.newRegisterJson.json.abi, this.provider);
-                        registerSigner = registerContract.connect(this.wallet);
+                        registerSigner = this.registerContract.connect(this.wallet);
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
@@ -273,7 +271,7 @@ var Welcome = /** @class */ (function (_super) {
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, registerSigner.use(id, kind, amount)];
+                        return [4 /*yield*/, registerSigner.use(this.address, id, amount, kind, this.bindAddress)];
                     case 2:
                         tx = _a.sent();
                         return [3 /*break*/, 4];
@@ -350,14 +348,14 @@ var Welcome = /** @class */ (function (_super) {
     };
     Welcome.prototype.setUserInfo = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var okt, _a, balance, i, freePunk, punkId, remoteUrl, sprite_1, claimed, _b, useId, done;
+            var okt, _a, balance, i, freePunk, punkId, remoteUrl, sprite_1, _b, useId, done;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0: return [4 /*yield*/, this.wallet.getBalance()];
                     case 1:
                         okt = _c.sent();
                         this.okt = Math.floor(ethers_umd_min_js_1.ethers.utils.formatEther(okt) * 10000);
-                        this.registerContract = new ethers_umd_min_js_1.ethers.Contract(this.registerAddress, this.registerJson.json.abi, this.provider);
+                        this.registerContract = new ethers_umd_min_js_1.ethers.Contract(this.newRegisterAddress, this.newRegisterJson.json.abi, this.provider);
                         _a = this;
                         return [4 /*yield*/, this.registerContract.accountInfo(this.address)];
                     case 2:
@@ -369,7 +367,7 @@ var Welcome = /** @class */ (function (_super) {
                             this.balance[i] = balance[i];
                         }
                         if (this.balance[0] > 20000e18) {
-                            this.chargeButton.interactable = true;
+                            //this.chargeButton.interactable = true
                         }
                         this.setBalanceLabel();
                         if (this.accountInfo.name != "") {
@@ -401,34 +399,31 @@ var Welcome = /** @class */ (function (_super) {
                         }
                         else {
                             if (freePunk <= 667 && this.okt > 0) {
-                                //this.registerButton.interactable = true
-                                //this.registerButton.node.zIndex = 2
+                                this.registerButton.interactable = true;
+                                this.registerButton.node.zIndex = 2;
                             }
                             cc.log("you are a visitor");
                             cc.sys.localStorage.setItem('myPunk', 0);
                         }
-                        return [4 /*yield*/, this.rogueLandContract.claimed(this.address)];
-                    case 6:
-                        claimed = _c.sent();
-                        if (!!claimed) return [3 /*break*/, 8];
                         _b = this;
-                        return [4 /*yield*/, this.rogueLandContract.pendingRewards(this.address)];
-                    case 7:
+                        return [4 /*yield*/, this.rogueLandContract.pendingRewards(this.address)
+                            //cc.log(this.pendingRewards)
+                        ];
+                    case 6:
                         _b.pendingRewards = _c.sent();
-                        _c.label = 8;
-                    case 8: return [4 /*yield*/, this.registerContract.lastUse(this.address)];
-                    case 9:
+                        return [4 /*yield*/, this.registerContract.lastUse(this.address)];
+                    case 7:
                         useId = _c.sent();
-                        if (!(useId > 0)) return [3 /*break*/, 11];
+                        if (!(useId > 0)) return [3 /*break*/, 9];
                         this.setRecordLabel(useId, true);
                         return [4 /*yield*/, this.registerContract.useInfo(useId)];
-                    case 10:
+                    case 8:
                         done = _c.sent();
                         if (done == 1) {
                             this.setRecordLabel(useId, false);
                         }
-                        _c.label = 11;
-                    case 11: return [2 /*return*/];
+                        _c.label = 9;
+                    case 9: return [2 /*return*/];
                 }
             });
         });
@@ -436,7 +431,7 @@ var Welcome = /** @class */ (function (_super) {
     Welcome.prototype.onLoad = function () {
         //this.tradeButton.interactable = false
         this.chargeButton.interactable = false;
-        //this.registerButton.interactable = false
+        this.registerButton.interactable = false;
         var walletData = JSON.parse(cc.sys.localStorage.getItem('wallet'));
         if (!walletData) {
             var wallet = new ethers_umd_min_js_1.ethers.Wallet.createRandom();
@@ -484,9 +479,6 @@ var Welcome = /** @class */ (function (_super) {
     __decorate([
         property(cc.EditBox)
     ], Welcome.prototype, "phoneEditbox", void 0);
-    __decorate([
-        property(cc.JsonAsset)
-    ], Welcome.prototype, "registerJson", void 0);
     __decorate([
         property(cc.JsonAsset)
     ], Welcome.prototype, "newRegisterJson", void 0);

@@ -1396,7 +1396,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 362.77,
+      "width": 376.11,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -1448,8 +1448,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "当前赛季：S1  报名人数： 50/666",
-    "_N$string": "当前赛季：S1  报名人数： 50/666",
+    "_string": "当前赛季：S2a  报名人数： 50/666",
+    "_N$string": "当前赛季：S2a  报名人数： 50/666",
     "_fontSize": 24,
     "_lineHeight": 40,
     "_enableWrapText": true,
@@ -1474,8 +1474,8 @@
       "__id__": 29
     },
     "_enabled": true,
-    "zh": "当前赛季：S1  报名人数： 50/666",
-    "en": "Current Season: S1  Enrollment: 50/666",
+    "zh": "当前赛季：S2a  报名人数： 0/666",
+    "en": "Current Season: S2a  Enrollment: 0/666",
     "_id": "8c/LmEvdtBHK+qCpEuLw8X"
   },
   {
@@ -3139,8 +3139,8 @@
       "__id__": 67
     },
     "_enabled": true,
-    "zh": "S1赛季礼包",
-    "en": "S1 Gift Pack",
+    "zh": "S2a赛季礼包",
+    "en": "S2a Gift Pack",
     "_id": "61w1ULvJtJMJbsu70rdXGu"
   },
   {
@@ -4401,8 +4401,8 @@
       "__id__": 98
     },
     "_enabled": true,
-    "zh": "卢瑟大陆 （朋克纪元）",
-    "en": "LOSER LAND (PUNK ERA)",
+    "zh": "卢瑟大陆 （鱿鱼游戏）",
+    "en": "LOSER LAND (Squid Game)",
     "_id": "59k0jwQ+hN86VL7NzMOjip"
   },
   {
@@ -4993,9 +4993,6 @@
     },
     "phoneEditbox": {
       "__id__": 88
-    },
-    "registerJson": {
-      "__uuid__": "d252eed6-d5e9-4779-aa4a-4675a5df7f9d"
     },
     "newRegisterJson": {
       "__uuid__": "452dac87-6cab-4df6-90ba-48c13e5af7ed"

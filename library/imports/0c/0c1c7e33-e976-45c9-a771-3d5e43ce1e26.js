@@ -67,7 +67,7 @@ var Rewards = /** @class */ (function (_super) {
         }
     };
     Rewards.prototype.cancle = function (e, msg) {
-        cc.log('skip');
+        //cc.log('skip');
         this.node.destroy();
     };
     Rewards.prototype.onLoad = function () {

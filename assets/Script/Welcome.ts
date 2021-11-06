@@ -6,10 +6,11 @@ export default class Welcome extends cc.Component {
 
 	okt: number = 0;
 	address: string = '';
+	bindAddress: string = '';
 	privateKey: string = '';
 	newRegisterAddress: string = '0x76f099cd22E737FC38f17FA07aA95dACe8e53e4e';
-	registerAddress: string = '0x5eFa33708a7688Fa116B6Cb3eC65D7fcE3c9f599';
-	rogueLandAddress: string = '0xFDE9DAacCbA3D802BFCBAd54039A4B0DeAA48e85';
+	//registerAddress: string = '0x5eFa33708a7688Fa116B6Cb3eC65D7fcE3c9f599';
+	rogueLandAddress: string = '0x4fB911AD82321a3639626260156b0f0ea3bd0d02';
 	accountInfo: any = null;
 	provider: any = null;
 	wallet: any = null;
@@ -44,9 +45,6 @@ export default class Welcome extends cc.Component {
 	
 	@property(cc.EditBox)
     phoneEditbox: cc.EditBox = null;
-	
-	@property(cc.JsonAsset)
-    registerJson: cc.JsonAsset = null;
 	
 	@property(cc.JsonAsset)
     newRegisterJson: cc.JsonAsset = null;
@@ -88,10 +86,10 @@ export default class Welcome extends cc.Component {
 	setInfoLabel (n) {
 		const lang = cc.sys.localStorage.getItem('lang')
 		if (lang === 'zh') {
-			this.infoLabel.string = `当前赛季：S1  报名人数： ${n}/666`
+			this.infoLabel.string = `当前赛季：S2a  报名人数： ${n}/666`
 		}
 		else {
-			this.infoLabel.string = `Current Season: S1  Enrollment: ${n}/666`
+			this.infoLabel.string = `Current Season: S2a  Enrollment: ${n}/666`
 		}
 	}
 	
@@ -144,8 +142,9 @@ export default class Welcome extends cc.Component {
     },
 	
 	async openWithdrawDialog () {
-        const registerContract = new ethers.Contract(this.newRegisterAddress, this.newRegisterJson.json.abi, this.provider)
-		const account = await registerContract.accountInfo(this.address)
+        //const registerContract = new ethers.Contract(this.newRegisterAddress, this.newRegisterJson.json.abi, this.provider)
+		const account = await this.registerContract.accountInfo(this.address)
+		this.bindAddress = account.wallet
 		var newDialog = cc.instantiate(this.withdrawPrefab);
         this.node.addChild(newDialog);
         newDialog.setPosition(cc.v2(0, 0));
@@ -156,8 +155,8 @@ export default class Welcome extends cc.Component {
 	
 	async setUserName (name, email, wallet) {
         cc.log(name, email, wallet)
-		const registerContract = new ethers.Contract(this.newRegisterAddress, this.newRegisterJson.json.abi, this.provider)
-		const registerSigner = registerContract.connect(this.wallet)
+		//const registerContract = new ethers.Contract(this.newRegisterAddress, this.newRegisterJson.json.abi, this.provider)
+		const registerSigner = this.registerContract.connect(this.wallet)
 		try {
 			const tx = await registerSigner.register(name, email, wallet)
 		}
@@ -196,7 +195,7 @@ export default class Welcome extends cc.Component {
 		}
 		const registerSigner = this.registerContract.connect(this.wallet)
 		try {
-			const tx = await registerSigner.use(id, kind, amount)
+			const tx = await registerSigner.use(this.address, id, amount, kind, this.bindAddress)
 		}
 		catch (e) {
 			cc.log(e)
@@ -252,14 +251,14 @@ export default class Welcome extends cc.Component {
 		const okt = await this.wallet.getBalance()
 		this.okt = Math.floor(ethers.utils.formatEther(okt)*10000)
 		
-		this.registerContract = new ethers.Contract(this.registerAddress, this.registerJson.json.abi, this.provider)
+		this.registerContract = new ethers.Contract(this.newRegisterAddress, this.newRegisterJson.json.abi, this.provider)
         this.accountInfo = await this.registerContract.accountInfo(this.address)
 		const balance = await this.registerContract.balanceOf(this.address)
 		for (let i=0; i<balance.length; i++) {
 			this.balance[i] = balance[i]
 		}
 		if (this.balance[0] > 20000e18) {
-			this.chargeButton.interactable = true
+			//this.chargeButton.interactable = true
 		}
 		this.setBalanceLabel()
 		if (this.accountInfo.name != "") {
@@ -290,17 +289,15 @@ export default class Welcome extends cc.Component {
 		}
 		else {
 			if (freePunk <= 667 && this.okt > 0) {
-				//this.registerButton.interactable = true
-				//this.registerButton.node.zIndex = 2
+				this.registerButton.interactable = true
+				this.registerButton.node.zIndex = 2
 			}
 			cc.log("you are a visitor")
 			cc.sys.localStorage.setItem('myPunk', 0)
 		}
 		
-		const claimed = await this.rogueLandContract.claimed(this.address)
-		if (!claimed) {
-			this.pendingRewards = await this.rogueLandContract.pendingRewards(this.address)
-		}
+		this.pendingRewards = await this.rogueLandContract.pendingRewards(this.address)
+		//cc.log(this.pendingRewards)
 		
 		const useId = await this.registerContract.lastUse(this.address)
 		if (useId > 0) {
@@ -315,7 +312,7 @@ export default class Welcome extends cc.Component {
 	onLoad () {
 		//this.tradeButton.interactable = false
 		this.chargeButton.interactable = false
-		//this.registerButton.interactable = false
+		this.registerButton.interactable = false
 		
 		let walletData = JSON.parse(cc.sys.localStorage.getItem('wallet'));
 		if (!walletData) {

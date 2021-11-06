@@ -3,8 +3,9 @@
  <tileset firstgid="1" source="grass.tsx"/>
  <tileset firstgid="2" source="boundary.tsx"/>
  <tileset firstgid="3" source="gold.tsx"/>
- <tileset firstgid="4" source="punk.tsx"/>
- <tileset firstgid="5" source="self.tsx"/>
+ <tileset firstgid="4" source="red-punk.tsx"/>
+ <tileset firstgid="5" source="blue-punk.tsx"/>
+ <tileset firstgid="6" source="self.tsx"/>
  <layer id="1" name="background" width="51" height="51">
   <data encoding="csv">
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,

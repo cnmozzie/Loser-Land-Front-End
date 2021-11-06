@@ -1,0 +1,38 @@
+{
+  "ver": "2.3.7",
+  "uuid": "39916335-fe17-42f7-90b9-86b2302b6ebc",
+  "importer": "texture",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "premultiplyAlpha": false,
+  "genMipmaps": false,
+  "packable": true,
+  "width": 64,
+  "height": 64,
+  "platformSettings": {},
+  "subMetas": {
+    "Lava Planet CH16": {
+      "ver": "1.0.6",
+      "uuid": "07d46eb1-e862-4094-be3e-5c4e3e6fd647",
+      "importer": "sprite-frame",
+      "rawTextureUuid": "39916335-fe17-42f7-90b9-86b2302b6ebc",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 64,
+      "height": 64,
+      "rawWidth": 64,
+      "rawHeight": 64,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

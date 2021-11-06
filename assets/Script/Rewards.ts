@@ -50,7 +50,7 @@ export default class Rewards extends cc.Component {
     },
 	
 	cancle (e, msg) {
-        cc.log('skip');
+        //cc.log('skip');
 		this.node.destroy()
     },
 
