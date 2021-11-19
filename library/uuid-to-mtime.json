@@ -510,24 +510,19 @@
     "relativePath": "Script"
   },
   "7b81d4e8-ec84-4716-968d-500ac1d78a54": {
-    "asset": 1633232467582,
-    "meta": 1633763217014,
+    "asset": 1636281082150,
+    "meta": 1636639766040,
     "relativePath": "Texture"
   },
   "2d2f792f-a40c-49bb-a189-ed176a246e49": {
-    "asset": 1635685076410,
-    "meta": 1635685076424,
+    "asset": 1636285143439,
+    "meta": 1636285143451,
     "relativePath": "Scene\\game.fire"
   },
   "a8027877-d8d6-4645-97a0-52d4a0123dba": {
     "asset": 1628342208456,
     "meta": 1628487796041,
     "relativePath": "Texture\\singleColor.png"
-  },
-  "6aa0aa6a-ebee-4155-a088-a687a6aadec4": {
-    "asset": 1628342208453,
-    "meta": 1628487796053,
-    "relativePath": "Texture\\HelloWorld.png"
   },
   "e57d6660-d971-44c8-b63b-894c4fcf3dc3": {
     "asset": 1628909854828,
@@ -550,13 +545,13 @@
     "relativePath": "chest.prefab"
   },
   "0155f2be-7b43-43e0-9162-9b8ee4ee6c70": {
-    "asset": 1633183172291,
-    "meta": 1633231463226,
+    "asset": 1636297522597,
+    "meta": 1636639766038,
     "relativePath": "Contract"
   },
   "a4ac4309-ee86-428d-b0d7-37566b253ee3": {
-    "asset": 1629714986476,
-    "meta": 1629715000465,
+    "asset": 1636281282286,
+    "meta": 1636281282304,
     "relativePath": "punk.prefab"
   },
   "104a13d2-72d0-447c-a16e-c02e1d55a457": {
@@ -705,8 +700,8 @@
     "relativePath": "Map\\self.png"
   },
   "7d0e4df5-b396-46f3-bb06-87cd465a85b9": {
-    "asset": 1635688543594,
-    "meta": 1635688543607,
+    "asset": 1636795117979,
+    "meta": 1636795117994,
     "relativePath": "Scene\\welcome.fire"
   },
   "70da30a3-3312-4397-9c19-c4501f929bf8": {
@@ -725,19 +720,14 @@
     "relativePath": "reward_dialog.prefab"
   },
   "4823589d-3851-4e26-995d-9002c61713ba": {
-    "asset": 1635660488604,
-    "meta": 1635660488619,
+    "asset": 1636284630604,
+    "meta": 1636284630624,
     "relativePath": "info_dialog.prefab"
   },
   "c39dfd71-9ac6-4fdb-8079-4f5ccd20bc88": {
     "asset": 1632211687261,
     "meta": 1632211687272,
     "relativePath": "rank_layout.prefab"
-  },
-  "8ce79938-d098-4f80-a141-cdee1db7b8ba": {
-    "asset": 1632211912432,
-    "meta": 1632211913460,
-    "relativePath": "Script\\Rank.ts"
   },
   "90db1c4e-fa78-400e-a169-f88138f07e2d": {
     "asset": 1632458178709,
@@ -749,19 +739,9 @@
     "meta": 1632378939357,
     "relativePath": "gold_layout.prefab"
   },
-  "a554a785-7a9a-4a58-a1c9-535b3626efd1": {
-    "asset": 1632553985495,
-    "meta": 1632554087994,
-    "relativePath": "Script\\Register.ts"
-  },
-  "452dac87-6cab-4df6-90ba-48c13e5af7ed": {
-    "asset": 1632553003401,
-    "meta": 1632554088234,
-    "relativePath": "Contract\\NewRegister.json"
-  },
   "c7975fd1-a6c1-4efc-a1cc-0f8c28e7e303": {
-    "asset": 1632554542376,
-    "meta": 1632554542391,
+    "asset": 1636298734896,
+    "meta": 1636298734909,
     "relativePath": "register_dialog.prefab"
   },
   "d0ae8661-f13e-42e2-8e4e-a4d67612972a": {
@@ -889,30 +869,10 @@
     "meta": 1633781054441,
     "relativePath": "Map\\gamemap.tmx"
   },
-  "28be3bdb-ea43-4115-b7f6-f9c864cb35b6": {
-    "asset": 1635687858310,
-    "meta": 1635688765071,
-    "relativePath": "Contract\\RogueLand.json"
-  },
   "df309205-0aed-437c-9343-b597e3bac03c": {
     "asset": 1635686289755,
     "meta": 1635686291072,
     "relativePath": "Script\\DieDialog.ts"
-  },
-  "38d7ea77-3997-4033-8508-bb7ed8abcaa3": {
-    "asset": 1635687053211,
-    "meta": 1635687056967,
-    "relativePath": "Script\\PunkInfo.ts"
-  },
-  "02631bfe-2098-4a21-83dd-703ea26c5e57": {
-    "asset": 1636073541851,
-    "meta": 1636073551789,
-    "relativePath": "Script\\Game.ts"
-  },
-  "3d8c7543-d447-4730-897b-36c9f6ed2592": {
-    "asset": 1636162102438,
-    "meta": 1636162119982,
-    "relativePath": "Script\\Welcome.ts"
   },
   "fee8c1bb-be59-428a-8e8b-ee05ec6b230f": {
     "asset": 1636162302589,
@@ -923,5 +883,50 @@
     "asset": 1636162527033,
     "meta": 1636162531481,
     "relativePath": "Script\\Rewards.ts"
+  },
+  "863a031b-eef6-4e40-aa9b-93798d3d0d0a": {
+    "asset": 1636276370546,
+    "meta": 1636276390672,
+    "relativePath": "Texture\\background.jpg"
+  },
+  "efad9448-2d2a-408b-b4de-55096194199f": {
+    "asset": 1636281008840,
+    "meta": 1636281045708,
+    "relativePath": "Texture\\Squid Game Soldier Mask.png"
+  },
+  "38d7ea77-3997-4033-8508-bb7ed8abcaa3": {
+    "asset": 1636286682822,
+    "meta": 1636286694345,
+    "relativePath": "Script\\PunkInfo.ts"
+  },
+  "3bbd354e-b1c9-4ee7-95d3-9619846fa6c6": {
+    "asset": 1625408184316,
+    "meta": 1636297408994,
+    "relativePath": "Contract\\ERC20.json"
+  },
+  "a554a785-7a9a-4a58-a1c9-535b3626efd1": {
+    "asset": 1636298724578,
+    "meta": 1636298729652,
+    "relativePath": "Script\\Register.ts"
+  },
+  "02631bfe-2098-4a21-83dd-703ea26c5e57": {
+    "asset": 1637130724960,
+    "meta": 1637130726967,
+    "relativePath": "Script\\Game.ts"
+  },
+  "8ce79938-d098-4f80-a141-cdee1db7b8ba": {
+    "asset": 1637300794230,
+    "meta": 1637300796382,
+    "relativePath": "Script\\Rank.ts"
+  },
+  "3d8c7543-d447-4730-897b-36c9f6ed2592": {
+    "asset": 1637301688027,
+    "meta": 1637301690288,
+    "relativePath": "Script\\Welcome.ts"
+  },
+  "28be3bdb-ea43-4115-b7f6-f9c864cb35b6": {
+    "asset": 1637130319733,
+    "meta": 1637301843883,
+    "relativePath": "Contract\\RogueLand.json"
   }
 }

@@ -66,9 +66,8 @@ var PunkInfo = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.id = 0;
         _this.gold = 0;
-        _this.pendingGold = 0;
         _this.hp = 0;
-        _this.hep = 0;
+        _this.evil = 0;
         _this.seed = '';
         _this.userName = 'vistor';
         _this.action = 'Unknown';
@@ -87,12 +86,12 @@ var PunkInfo = /** @class */ (function (_super) {
     PunkInfo.prototype.setLabel = function () {
         var lang = cc.sys.localStorage.getItem('lang');
         if (lang === 'zh') {
-            this.leftLabel.string = "ID: " + (this.id - 1) + " \nHP: " + this.hp + " \n\u836F\u6C34: " + this.hep;
-            this.rightLabel.string = "\u6635\u79F0: " + this.userName + " \n\u72B6\u6001: " + this.action + " \n\u91D1\u5E01: " + this.gold + "(" + this.pendingGold + ")";
+            this.leftLabel.string = "ID: " + (this.id - 1) + " \nHP: " + this.hp + " \n\u7B49\u7EA7: " + this.evil;
+            this.rightLabel.string = "\u6635\u79F0: " + this.userName + " \n\u72B6\u6001: " + this.action + " \n\u9C7F\u9C7C\u5E01: " + this.gold;
         }
         else {
-            this.leftLabel.string = "ID: " + (this.id - 1) + " \nHP: " + this.hp + " \nHEP: " + this.hep;
-            this.rightLabel.string = "Name: " + this.userName + " \nStatus: " + this.action + " \nGold: " + this.gold + "(" + this.pendingGold + ")";
+            this.leftLabel.string = "ID: " + (this.id - 1) + " \nHP: " + this.hp + " \nLevel: " + this.evil;
+            this.rightLabel.string = "Name: " + this.userName + " \nStatus: " + this.action + " \nSQUIDs: " + this.gold;
         }
     };
     PunkInfo.prototype.setId = function (id) {
@@ -114,9 +113,8 @@ var PunkInfo = /** @class */ (function (_super) {
             this.action = (lang === 'zh' ? '挖矿中' : 'Mining');
         }
         this.gold = info.gold;
-        this.pendingGold = info.pendingGold;
         this.hp = info.hp;
-        this.hep = info.hep;
+        this.evil = info.evil;
         this.seed = info.seed;
         this.setLabel();
     };
@@ -138,7 +136,7 @@ var PunkInfo = /** @class */ (function (_super) {
                         this.seed = data.newSeed;
                         this.setLabel();
                         if (this.hp <= 0) {
-                            this.game.setDieMessage(data.name, this.userName, Number(this.gold) + Number(this.pendingGold));
+                            this.game.setDieMessage(data.name, this.userName, Number(this.gold));
                             this.cancle();
                         }
                         else {

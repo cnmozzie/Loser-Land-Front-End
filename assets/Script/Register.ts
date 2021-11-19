@@ -6,14 +6,8 @@ export default class Register extends cc.Component {
 	@property(cc.EditBox)
     nameEditbox: cc.EditBox = null;
 	
-	@property(cc.EditBox)
-    emailEditbox: cc.EditBox = null;
-	
-	@property(cc.EditBox)
-    walletEditbox: cc.EditBox = null;
-	
 	register (e, msg) {
-		this.welcome.setUserName(this.nameEditbox.string, this.emailEditbox.string, this.walletEditbox.string)
+		this.welcome.setUserName(this.nameEditbox.string)
 		this.node.destroy()
     },
 	
@@ -22,9 +16,8 @@ export default class Register extends cc.Component {
 		this.node.destroy()
     },
 	
-	setInfo (name, email) {
+	setInfo (name) {
 		this.nameEditbox.string = name;
-		this.emailEditbox.string = email;
 	}
 	
 	set_zh () {

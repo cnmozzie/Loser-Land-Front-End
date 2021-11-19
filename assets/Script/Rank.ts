@@ -1,4 +1,5 @@
 const {ccclass, property} = cc._decorator;
+import {ethers} from 'ethers/dist/ethers.umd.min.js';
 
 @ccclass
 export default class Rank extends cc.Component {
@@ -24,8 +25,12 @@ export default class Rank extends cc.Component {
 	
 	async setGolds (golds) {
         let unsortGolds = [];
-		for (let i=0; i<667; i++) {
-			unsortGolds.push({id: i, gold: Number(golds[i])})
+		const invalid = ethers.utils.formatEther(golds[0])
+		for (let i=1; i<667; i++) {
+			let temp = ethers.utils.formatEther(golds[i])
+			if (temp < invalid) {
+				unsortGolds.push({id: i, gold: temp})
+			}
 		}
 		this.sortGolds = unsortGolds.sort(function(a, b){return b.gold - a.gold});
 		this.setLabel()

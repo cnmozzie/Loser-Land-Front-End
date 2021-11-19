@@ -60,6 +60,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var _a = cc._decorator, ccclass = _a.ccclass, property = _a.property;
+var ethers_umd_min_js_1 = require("ethers/dist/ethers.umd.min.js");
 var Rank = /** @class */ (function (_super) {
     __extends(Rank, _super);
     function Rank() {
@@ -78,13 +79,17 @@ var Rank = /** @class */ (function (_super) {
     };
     Rank.prototype.setGolds = function (golds) {
         return __awaiter(this, void 0, void 0, function () {
-            var unsortGolds, i, i, name;
+            var unsortGolds, invalid, i, temp, i, name;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         unsortGolds = [];
-                        for (i = 0; i < 667; i++) {
-                            unsortGolds.push({ id: i, gold: Number(golds[i]) });
+                        invalid = ethers_umd_min_js_1.ethers.utils.formatEther(golds[0]);
+                        for (i = 1; i < 667; i++) {
+                            temp = ethers_umd_min_js_1.ethers.utils.formatEther(golds[i]);
+                            if (temp < invalid) {
+                                unsortGolds.push({ id: i, gold: temp });
+                            }
                         }
                         this.sortGolds = unsortGolds.sort(function (a, b) { return b.gold - a.gold; });
                         this.setLabel();

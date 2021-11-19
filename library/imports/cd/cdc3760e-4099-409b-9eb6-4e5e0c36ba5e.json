@@ -1,0 +1,28 @@
+{
+  "__type__": "cc.SpriteFrame",
+  "content": {
+    "name": "Squid Game Soldier Mask",
+    "texture": "efad9448-2d2a-408b-b4de-55096194199f",
+    "atlas": "",
+    "rect": [
+      4,
+      19,
+      223,
+      291
+    ],
+    "offset": [
+      -0.5,
+      -3.5
+    ],
+    "originalSize": [
+      232,
+      322
+    ],
+    "capInsets": [
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+}

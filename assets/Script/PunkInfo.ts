@@ -5,9 +5,8 @@ export default class PunkInfo extends cc.Component {
 	
 	id: number = 0;
 	gold: number = 0;
-	pendingGold: number = 0;
 	hp: number = 0;
-	hep: number = 0;
+	evil: number = 0;
 	seed: string = '';
 	userName: string = 'vistor';
 	action: string = 'Unknown';
@@ -35,12 +34,12 @@ export default class PunkInfo extends cc.Component {
 	setLabel () {
 		const lang = cc.sys.localStorage.getItem('lang')
 		if (lang === 'zh') {
-			this.leftLabel.string = `ID: ${this.id-1} \nHP: ${this.hp} \n药水: ${this.hep}`
-			this.rightLabel.string = `昵称: ${this.userName} \n状态: ${this.action} \n金币: ${this.gold}(${this.pendingGold})`
+			this.leftLabel.string = `ID: ${this.id-1} \nHP: ${this.hp} \n等级: ${this.evil}`
+			this.rightLabel.string = `昵称: ${this.userName} \n状态: ${this.action} \n鱿鱼币: ${this.gold}`
 		}
 		else {
-			this.leftLabel.string = `ID: ${this.id-1} \nHP: ${this.hp} \nHEP: ${this.hep}`
-			this.rightLabel.string = `Name: ${this.userName} \nStatus: ${this.action} \nGold: ${this.gold}(${this.pendingGold})`
+			this.leftLabel.string = `ID: ${this.id-1} \nHP: ${this.hp} \nLevel: ${this.evil}`
+			this.rightLabel.string = `Name: ${this.userName} \nStatus: ${this.action} \nSQUIDs: ${this.gold}`
 		}
     },
 	
@@ -64,9 +63,8 @@ export default class PunkInfo extends cc.Component {
 			this.action = (lang === 'zh'? '挖矿中' : 'Mining')
 		}
 		this.gold = info.gold
-		this.pendingGold = info.pendingGold
 		this.hp = info.hp
-		this.hep = info.hep
+		this.evil = info.evil
 		this.seed = info.seed
 		this.setLabel()
     },
@@ -74,8 +72,6 @@ export default class PunkInfo extends cc.Component {
 	setAttack (attackable) {
 		this.attackButton.interactable = attackable
     },
-	
-
 	
 	async attack (e, msg) {
         this.attackButton.interactable = false
@@ -86,7 +82,7 @@ export default class PunkInfo extends cc.Component {
 		this.seed = data.newSeed
 		this.setLabel()
 		if (this.hp <= 0) {
-			this.game.setDieMessage(data.name, this.userName, Number(this.gold)+Number(this.pendingGold))
+			this.game.setDieMessage(data.name, this.userName, Number(this.gold))
 			this.cancle()
 		}
 		else {

@@ -124,6 +124,12 @@
       "y": 225,
       "width": 600,
       "height": 565
+    },
+    "sprite-editor": {
+      "x": 702,
+      "y": 240,
+      "width": 516,
+      "height": 539
     }
   },
   "panelLabelWidth": {}

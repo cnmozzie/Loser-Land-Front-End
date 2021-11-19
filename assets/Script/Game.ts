@@ -13,7 +13,6 @@ export default class Game extends cc.Component {
 	toCommit: number = 0;
 	balance: number = 0;
 	gold: number = 0;
-	pendingGold: number = 0;
 	hp: number = 0;
 	hep: number = 0;
 	endRound: number = 225;
@@ -24,8 +23,7 @@ export default class Game extends cc.Component {
 	userName: string = 'vistor';
 	mode: string = "view";
 	isBusy: bool = false;
-	registerAddress: string = '0x76f099cd22E737FC38f17FA07aA95dACe8e53e4e';
-	rogueLandAddress: string = '0x4fB911AD82321a3639626260156b0f0ea3bd0d02';
+	rogueLandAddress: string = '0x432E7300786636043Bd3791fD49f4C0c58C3CC87';
 	rogueLandContract: any = null;
 	provider: any = null;
 	wallet: any = null;
@@ -51,10 +49,7 @@ export default class Game extends cc.Component {
     modeButton: cc.Button = null;
 	
 	@property(cc.Button)
-    swapButton: cc.Button = null;
-	
-	@property(cc.Button)
-    makeButton: cc.Button = null;
+    leaveButton: cc.Button = null;
 	
 	@property(cc.Button)
     useButton: cc.Button = null;
@@ -97,9 +92,6 @@ export default class Game extends cc.Component {
 	
 	@property(cc.Prefab)
     goldInfoPrefab: cc.Prefab = null;
-	
-	@property(cc.JsonAsset)
-    registerJson: cc.JsonAsset = null;
 	
 	@property(cc.JsonAsset)
     rogueLandJson: cc.JsonAsset = null;
@@ -146,7 +138,7 @@ export default class Game extends cc.Component {
 		newDialog.getComponent('PunkInfo').setId(id);
 		const info = await this.getPunkInfo(id);
 		newDialog.getComponent('PunkInfo').setInfo(info);
-		if (id != this.id && this.t == this.playerInfo.t && Math.abs(x-this.playerInfo.x)<=1 && Math.abs(y-this.playerInfo.y)<=1 && !info.isMoving && Math.abs(x)<25 && Math.abs(y)<25 && Math.abs(this.playerInfo.x)<25 && Math.abs(this.playerInfo.y)<25) {
+		if (id != this.id && this.t == this.playerInfo.t && Math.abs(x-this.playerInfo.x)<=1 && Math.abs(y-this.playerInfo.y)<=1 && !info.isMoving) {
 			newDialog.getComponent('PunkInfo').setAttack(true);
 		}
     },
@@ -203,21 +195,6 @@ export default class Game extends cc.Component {
 		}
     },
 	
-	spawnNewChest (x, y) {
-        // 使用给定的模板在场景中生成一个新节点
-        var newChest = cc.instantiate(this.chestPrefab);
-        // 将新增的节点添加到 Canvas 节点下面
-        this.node.addChild(newChest);
-		newChest.zIndex = 2;
-        // 设置宝箱的位置
-        newChest.setPosition(cc.v2(x,y));
-		this.chests.push(newChest)
-		
-		newChest.on(cc.Node.EventType.TOUCH_START, function(event){
-			this.spawnNewGoldInfo(x/64, y/64);
-		}, this)
-    },
-	
 	spawnNewPunk (x, y, id) {
         //cc.log(x, y, id.toString())
 		// 使用给定的模板在场景中生成一个新节点
@@ -270,17 +247,12 @@ export default class Game extends cc.Component {
 		// 自动提交
 		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
 		try {
-			const tx = await rogueLandSigner.scheduleAction(this.id, action, {gasLimit: 300000, gasPrice: 1000000000})
+			const tx = await rogueLandSigner.scheduleAction(this.id, action)
 		}
 		catch (e) {
 			cc.log(e)
 		}
-		this.balance = this.balance - 3
-		this.gold = Number(this.gold) + Number(this.pendingGold)
-		this.pendingGold = 0
-		if (this.gold >= 1000) {
-		    this.swapButton.interactable = true
-		}
+		
     },
 	
 	spawnTimeButton (x, y, t) {
@@ -356,12 +328,7 @@ export default class Game extends cc.Component {
 			}
 		}
 		else {
-			if (lang === 'zh') {
-			    this.text = `金币: ${this.gold}(${this.pendingGold}) 行动点: ${this.balance} 生命值: ${this.hp} 药水: ${this.hep}\n${this.endRound-this.t}回合后游戏结束`
-		    }
-			else {
-				this.text = `GOLD: ${this.gold}(${this.pendingGold}) ACTION POINTS: ${this.balance} HP: ${this.hp} HEP: ${this.hep}\nGame will end in {this.endRound-this.t} rounds`
-			}
+			this.text = `SQUID: ${this.gold} OKT: ${this.balance} HP: ${this.hp} HEP: ${this.hep}`
 			
 		}
 		this.label.string = this.text;
@@ -380,60 +347,36 @@ export default class Game extends cc.Component {
 	setDieMessage (A, B, n) {
 		const lang = cc.sys.localStorage.getItem('lang')
 		if (lang === 'zh') {
-			this.messageLabel.string = `${A}击杀了${B}，获得了${n}个金币\n` + this.messageLabel.string
+			this.messageLabel.string = `${A}击杀了${B}，获得了${n}个鱿鱼币\n` + this.messageLabel.string
 		}
 		else {
-			this.messageLabel.string = `${A} killed ${B}，rob ${n} golds\n` + this.messageLabel.string
+			this.messageLabel.string = `${A} killed ${B}，rob ${n} SQUIDs\n` + this.messageLabel.string
 		}
 		this.spawnNewDieDialog(B)
 	}
 	
-	async swap () {
-		this.swapButton.interactable = false
-		if (this.gold < 1200) {
-			this.makeButton.interactable = false
-		}
+	async leaveGame () {
+		this.leaveButton.interactable = false
 		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
 		try {
-			const tx = await rogueLandSigner.swapOKT(this.playerAddress, {gasPrice: 1000000000})
+			const tx = await rogueLandSigner.claimRewards()
 		}
 		catch (e) {
 			cc.log(e)
 		}
-		this.balance = this.balance + 100
-		this.gold = this.gold - 1000
-		
-		if (this.gold >= 1000) {
-			this.swapButton.interactable = true
-		}
-		
-    },
-	
-	async makeHEP () {
-		this.makeButton.interactable = false
-		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
-		try {
-			const tx = await rogueLandSigner.swapHEP({gasPrice: 1000000000})
-		}
-		catch (e) {
-			cc.log(e)
-		}
-		this.balance = this.balance - 2
-		this.hep ++
-		this.gold = this.gold - 200
-		this.useButton.interactable = true
+		this.setDieMessage(this.userName, this.userName, this.gold)
     },
 	
 	async useHEP () {
         this.useButton.interactable = false
 		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
 		try {
-			const tx = await rogueLandSigner.useHEP(this.id, {gasPrice: 1000000000})
+			const tx = await rogueLandSigner.useHEP(this.id)
 		}
 		catch (e) {
 			cc.log(e)
 		}
-		this.balance = this.balance - 2
+		//this.balance = this.balance - 2
 		this.hep --
 		this.hp = Math.min(this.hp+10, 15)
 		if (this.hep > 0) {
@@ -451,7 +394,7 @@ export default class Game extends cc.Component {
 		if (this.balance < 0) return;
 		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
 		try {
-			const tx = await rogueLandSigner.attack(this.id, to, {gasPrice: 1000000000})
+			const tx = await rogueLandSigner.attack(this.id, to)
 		}
 		catch (e) {
 			cc.log(e)
@@ -461,7 +404,7 @@ export default class Game extends cc.Component {
 		const diceB = seedB.mod(100)
 		cc.log(Number(diceA), Number(diceB))
 		
-		this.balance = this.balance - 5
+		//this.balance = this.balance - 5
 		
 		let _damage = 0
 		if (diceA/5+1 < 19) {
@@ -476,7 +419,7 @@ export default class Game extends cc.Component {
 			this.hp -= ((diceB)%5+1)
 			this.setAttackMessage(_name, this.userName, diceB%5+1)
 			if (this.hp <= 0) {
-				this.setDieMessage(_name, this.userName, Number(this.gold)+Number(this.pendingGold))
+				this.setDieMessage(_name, this.userName, Number(this.gold))
 			}
 		}
 		else {
@@ -495,10 +438,9 @@ export default class Game extends cc.Component {
 		return  {
 			        name: punkInfo.name, 
 					isMoving: Number(punkInfo.isMoving), 
-		            gold: Number(punkInfo.gold), 
-					pendingGold: Number(punkInfo.pendingGold), 
+		            gold: ethers.utils.formatEther(punkInfo.totalGold), 
 					hp: Number(punkInfo.hp), 
-					hep: Number(punkInfo.hep), 
+					evil: Number(punkInfo.evil), 
 					seed: punkInfo.seed.toHexString(),
 				    address: punkInfo.player
 			    }
@@ -524,13 +466,20 @@ export default class Game extends cc.Component {
     },
 	
 	async getStatus () {
-		let walletData = JSON.parse(cc.sys.localStorage.getItem('wallet'))
-		const walletPrivateKey = new ethers.Wallet(walletData.privateKey)
-		this.playerAddress = walletData.address;
-		this.provider = new ethers.providers.JsonRpcProvider("https://exchaintestrpc.okex.org")
-		this.wallet = walletPrivateKey.connect(this.provider)
+
+		this.playerAddress = cc.sys.localStorage.getItem('address')
+		if (this.playerAddress == '') {
+			cc.log('visitor')
+			this.provider = new ethers.providers.JsonRpcProvider("https://exchainrpc.okex.org")
+			this.modeButton.interactable = false
+		}
+		else {
+			cc.log(this.playerAddress)
+			this.provider = new ethers.providers.Web3Provider(window.ethereum)
+		    this.wallet = this.provider.getSigner()
+		}
+		
 		this.rogueLandContract = new ethers.Contract(this.rogueLandAddress, this.rogueLandJson.json.abi, this.provider)
-		//this.modeButton.interactable = false
 		this.goViewMode()
 		this.mapSize = 24
 		this.spawnNewCross(Number(this.mapSize)+1)
@@ -637,10 +586,9 @@ export default class Game extends cc.Component {
 			return;
 		}
 		const myPunk = await this.rogueLandContract.getPunkInfo(this.id)
-		this.gold = myPunk.gold
-		this.pendingGold = myPunk.pendingGold
+		this.gold = ethers.utils.formatEther(myPunk.totalGold)
 		this.hp = myPunk.hp
-		this.hep = myPunk.hep
+		this.hep = cc.sys.localStorage.getItem('hep')
 		if (myPunk.name == "") {
 			this.userName = myPunk.player.slice(0, 6)
 		}
@@ -648,18 +596,14 @@ export default class Game extends cc.Component {
 			this.userName = myPunk.name
 		}
 		this.seed = myPunk.seed.toHexString()
-        if (this.gold >= 1000 && this.playerInfo.t < this.endRound) {
-		    this.swapButton.interactable = true
-		}
-		if (this.hep > 0 && this.playerInfo.t < this.endRound) {
+		if (this.hep > 0) {
 		    this.useButton.interactable = true
 		}
-		const okt = await this.wallet.getBalance()
-		this.balance = Math.floor(ethers.utils.formatEther(okt)*10000)
-		const isCook = await await this.rogueLandContract.cooked(this.id, this.t)
-		if (!isCook && this.gold >= 200) {
-		    this.makeButton.interactable = true
+		if (Math.abs(statusInfo.x) == 25 || Math.abs(statusInfo.y) == 25) {
+		    this.leaveButton.interactable = true
 		}
+		const okt = await this.wallet.getBalance()
+		this.balance = Math.floor(ethers.utils.formatEther(okt)*10000)/10000
 		
 	}
 	
@@ -918,8 +862,7 @@ export default class Game extends cc.Component {
 		this.time_button_group.zIndex = 5;
 		this.button_group_2.zIndex = 5;
 		this.gameMap.node.zIndex = 2;
-		this.swapButton.interactable = false
-		this.makeButton.interactable = false
+		this.leaveButton.interactable = false
 		this.useButton.interactable = false
 		// 生成草地
         //let windowSize=cc.view.getVisibleSize();

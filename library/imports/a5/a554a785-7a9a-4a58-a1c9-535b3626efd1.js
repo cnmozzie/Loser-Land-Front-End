@@ -29,21 +29,18 @@ var Register = /** @class */ (function (_super) {
     function Register() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.nameEditbox = null;
-        _this.emailEditbox = null;
-        _this.walletEditbox = null;
         return _this;
     }
     Register.prototype.register = function (e, msg) {
-        this.welcome.setUserName(this.nameEditbox.string, this.emailEditbox.string, this.walletEditbox.string);
+        this.welcome.setUserName(this.nameEditbox.string);
         this.node.destroy();
     };
     Register.prototype.skip = function (e, msg) {
         cc.log('skip');
         this.node.destroy();
     };
-    Register.prototype.setInfo = function (name, email) {
+    Register.prototype.setInfo = function (name) {
         this.nameEditbox.string = name;
-        this.emailEditbox.string = email;
     };
     Register.prototype.set_zh = function () {
         cc.sys.localStorage.setItem('lang', 'zh');
@@ -60,12 +57,6 @@ var Register = /** @class */ (function (_super) {
     __decorate([
         property(cc.EditBox)
     ], Register.prototype, "nameEditbox", void 0);
-    __decorate([
-        property(cc.EditBox)
-    ], Register.prototype, "emailEditbox", void 0);
-    __decorate([
-        property(cc.EditBox)
-    ], Register.prototype, "walletEditbox", void 0);
     Register = __decorate([
         ccclass
     ], Register);
