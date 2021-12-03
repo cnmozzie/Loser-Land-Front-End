@@ -420,18 +420,6 @@
       },
       {
         "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
-      },
-      {
-        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
-      },
-      {
-        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
-      },
-      {
-        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
-      },
-      {
-        "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
       }
     ],
     "_id": "c6ZIoHd5tABp0yJdMDmC6b"
@@ -7303,6 +7291,9 @@
     "blueStarPrefab": {
       "__uuid__": "959f1afa-6861-49cb-87bb-f73b0ef9ed45"
     },
+    "circlePrefab": {
+      "__uuid__": "68ed6050-df26-4a1b-aaa5-00474e539e51"
+    },
     "diePrefab": {
       "__uuid__": "4224dba3-fe46-4217-a1d0-441cad3f3829"
     },
@@ -7312,14 +7303,17 @@
     "goldInfoPrefab": {
       "__uuid__": "45e47761-26c6-491f-97ad-68afe4bbc8aa"
     },
-    "registerJson": {
-      "__uuid__": "452dac87-6cab-4df6-90ba-48c13e5af7ed"
-    },
     "rogueLandJson": {
       "__uuid__": "28be3bdb-ea43-4115-b7f6-f9c864cb35b6"
     },
+    "buildingJson": {
+      "__uuid__": "43800e15-f174-4540-b829-f8445d099ea3"
+    },
     "loserpunkJson": {
       "__uuid__": "104a13d2-72d0-447c-a16e-c02e1d55a457"
+    },
+    "landJson": {
+      "__uuid__": "e29ae348-a2ee-4e8d-ac86-19dc6e87eac9"
     },
     "player": {
       "__id__": 10

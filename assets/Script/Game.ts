@@ -9,13 +9,14 @@ export default class Game extends cc.Component {
 	
 	id: number = 0;
 	t: number = 0;
+	block: number = 0;
 	currentSchedule: number = 0;
 	toCommit: number = 0;
 	balance: number = 0;
 	gold: number = 0;
 	hp: number = 0;
 	hep: number = 0;
-	endRound: number = 225;
+	endRound: number = 1320;
 	minimapSize: number = 51;
 	mapSize: number = 51;
 	eventNumber: number = 0;
@@ -23,18 +24,23 @@ export default class Game extends cc.Component {
 	userName: string = 'vistor';
 	mode: string = "view";
 	isBusy: bool = false;
-	rogueLandAddress: string = '0x432E7300786636043Bd3791fD49f4C0c58C3CC87';
+	rogueLandAddress: string = '0xCaFf20f886248F6d8c0D7dF08A8c3E67C3Cfd3C2';
 	rogueLandContract: any = null;
+	buildingAddress: string = '0xcCbFb4740838365AfcB6AEC663C09652A859d219';
+	buildingContract: any = null;
+	landAddress: string = '0xd4B4529cB66a3793fE2423E627Ba32ca1FEbD3b9';
+	landContract: any = null;
 	provider: any = null;
 	wallet: any = null;
 	validToGo: any = {};
 	playerInfo: any = {x: 0, y: 0, t: 0};
-	toPick: any = {x: 0, y: 0};
+	landPos: any = {x: 0, y: 0};
 	minimapCenter: any = {x: 0, y: 0};
 	timeList: any[] = [];
 	punks: any[] = [];
 	chests: any[] = [];
 	tiledLayer : cc.TiledLayer = null;
+	gameLayer : cc.TiledLayer = null;
 	
 	@property(cc.Label)
     label: cc.Label = null;
@@ -85,6 +91,9 @@ export default class Game extends cc.Component {
     blueStarPrefab: cc.Prefab = null;
 	
 	@property(cc.Prefab)
+    circlePrefab: cc.Prefab = null;
+	
+	@property(cc.Prefab)
     diePrefab: cc.Prefab = null;
 	
 	@property(cc.Prefab)
@@ -97,7 +106,13 @@ export default class Game extends cc.Component {
     rogueLandJson: cc.JsonAsset = null;
 	
 	@property(cc.JsonAsset)
+    buildingJson: cc.JsonAsset = null;
+	
+	@property(cc.JsonAsset)
     loserpunkJson: cc.JsonAsset = null;
+	
+	@property(cc.JsonAsset)
+    landJson: cc.JsonAsset = null;
 	
 	// Player 节点，用于获取主角的位置
 	@property(cc.Node)
@@ -127,7 +142,7 @@ export default class Game extends cc.Component {
         newDialog.getComponent('DieDialog').setText(name);
     },
 	
-	async spawnNewPunkInfo (id, x, y) {
+	async spawnNewPunkInfo (id, x, y, inHouse) {
         var newDialog = cc.instantiate(this.punkInfoPrefab);
         this.node.addChild(newDialog);
 		newDialog.zIndex = 6;
@@ -138,19 +153,35 @@ export default class Game extends cc.Component {
 		newDialog.getComponent('PunkInfo').setId(id);
 		const info = await this.getPunkInfo(id);
 		newDialog.getComponent('PunkInfo').setInfo(info);
-		if (id != this.id && this.t == this.playerInfo.t && Math.abs(x-this.playerInfo.x)<=1 && Math.abs(y-this.playerInfo.y)<=1 && !info.isMoving) {
+		if (id != this.id && this.t == this.playerInfo.t && Math.abs(x-this.playerInfo.x)<=1 && Math.abs(y-this.playerInfo.y)<=1 && !info.isMoving && !inHouse) {
 			newDialog.getComponent('PunkInfo').setAttack(true);
 		}
     },
 	
-	async spawnNewGoldInfo (x, y) {
-        var newDialog = cc.instantiate(this.goldInfoPrefab);
+	async spawnNewLandInfo () {
+        //cc.log(this.landPos)
+		var newDialog = cc.instantiate(this.goldInfoPrefab);
         this.node.addChild(newDialog);
 		newDialog.zIndex = 6;
         newDialog.setPosition(cc.v2(this.player.x, this.player.y));
 		// 在对话框脚本组件上保存 Game 对象的引用
-		const info = await this.rogueLandContract.goldOn(x, y);
-		newDialog.getComponent('GoldDialog').setLabel({amount: info.amount, punkNumber: info.punkNumber, time: info.vaildTime-this.playerInfo.t});
+		newDialog.getComponent('GoldDialog').game = this;
+		const info = await this.buildingContract.landOf(this.landPos.x, this.landPos.y);
+		newDialog.getComponent('GoldDialog').setLabel({pos: this.landPos, block: this.block, land: info, player: this.playerAddress});
+		newDialog.on(cc.Node.EventType.TOUCH_START, function(event){cc.log('touched')}, this)
+    },
+	
+	async spawnNewCircle () {
+        const balance = await this.landContract.balanceOf(this.playerAddress)
+		for (let i=0; i< balance; i++) {
+			let id = await this.landContract.tokenOfOwnerByIndex(this.playerAddress, i)
+			let pos = await this.landContract.positionOf(id)
+			// 使用给定的模板在场景中生成一个新节点
+            let newCircle = cc.instantiate(this.circlePrefab);
+			this.node.addChild(newCircle);
+			newCircle.setPosition(cc.v2(pos.x*64,pos.y*64));
+			newCircle.zIndex = 3;
+		}
     },
 	
 	spawnNewGrass (x, y) {
@@ -164,6 +195,12 @@ export default class Game extends cc.Component {
         newGrass.getComponent('Grass').camera = this.camera;
 		
 		//newGrass.on(cc.Node.EventType.TOUCH_START,function(t){cc.log("触摸开始");},this)
+		newGrass.on(cc.Node.EventType.TOUCH_START, function(event){
+			this.landPos.x = x/64 + Math.round(this.player.x/64);
+			this.landPos.y = y/64 + Math.round(this.player.y/64);
+			const center = this.getPosition()
+			//cc.log(center, x, y)
+		}, this)
         //监听
         newGrass.on(cc.Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
         newGrass.on(cc.Node.EventType.TOUCH_END, this.onTouchEnd, this);
@@ -195,7 +232,7 @@ export default class Game extends cc.Component {
 		}
     },
 	
-	spawnNewPunk (x, y, id) {
+	spawnNewPunk (x, y, id, inHouse) {
         //cc.log(x, y, id.toString())
 		// 使用给定的模板在场景中生成一个新节点
         var newPunk = cc.instantiate(this.punkPrefab);
@@ -210,7 +247,7 @@ export default class Game extends cc.Component {
         this.node.addChild(newPunk);
 		newPunk.addChild(newStar)
 		newStar.setPosition(cc.v2(20,20));
-		newPunk.zIndex = 4;
+		newPunk.zIndex = inHouse ? 2 : 4;
         // 设置punk的位置
         newPunk.setPosition(cc.v2(x,y));
 		this.punks.push(newPunk)
@@ -229,7 +266,7 @@ export default class Game extends cc.Component {
 		}
 		
 		newPunk.on(cc.Node.EventType.TOUCH_START, function(event){
-			this.spawnNewPunkInfo(id, x/64, y/64);
+			this.spawnNewPunkInfo(id, x/64, y/64, inHouse);
 		}, this)
     },
 	
@@ -329,7 +366,7 @@ export default class Game extends cc.Component {
 		}
 		else {
 			this.text = `SQUID: ${this.gold} OKT: ${this.balance} HP: ${this.hp} HEP: ${this.hep}`
-			
+			//this.text += `${this.endRound - this.t}回合后游戏结束`
 		}
 		this.label.string = this.text;
 	}
@@ -365,6 +402,26 @@ export default class Game extends cc.Component {
 			cc.log(e)
 		}
 		this.setDieMessage(this.userName, this.userName, this.gold)
+    },
+	
+	async buyLand () {
+		const buildingSigner = this.buildingContract.connect(this.wallet)
+		try {
+			const tx = await buildingSigner.mint(this.landPos.x, this.landPos.y)
+		}
+		catch (e) {
+			cc.log(e)
+		}
+    },
+	
+	async build (kind) {
+		const buildingSigner = this.buildingContract.connect(this.wallet)
+		try {
+			const tx = await buildingSigner.build(this.landPos.x, this.landPos.y, kind)
+		}
+		catch (e) {
+			cc.log(e)
+		}
     },
 	
 	async useHEP () {
@@ -480,9 +537,12 @@ export default class Game extends cc.Component {
 		}
 		
 		this.rogueLandContract = new ethers.Contract(this.rogueLandAddress, this.rogueLandJson.json.abi, this.provider)
+		this.buildingContract = new ethers.Contract(this.buildingAddress, this.buildingJson.json.abi, this.provider)
+		this.landContract = new ethers.Contract(this.landAddress, this.landJson.json.abi, this.provider)
 		this.goViewMode()
 		this.mapSize = 24
 		this.spawnNewCross(Number(this.mapSize)+1)
+		this.spawnNewCircle()
     },
 	
 	setMinimapBoundary () {
@@ -519,7 +579,8 @@ export default class Game extends cc.Component {
 		let x2 = center.x + 7
 		let y1 = center.y - 5
 		let y2 = center.y + 5
-		const map = await this.rogueLandContract.getEvents(x1, y1, x2, y2, this.t)
+		const minimap = await this.rogueLandContract.getEvents(x1, y1, x2, y2, this.t)
+		const gamemap = await this.buildingContract.getLandInfo(x1, y1, x2, y2)
 		while (this.punks.length > 0) {
 			let node = this.punks.pop()
 			node.destroy();
@@ -531,16 +592,23 @@ export default class Game extends cc.Component {
 		let i = 0
         for (let x=x1; x<=x2; x++) {
           for (let y=y1; y<=y2; y++) {
-            if (map[i] != 0 && !(this.mode == "schedule" && map[i] == this.id)) {
-			  //cc.log(map[i].movingPunk, x, y)
-			  this.spawnNewPunk (x*64, y*64, map[i])
-			  if (map[i] % 2 == 0) {
+            if (gamemap[i] != 0) {
+				//cc.log(x, y)
+				this.setGameMap(x, y, gamemap[i])
+				if (minimap[i] == this.id && gamemap[i] == 1 && this.playerInfo.t == this.t) {
+					this.leaveButton.interactable = true
+				}
+			}
+			if (minimap[i] != 0 && !(this.mode == "schedule" && minimap[i] == this.id)) {
+			  //cc.log(minimap[i].movingPunk, x, y)
+			  this.spawnNewPunk (x*64, y*64, minimap[i], gamemap[i] == 1)
+			  if (minimap[i] % 2 == 0) {
 				  this.setMiniMap(x, y, 4)
 			  }
 			  else {
 				  this.setMiniMap(x, y, 5)
 			  }
-			  this.validToGo["x"+x+"y"+y] = false
+			  this.validToGo["x"+x+"y"+y] = (gamemap[i] == 1)
             }
 			else {
 			  this.validToGo["x"+x+"y"+y] = true
@@ -554,17 +622,6 @@ export default class Game extends cc.Component {
 	  else {
 		  cc.log('isBusy')
 	  }
-	}
-	
-	async getEvent() {
-		this.goViewMode()
-		const statusInfo = await this.rogueLandContract.getEvent(this.id)
-		if (statusInfo.t > this.eventNumber) {
-			this.toPick.x = statusInfo.x
-			this.toPick.y = statusInfo.y
-			this.eventNumber = statusInfo.t
-			this.pick()
-		}
 	}
 	
 	async goViewMode() {
@@ -582,8 +639,8 @@ export default class Game extends cc.Component {
 		this.resetMinimap()
 		this.updateMap()
 		if (this.playerInfo.t == this.endRound) {
-			this.modeButton.interactable = false
-			return;
+			//this.modeButton.interactable = false
+			//return;
 		}
 		const myPunk = await this.rogueLandContract.getPunkInfo(this.id)
 		this.gold = ethers.utils.formatEther(myPunk.totalGold)
@@ -600,8 +657,9 @@ export default class Game extends cc.Component {
 		    this.useButton.interactable = true
 		}
 		if (Math.abs(statusInfo.x) == 25 || Math.abs(statusInfo.y) == 25) {
-		    this.leaveButton.interactable = true
+		    //this.leaveButton.interactable = true
 		}
+		this.block = myPunk.blockNumber
 		const okt = await this.wallet.getBalance()
 		this.balance = Math.floor(ethers.utils.formatEther(okt)*10000)/10000
 		
@@ -844,9 +902,41 @@ export default class Game extends cc.Component {
 	
 	onTouchEnd(t){
 		if (this.mode == "view") {
-			this.updateMap()
+			let deltaX = t.getLocation().x - t.getStartLocation().x;
+			let deltaY = t.getLocation().y - t.getStartLocation().y;
+			//cc.log(deltaX, deltaY)
+			if (Math.abs(deltaX) > 64 || Math.abs(deltaY) > 64) {
+				this.updateMap()
+			}
+			else {
+				//const center = this.getPosition()
+				let windowSize=cc.view.getVisibleSize();
+                cc.log("width="+windowSize.width+",height="+windowSize.height);
+				this.landPos.x = Math.round((t.getLocation().x+this.player.x-windowSize.width/2)/64)
+				this.landPos.y = Math.round((t.getLocation().y+this.player.y-windowSize.height/2)/64)
+				this.spawnNewLandInfo()
+				cc.log(Math.floor(t.getLocation().x/64), Math.floor(t.getLocation().y/64))
+			}
 		}
     },
+	
+	setGameMap(x_, y_, kind) {
+		let gid = 0
+		if (kind == 0) {
+			gid = 8
+		}
+		else if (kind == 1) {
+			gid = 9
+		}
+		else {
+			gid = kind - 1
+		}
+		let x = x_ + 24
+		let y = y_ + 24
+		if (x>=0 && x<=48 && y>=0 && y<=48) {
+			this.gameLayer.setTileGIDAt(gid, x, 48-y, 0)
+		}
+	},
 	
 	setMiniMap(x_, y_, gid_) {
 		//cc.log(x_, y_, gid_)
@@ -855,7 +945,7 @@ export default class Game extends cc.Component {
 		if (x>=0 && x<=50 && y>=0 && y<=50) {
 			this.tiledLayer.setTileGIDAt(gid_, x, 50-y, 0)
 		}
-	}
+	},
 	
 	onLoad () {
 		this.label.node.zIndex = 5;
@@ -865,8 +955,6 @@ export default class Game extends cc.Component {
 		this.leaveButton.interactable = false
 		this.useButton.interactable = false
 		// 生成草地
-        //let windowSize=cc.view.getVisibleSize();
-        //cc.log("width="+windowSize.width+",height="+windowSize.height);
 		for (let i=-9; i<=9; i++) {
 			for (let j=-6; j<=6; j++) {
 				this.spawnNewGrass(i*64, j*64);
@@ -878,6 +966,7 @@ export default class Game extends cc.Component {
 		}
 		
 		this.tiledLayer = this.smallMap.getLayer("background")
+		this.gameLayer = this.gameMap.getLayer("game_map")
 
 		// 初始化键盘输入监听
         cc.systemEvent.on(cc.SystemEvent.EventType.KEY_DOWN, this.onKeyDown, this);

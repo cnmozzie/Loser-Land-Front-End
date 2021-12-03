@@ -28,49 +28,103 @@ var GoldDialog = /** @class */ (function (_super) {
     __extends(GoldDialog, _super);
     function GoldDialog() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.kind = 0;
         _this.label = null;
+        _this.kindLabel = null;
+        _this.buildButton = null;
+        _this.buyButton = null;
         return _this;
     }
+    GoldDialog.prototype.kindName = function (n) {
+        var lang = cc.sys.localStorage.getItem('lang');
+        if (n == 0) {
+            this.buildButton.interactable = false;
+            return lang === 'zh' ? '空地' : 'Open Space';
+        }
+        else if (n == 1) {
+            this.buildButton.interactable = true;
+            return lang === 'zh' ? '房屋' : 'House';
+        }
+        else {
+            this.buildButton.interactable = true;
+            return lang === 'zh' ? n - 1 + "\u7EA7\u77FF\u573A" : "Level " + (n - 1) + " Mine";
+        }
+    };
     GoldDialog.prototype.setLabel = function (info) {
         var lang = cc.sys.localStorage.getItem('lang');
+        var kind = info.land.builtTime > info.block ? info.land.oldBuilding : info.land.newBuilding;
+        var time = Math.ceil((info.land.builtTime - info.block) / 500);
         var text;
+        var x = info.pos.x;
+        var y = info.pos.y;
         if (lang === 'zh') {
-            text = "\u4E00\u4E2A\u88C5\u6709" + info.amount + "\u91D1\u5E01\u5B9D\u7BB1\uFF0C\n";
-            if (info.time <= 0) {
-                text = text + (info.punkNumber + "\u53EA\u670B\u514B\u6B63\u5728\u6253\u5F00\u5B83");
-            }
-            else if (info.punkNumber > 0) {
-                text = text + (info.time + "\u56DE\u5408\u540E" + info.punkNumber + "\u53EA\u670B\u514B\u4F1A\u6253\u5F00\u5B83");
-            }
-            else {
-                text = text + "\u76EE\u524D\u6CA1\u6709\u670B\u514B\u60F3\u53BB\u6253\u5F00\u5B83";
+            text = "\u5750\u6807\uFF1A(" + x + ", " + y + ")\n\u5730\u4E3B\uFF1A" + info.land.owner.slice(0, 6);
+            if (time > 0) {
+                text += "\n\u6B63\u5728\u5EFA\u9020\uFF1A" + this.kindName(info.land.newBuilding) + "\uFF08\u8FD8\u9700" + time + "\u56DE\u5408\uFF09";
             }
         }
         else {
-            text = "A chest with " + info.amount + " gold, \n";
-            if (info.time <= 0 && info.punkNumber > 0) {
-                text = text + (info.punkNumber + " punks are looting it now...");
-            }
-            else if (info.punkNumber > 0) {
-                text = text + (info.punkNumber + " punk will loot it " + info.time + " rounds later");
-            }
-            else {
-                text = text + "no punk want to loot it for now";
+            text = "Coordinate\uFF1A(" + x + ", " + y + ")\nOwner\uFF1A" + info.land.owner.slice(0, 6);
+            if (time > 0) {
+                text += "\nBuilding\uFF1A" + this.kindName(info.land.newBuilding) + " (in " + time + " rounds)";
             }
         }
         this.label.string = text;
+        this.kind = kind;
+        this.kindLabel.string = this.kindName(this.kind);
+        if (info.land.owner == '0x0000000000000000000000000000000000000000') {
+            cc.log('no owner');
+            if ((Math.pow(x, 2) > 100 || Math.pow(y, 2) > 100) && Math.pow(x, 2) < 625 && Math.pow(y, 2) < 625) {
+                this.buyButton.interactable = true;
+            }
+        }
+        else if (info.player.toLowerCase() == info.land.owner.toLowerCase()) {
+            this.buildButton.node.zIndex = 2;
+        }
     };
     GoldDialog.prototype.close = function () {
         cc.log('cancle');
         this.node.destroy();
     };
+    GoldDialog.prototype.buy = function () {
+        cc.log('buy');
+        this.buyButton.interactable = false;
+        this.game.buyLand();
+    };
+    GoldDialog.prototype.build = function () {
+        cc.log('build');
+        this.buildButton.interactable = false;
+        this.game.build(this.kind % 9 - 1);
+    };
+    GoldDialog.prototype.inc_n = function () {
+        if (this.buildButton.node.zIndex == 2) {
+            this.kind++;
+            this.kindLabel.string = this.kindName(this.kind % 9);
+        }
+    };
+    GoldDialog.prototype.dec_n = function () {
+        if (this.buildButton.node.zIndex == 2) {
+            this.kind += 8;
+            this.kindLabel.string = this.kindName(this.kind % 9);
+        }
+    };
     GoldDialog.prototype.onLoad = function () {
+        this.buyButton.interactable = false;
     };
     GoldDialog.prototype.start = function () {
     };
     __decorate([
         property(cc.Label)
     ], GoldDialog.prototype, "label", void 0);
+    __decorate([
+        property(cc.Label)
+    ], GoldDialog.prototype, "kindLabel", void 0);
+    __decorate([
+        property(cc.Button)
+    ], GoldDialog.prototype, "buildButton", void 0);
+    __decorate([
+        property(cc.Button)
+    ], GoldDialog.prototype, "buyButton", void 0);
     GoldDialog = __decorate([
         ccclass
     ], GoldDialog);

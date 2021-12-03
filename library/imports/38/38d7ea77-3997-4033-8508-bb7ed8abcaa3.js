@@ -103,7 +103,7 @@ var PunkInfo = /** @class */ (function (_super) {
             this.userName = info.address.slice(0, 6);
         }
         else {
-            this.userName = info.name;
+            this.userName = info.name.substr(0, 9);
         }
         var lang = cc.sys.localStorage.getItem('lang');
         if (info.isMoving) {

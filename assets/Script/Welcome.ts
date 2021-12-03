@@ -14,9 +14,10 @@ export default class Welcome extends cc.Component {
 	username: string = '';
 	bindAddress: string = '';
 	privateKey: string = '';
-	hepAddress: string = '0xfD83168291312A0800f44610974350C569d12e42';
-	squidAddress: string = '0xC9a9bE0f88b44889F30EA0978e984FB5a6eFE68b';
-	rogueLandAddress: string = '0x432E7300786636043Bd3791fD49f4C0c58C3CC87';
+	hepAddress: string = '0xfd83168291312a0800f44610974350c569d12e42';
+	buildingAddress: string = '0xcCbFb4740838365AfcB6AEC663C09652A859d219';
+	squidAddress: string = '0xc9a9be0f88b44889f30ea0978e984fb5a6efe68b';
+	rogueLandAddress: string = '0xCaFf20f886248F6d8c0D7dF08A8c3E67C3Cfd3C2';
 	provider: any = null;
 	wallet: any = null;
 	rogueLandContract: any = null;
@@ -28,19 +29,7 @@ export default class Welcome extends cc.Component {
     infoLabel: cc.Label = null;
 	
 	@property(cc.Label)
-    cherryLabel: cc.Label = null;
-	
-	@property(cc.Label)
-    loserLabel: cc.Label = null;
-	
-	@property(cc.Label)
     balanceLabel: cc.Label = null;
-	
-	@property(cc.Button)
-    loserButton: cc.Button = null;
-	
-	@property(cc.Button)
-    cherryButton: cc.Button = null;
 	
 	@property(cc.Button)
     registerButton: cc.Button = null;
@@ -72,6 +61,9 @@ export default class Welcome extends cc.Component {
 	@property(cc.Prefab)
     withdrawPrefab: cc.Prefab = null;
 	
+	@property(cc.EditBox)
+    idEditbox: cc.EditBox = null;
+	
 	
 	startGame (e, msg) {
         cc.log('start game');
@@ -85,17 +77,17 @@ export default class Welcome extends cc.Component {
 		this.privateKey = walletData.privateKey
     },
 	
-	setInfoLabel (a, b, n) {
+	setInfoLabel (total, dead) {
 		const lang = cc.sys.localStorage.getItem('lang')
 		if (lang === 'zh') {
-			this.loserLabel.string = `存活: ${a}/333`
-			this.cherryLabel.string = `死亡: ${b}/333`
-			this.infoLabel.string = `当前赛季：S2  报名人数： ${n}/666`
+			//this.loserLabel.string = `存活: ${a}/333`
+			//this.cherryLabel.string = `死亡: ${b}/333`
+			this.infoLabel.string = `当前赛季：S2  存活： ${total-dead}/666 死亡：${dead}`
 		}
 		else {
-			this.loserLabel.string = `Live: ${a}/333`
-			this.cherryLabel.string = `Dead: ${b}/333`
-			this.infoLabel.string = `Current Season: S2a  Enrollment: ${n}/666`
+			//this.loserLabel.string = `Live: ${a}/333`
+			//this.cherryLabel.string = `Dead: ${b}/333`
+			this.infoLabel.string = `Current Season: S2  Alive: ${total-dead}/666 Dead: ${dead}`
 		}
 	}
 	
@@ -126,33 +118,12 @@ export default class Welcome extends cc.Component {
 		}
 	}
 	
-	async enrollGame () {
-        this.registerButton.interactable = false
+	async enrollGame (e, msg) {
+        let id = (msg == 'random'? 0 : Number(this.idEditbox.string))
+		//this.registerButton.interactable = false
 		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
 		try {
-			const tx = await rogueLandSigner.registerWithSquid()
-		}
-		catch (e) {
-			cc.log(e)
-		}
-    },
-	
-	async enrollGameWithNFT () {
-        this.cherryButton.interactable = false
-		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
-		try {
-			const tx = await rogueLandSigner.registerWithNFT()
-		}
-		catch (e) {
-			cc.log(e)
-		}
-    },
-	
-	async enrollGameWithPunk () {
-        this.loserButton.interactable = false
-		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
-		try {
-			const tx = await rogueLandSigner.registerWithPunk()
+			const tx = await rogueLandSigner.register(id)
 		}
 		catch (e) {
 			cc.log(e)
@@ -200,7 +171,7 @@ export default class Welcome extends cc.Component {
 		  try {
 			const squidContract = new ethers.Contract(this.squidAddress, this.ERC20Json.json.abi, this.provider)
 			const squidSigner = squidContract.connect(this.wallet)
-			const tx = await squidSigner.approve(this.rogueLandAddress, ethers.utils.parseUnits("6666"))
+			const tx = await squidSigner.approve(this.buildingAddress, ethers.utils.parseUnits("6666"))
 		  }
 		  catch (e) {
 			cc.log(e)
@@ -260,16 +231,9 @@ export default class Welcome extends cc.Component {
 			this.nameLabel.string = this.username
 		}
 		
-        const evenPunk = gameInfo.evenPunk/2-1
-		const oddPunk = Math.floor(gameInfo.oddPunk/2-1)
-		if (evenPunk < 333 && gameInfo.hasPunk) {
-			//this.loserButton.interactable = true
-		}
-		if (oddPunk < 333 && gameInfo.hasNFT) {
-			//this.cherryButton.interactable = true
-		}
-		const totalPunk = await this.rogueLandContract.totalPunk()
-		this.setInfoLabel(totalPunk-gameInfo.oddPunk, gameInfo.oddPunk, totalPunk)
+		
+		//const totalPunk = await this.rogueLandContract.totalPunk()
+		this.setInfoLabel(gameInfo.total, gameInfo.dead)
 		
 		const punkId = await this.rogueLandContract.punkOf(this.address)
 		
@@ -324,9 +288,9 @@ export default class Welcome extends cc.Component {
 	},
 	
 	onLoad () {
-		this.loserButton.interactable = false
-		this.cherryButton.interactable = false
-		this.registerButton.interactable = false
+		//this.loserButton.interactable = false
+		//this.cherryButton.interactable = false
+		//this.registerButton.interactable = false
 		this.approveButton.interactable = false
 		
 		cc.sys.localStorage.setItem('address', '');

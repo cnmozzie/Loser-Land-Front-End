@@ -75,19 +75,16 @@ var Welcome = /** @class */ (function (_super) {
         _this.username = '';
         _this.bindAddress = '';
         _this.privateKey = '';
-        _this.hepAddress = '0xfD83168291312A0800f44610974350C569d12e42';
-        _this.squidAddress = '0xC9a9bE0f88b44889F30EA0978e984FB5a6eFE68b';
-        _this.rogueLandAddress = '0x432E7300786636043Bd3791fD49f4C0c58C3CC87';
+        _this.hepAddress = '0xfd83168291312a0800f44610974350c569d12e42';
+        _this.buildingAddress = '0xcCbFb4740838365AfcB6AEC663C09652A859d219';
+        _this.squidAddress = '0xc9a9be0f88b44889f30ea0978e984fb5a6efe68b';
+        _this.rogueLandAddress = '0xCaFf20f886248F6d8c0D7dF08A8c3E67C3Cfd3C2';
         _this.provider = null;
         _this.wallet = null;
         _this.rogueLandContract = null;
         _this.nameLabel = null;
         _this.infoLabel = null;
-        _this.cherryLabel = null;
-        _this.loserLabel = null;
         _this.balanceLabel = null;
-        _this.loserButton = null;
-        _this.cherryButton = null;
         _this.registerButton = null;
         _this.approveButton = null;
         _this.ERC20Json = null;
@@ -98,6 +95,7 @@ var Welcome = /** @class */ (function (_super) {
         _this.rewardPrefab = null;
         _this.rankPrefab = null;
         _this.withdrawPrefab = null;
+        _this.idEditbox = null;
         return _this;
     }
     Welcome.prototype.startGame = function (e, msg) {
@@ -110,17 +108,17 @@ var Welcome = /** @class */ (function (_super) {
         this.address = walletData.address;
         this.privateKey = walletData.privateKey;
     };
-    Welcome.prototype.setInfoLabel = function (a, b, n) {
+    Welcome.prototype.setInfoLabel = function (total, dead) {
         var lang = cc.sys.localStorage.getItem('lang');
         if (lang === 'zh') {
-            this.loserLabel.string = "\u5B58\u6D3B: " + a + "/333";
-            this.cherryLabel.string = "\u6B7B\u4EA1: " + b + "/333";
-            this.infoLabel.string = "\u5F53\u524D\u8D5B\u5B63\uFF1AS2  \u62A5\u540D\u4EBA\u6570\uFF1A " + n + "/666";
+            //this.loserLabel.string = `存活: ${a}/333`
+            //this.cherryLabel.string = `死亡: ${b}/333`
+            this.infoLabel.string = "\u5F53\u524D\u8D5B\u5B63\uFF1AS2  \u5B58\u6D3B\uFF1A " + (total - dead) + "/666 \u6B7B\u4EA1\uFF1A" + dead;
         }
         else {
-            this.loserLabel.string = "Live: " + a + "/333";
-            this.cherryLabel.string = "Dead: " + b + "/333";
-            this.infoLabel.string = "Current Season: S2a  Enrollment: " + n + "/666";
+            //this.loserLabel.string = `Live: ${a}/333`
+            //this.cherryLabel.string = `Dead: ${b}/333`
+            this.infoLabel.string = "Current Season: S2  Alive: " + (total - dead) + "/666 Dead: " + dead;
         }
     };
     Welcome.prototype.setBalanceLabel = function () {
@@ -148,18 +146,18 @@ var Welcome = /** @class */ (function (_super) {
             }
         }
     };
-    Welcome.prototype.enrollGame = function () {
+    Welcome.prototype.enrollGame = function (e, msg) {
         return __awaiter(this, void 0, void 0, function () {
-            var rogueLandSigner, tx, e_1;
+            var id, rogueLandSigner, tx, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        this.registerButton.interactable = false;
+                        id = (msg == 'random' ? 0 : Number(this.idEditbox.string));
                         rogueLandSigner = this.rogueLandContract.connect(this.wallet);
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, rogueLandSigner.registerWithSquid()];
+                        return [4 /*yield*/, rogueLandSigner.register(id)];
                     case 2:
                         tx = _a.sent();
                         return [3 /*break*/, 4];
@@ -172,57 +170,9 @@ var Welcome = /** @class */ (function (_super) {
             });
         });
     };
-    Welcome.prototype.enrollGameWithNFT = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var rogueLandSigner, tx, e_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.cherryButton.interactable = false;
-                        rogueLandSigner = this.rogueLandContract.connect(this.wallet);
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, rogueLandSigner.registerWithNFT()];
-                    case 2:
-                        tx = _a.sent();
-                        return [3 /*break*/, 4];
-                    case 3:
-                        e_2 = _a.sent();
-                        cc.log(e_2);
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    Welcome.prototype.enrollGameWithPunk = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var rogueLandSigner, tx, e_3;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.loserButton.interactable = false;
-                        rogueLandSigner = this.rogueLandContract.connect(this.wallet);
-                        _a.label = 1;
-                    case 1:
-                        _a.trys.push([1, 3, , 4]);
-                        return [4 /*yield*/, rogueLandSigner.registerWithPunk()];
-                    case 2:
-                        tx = _a.sent();
-                        return [3 /*break*/, 4];
-                    case 3:
-                        e_3 = _a.sent();
-                        cc.log(e_3);
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/];
-                }
-            });
-        });
-    };
     Welcome.prototype.setUserName = function (name) {
         return __awaiter(this, void 0, void 0, function () {
-            var rogueLandSigner, tx, e_4;
+            var rogueLandSigner, tx, e_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -236,8 +186,8 @@ var Welcome = /** @class */ (function (_super) {
                         tx = _a.sent();
                         return [3 /*break*/, 4];
                     case 3:
-                        e_4 = _a.sent();
-                        cc.log(e_4);
+                        e_2 = _a.sent();
+                        cc.log(e_2);
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/];
                 }
@@ -287,7 +237,7 @@ var Welcome = /** @class */ (function (_super) {
     };
     Welcome.prototype.approve = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var squidContract, squidSigner, tx, e_5, hepContract, hepSigner, tx, e_6;
+            var squidContract, squidSigner, tx, e_3, hepContract, hepSigner, tx, e_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -298,13 +248,13 @@ var Welcome = /** @class */ (function (_super) {
                         _a.trys.push([1, 3, , 4]);
                         squidContract = new ethers_umd_min_js_1.ethers.Contract(this.squidAddress, this.ERC20Json.json.abi, this.provider);
                         squidSigner = squidContract.connect(this.wallet);
-                        return [4 /*yield*/, squidSigner.approve(this.rogueLandAddress, ethers_umd_min_js_1.ethers.utils.parseUnits("6666"))];
+                        return [4 /*yield*/, squidSigner.approve(this.buildingAddress, ethers_umd_min_js_1.ethers.utils.parseUnits("6666"))];
                     case 2:
                         tx = _a.sent();
                         return [3 /*break*/, 4];
                     case 3:
-                        e_5 = _a.sent();
-                        cc.log(e_5);
+                        e_3 = _a.sent();
+                        cc.log(e_3);
                         return [3 /*break*/, 4];
                     case 4:
                         if (!(this.hepApproved < 1)) return [3 /*break*/, 8];
@@ -318,8 +268,8 @@ var Welcome = /** @class */ (function (_super) {
                         tx = _a.sent();
                         return [3 /*break*/, 8];
                     case 7:
-                        e_6 = _a.sent();
-                        cc.log(e_6);
+                        e_4 = _a.sent();
+                        cc.log(e_4);
                         return [3 /*break*/, 8];
                     case 8: return [2 /*return*/];
                 }
@@ -336,7 +286,7 @@ var Welcome = /** @class */ (function (_super) {
     };
     Welcome.prototype.setUserInfo = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var okt, _a, gameInfo, evenPunk, oddPunk, totalPunk, punkId, remoteUrl, sprite_1;
+            var okt, _a, gameInfo, punkId, remoteUrl, sprite_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0: return [4 /*yield*/, this.provider.getBalance(this.address)];
@@ -371,20 +321,10 @@ var Welcome = /** @class */ (function (_super) {
                         if (this.username != "") {
                             this.nameLabel.string = this.username;
                         }
-                        evenPunk = gameInfo.evenPunk / 2 - 1;
-                        oddPunk = Math.floor(gameInfo.oddPunk / 2 - 1);
-                        if (evenPunk < 333 && gameInfo.hasPunk) {
-                            //this.loserButton.interactable = true
-                        }
-                        if (oddPunk < 333 && gameInfo.hasNFT) {
-                            //this.cherryButton.interactable = true
-                        }
-                        return [4 /*yield*/, this.rogueLandContract.totalPunk()];
-                    case 4:
-                        totalPunk = _b.sent();
-                        this.setInfoLabel(totalPunk - gameInfo.oddPunk, gameInfo.oddPunk, totalPunk);
+                        //const totalPunk = await this.rogueLandContract.totalPunk()
+                        this.setInfoLabel(gameInfo.total, gameInfo.dead);
                         return [4 /*yield*/, this.rogueLandContract.punkOf(this.address)];
-                    case 5:
+                    case 4:
                         punkId = _b.sent();
                         if (punkId > 0) {
                             cc.log(this.punkJson.json[punkId - 1]);
@@ -452,9 +392,9 @@ var Welcome = /** @class */ (function (_super) {
         });
     };
     Welcome.prototype.onLoad = function () {
-        this.loserButton.interactable = false;
-        this.cherryButton.interactable = false;
-        this.registerButton.interactable = false;
+        //this.loserButton.interactable = false
+        //this.cherryButton.interactable = false
+        //this.registerButton.interactable = false
         this.approveButton.interactable = false;
         cc.sys.localStorage.setItem('address', '');
         cc.sys.localStorage.setItem('hep', 0);
@@ -479,19 +419,7 @@ var Welcome = /** @class */ (function (_super) {
     ], Welcome.prototype, "infoLabel", void 0);
     __decorate([
         property(cc.Label)
-    ], Welcome.prototype, "cherryLabel", void 0);
-    __decorate([
-        property(cc.Label)
-    ], Welcome.prototype, "loserLabel", void 0);
-    __decorate([
-        property(cc.Label)
     ], Welcome.prototype, "balanceLabel", void 0);
-    __decorate([
-        property(cc.Button)
-    ], Welcome.prototype, "loserButton", void 0);
-    __decorate([
-        property(cc.Button)
-    ], Welcome.prototype, "cherryButton", void 0);
     __decorate([
         property(cc.Button)
     ], Welcome.prototype, "registerButton", void 0);
@@ -522,6 +450,9 @@ var Welcome = /** @class */ (function (_super) {
     __decorate([
         property(cc.Prefab)
     ], Welcome.prototype, "withdrawPrefab", void 0);
+    __decorate([
+        property(cc.EditBox)
+    ], Welcome.prototype, "idEditbox", void 0);
     Welcome = __decorate([
         ccclass
     ], Welcome);
