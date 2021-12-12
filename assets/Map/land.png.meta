@@ -1,6 +1,6 @@
 {
   "ver": "2.3.7",
-  "uuid": "bc9d01b7-7154-4bfb-b123-b37f4307bfe2",
+  "uuid": "6d85a526-ac1a-4852-abb6-28c33e1b707e",
   "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
@@ -12,11 +12,11 @@
   "height": 64,
   "platformSettings": {},
   "subMetas": {
-    "Snow Planet CH16_2": {
+    "land": {
       "ver": "1.0.6",
-      "uuid": "87abdc64-a066-497b-a3f2-b8ba5d52efb7",
+      "uuid": "d3f9a3cc-9451-4499-85dc-5450fcdc6040",
       "importer": "sprite-frame",
-      "rawTextureUuid": "bc9d01b7-7154-4bfb-b123-b37f4307bfe2",
+      "rawTextureUuid": "6d85a526-ac1a-4852-abb6-28c33e1b707e",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,

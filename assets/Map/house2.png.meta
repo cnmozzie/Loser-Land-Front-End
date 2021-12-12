@@ -1,6 +1,6 @@
 {
   "ver": "2.3.7",
-  "uuid": "10be40e8-4288-4857-bd58-088fc675ec0f",
+  "uuid": "0a7843f9-32ee-46fc-a70e-c258bfb44590",
   "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
@@ -12,11 +12,11 @@
   "height": 64,
   "platformSettings": {},
   "subMetas": {
-    "Red rubble ch16": {
+    "house2": {
       "ver": "1.0.6",
-      "uuid": "a5f38a7a-bee2-4339-80eb-fb3c956bc3d0",
+      "uuid": "8ee5e7bd-237d-4c74-b3a0-d35fb09189cf",
       "importer": "sprite-frame",
-      "rawTextureUuid": "10be40e8-4288-4857-bd58-088fc675ec0f",
+      "rawTextureUuid": "0a7843f9-32ee-46fc-a70e-c258bfb44590",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,

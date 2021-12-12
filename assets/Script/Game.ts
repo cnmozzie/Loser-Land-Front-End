@@ -24,11 +24,11 @@ export default class Game extends cc.Component {
 	userName: string = 'vistor';
 	mode: string = "view";
 	isBusy: bool = false;
-	rogueLandAddress: string = '0xCaFf20f886248F6d8c0D7dF08A8c3E67C3Cfd3C2';
+	rogueLandAddress: string = '0x373eB106CF011c0EcE12f4ecf345cE96351697F4';
 	rogueLandContract: any = null;
-	buildingAddress: string = '0xcCbFb4740838365AfcB6AEC663C09652A859d219';
+	buildingAddress: string = '0xd87e8aa40da922eb1a8f2eF13c5Ca06d74645F4f';
 	buildingContract: any = null;
-	landAddress: string = '0xd4B4529cB66a3793fE2423E627Ba32ca1FEbD3b9';
+	landAddress: string = '0x3bF771C9C29B03a3cb53b377A0c4797458787721';
 	landContract: any = null;
 	provider: any = null;
 	wallet: any = null;
@@ -153,8 +153,16 @@ export default class Game extends cc.Component {
 		newDialog.getComponent('PunkInfo').setId(id);
 		const info = await this.getPunkInfo(id);
 		newDialog.getComponent('PunkInfo').setInfo(info);
-		if (id != this.id && this.t == this.playerInfo.t && Math.abs(x-this.playerInfo.x)<=1 && Math.abs(y-this.playerInfo.y)<=1 && !info.isMoving && !inHouse) {
-			newDialog.getComponent('PunkInfo').setAttack(true);
+		if (id != this.id && this.t == this.playerInfo.t && Math.abs(x-this.playerInfo.x)<=1 && Math.abs(y-this.playerInfo.y)<=1) {
+			if (!inHouse) {
+				newDialog.getComponent('PunkInfo').setAttack();
+			}
+			else if (info.stayTime > 5) {
+				newDialog.getComponent('PunkInfo').setExpel();
+			}
+		}
+		if (inHouse && info.stayTime > 5) {
+			newDialog.getComponent('PunkInfo').setCharge();
 		}
     },
 	
@@ -401,7 +409,14 @@ export default class Game extends cc.Component {
 		catch (e) {
 			cc.log(e)
 		}
-		this.setDieMessage(this.userName, this.userName, this.gold)
+		this.gold = 0
+		const lang = cc.sys.localStorage.getItem('lang')
+		if (lang === 'zh') {
+			this.messageLabel.string = `领取奖励成功\n` + this.messageLabel.string
+		}
+		else {
+			this.messageLabel.string = `Rewards claimed!\n` + this.messageLabel.string
+		}
     },
 	
 	async buyLand () {
@@ -411,6 +426,23 @@ export default class Game extends cc.Component {
 		}
 		catch (e) {
 			cc.log(e)
+		}
+    },
+	
+	async fish () {
+		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
+		try {
+			const tx = await rogueLandSigner.fish(this.landPos.x, this.landPos.y)
+		}
+		catch (e) {
+			cc.log(e)
+		}
+		const lang = cc.sys.localStorage.getItem('lang')
+		if (lang === 'zh') {
+			this.messageLabel.string = `尝试收杆中\n` + this.messageLabel.string
+		}
+		else {
+			this.messageLabel.string = `drawing fishing rods...\n` + this.messageLabel.string
 		}
     },
 	
@@ -440,6 +472,16 @@ export default class Game extends cc.Component {
 			this.useButton.interactable = true
 		}
     },
+	
+	async charge (to, getOut) {
+		const rogueLandSigner = this.rogueLandContract.connect(this.wallet)
+		try {
+			const tx = await rogueLandSigner.charge(this.id, to, getOut)
+		}
+		catch (e) {
+			cc.log(e)
+		}
+	}
 	
 	async attack (to, _seed, _name) {
         const abiCoder = new ethers.utils.AbiCoder();
@@ -492,9 +534,10 @@ export default class Game extends cc.Component {
 	
 	async getPunkInfo (id) {
 		const punkInfo = await this.rogueLandContract.getPunkInfo(id)
+		cc.log(punkInfo)
 		return  {
 			        name: punkInfo.name, 
-					isMoving: Number(punkInfo.isMoving), 
+					stayTime: Number(this.playerInfo.t) - Number(punkInfo.showTime), 
 		            gold: ethers.utils.formatEther(punkInfo.totalGold), 
 					hp: Number(punkInfo.hp), 
 					evil: Number(punkInfo.evil), 
@@ -595,20 +638,21 @@ export default class Game extends cc.Component {
             if (gamemap[i] != 0) {
 				//cc.log(x, y)
 				this.setGameMap(x, y, gamemap[i])
-				if (minimap[i] == this.id && gamemap[i] == 1 && this.playerInfo.t == this.t) {
+				if (minimap[i]==this.id && gamemap[i]>=9 && gamemap[i]<12 && this.playerInfo.t==this.t) {
 					this.leaveButton.interactable = true
 				}
 			}
 			if (minimap[i] != 0 && !(this.mode == "schedule" && minimap[i] == this.id)) {
 			  //cc.log(minimap[i].movingPunk, x, y)
-			  this.spawnNewPunk (x*64, y*64, minimap[i], gamemap[i] == 1)
+			  this.spawnNewPunk (x*64, y*64, minimap[i], gamemap[i]>=9 && gamemap[i]<12)
+			  //cc.log(gamemap[i])
 			  if (minimap[i] % 2 == 0) {
 				  this.setMiniMap(x, y, 4)
 			  }
 			  else {
 				  this.setMiniMap(x, y, 5)
 			  }
-			  this.validToGo["x"+x+"y"+y] = (gamemap[i] == 1)
+			  this.validToGo["x"+x+"y"+y] = (gamemap[i]>=9 && gamemap[i]<12)
             }
 			else {
 			  this.validToGo["x"+x+"y"+y] = true
@@ -921,16 +965,8 @@ export default class Game extends cc.Component {
     },
 	
 	setGameMap(x_, y_, kind) {
-		let gid = 0
-		if (kind == 0) {
-			gid = 8
-		}
-		else if (kind == 1) {
-			gid = 9
-		}
-		else {
-			gid = kind - 1
-		}
+		cc.log(x_, y_, kind)
+		gid = Number(kind) + 1
 		let x = x_ + 24
 		let y = y_ + 24
 		if (x>=0 && x<=48 && y>=0 && y<=48) {

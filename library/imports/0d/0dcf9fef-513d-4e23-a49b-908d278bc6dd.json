@@ -3,5 +3,5 @@
   "_name": "house",
   "_objFlags": 0,
   "_native": "",
-  "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<tileset version=\"1.5\" tiledversion=\"1.7.2\" name=\"house\" tilewidth=\"64\" tileheight=\"64\" tilecount=\"1\" columns=\"1\">\r\n <image source=\"house.png\" width=\"64\" height=\"64\"/>\r\n</tileset>\r\n"
+  "text": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<tileset version=\"1.5\" tiledversion=\"1.7.2\" name=\"house\" tilewidth=\"64\" tileheight=\"64\" tilecount=\"1\" columns=\"1\">\r\n<<<<<<< Updated upstream\r\n <image source=\"house.png\" width=\"64\" height=\"64\"/>\r\n=======\r\n <image source=\"house1.png\" width=\"64\" height=\"64\"/>\r\n>>>>>>> Stashed changes\r\n</tileset>\r\n"
 }

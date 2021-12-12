@@ -1,6 +1,6 @@
 {
   "ver": "2.3.7",
-  "uuid": "904c07fc-2c1c-40d7-8407-d478cc626d3a",
+  "uuid": "296b18bc-975e-4b27-840e-1f33bfd98017",
   "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
@@ -12,11 +12,11 @@
   "height": 64,
   "platformSettings": {},
   "subMetas": {
-    "Mine Rocks CH16": {
+    "pool1": {
       "ver": "1.0.6",
-      "uuid": "e3060857-dabb-4d93-94d1-e10acfd3ab72",
+      "uuid": "012a05fd-b2c9-4eb7-bbb3-95765f0e01e0",
       "importer": "sprite-frame",
-      "rawTextureUuid": "904c07fc-2c1c-40d7-8407-d478cc626d3a",
+      "rawTextureUuid": "296b18bc-975e-4b27-840e-1f33bfd98017",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,

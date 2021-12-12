@@ -9,7 +9,7 @@ export default class PunkInfo extends cc.Component {
 	evil: number = 0;
 	seed: string = '';
 	userName: string = 'vistor';
-	action: string = 'Unknown';
+	action: number = 0;
 	
 	@property(cc.Label)
     leftLabel: cc.Label = null;
@@ -19,6 +19,12 @@ export default class PunkInfo extends cc.Component {
 	
 	@property(cc.Button)
     attackButton: cc.Button = null;
+	
+	@property(cc.Button)
+    chargeButton: cc.Button = null;
+	
+	@property(cc.Button)
+    expelButton: cc.Button = null;
 	
 	@property(cc.Button)
     quitButton: cc.Button = null;
@@ -35,11 +41,11 @@ export default class PunkInfo extends cc.Component {
 		const lang = cc.sys.localStorage.getItem('lang')
 		if (lang === 'zh') {
 			this.leftLabel.string = `ID: ${this.id-1} \nHP: ${this.hp} \n等级: ${this.evil}`
-			this.rightLabel.string = `昵称: ${this.userName} \n状态: ${this.action} \n鱿鱼币: ${this.gold}`
+			this.rightLabel.string = `昵称: ${this.userName} \n停留: ${this.action}回合 \n鱿鱼币: ${this.gold}`
 		}
 		else {
 			this.leftLabel.string = `ID: ${this.id-1} \nHP: ${this.hp} \nLevel: ${this.evil}`
-			this.rightLabel.string = `Name: ${this.userName} \nStatus: ${this.action} \nSQUIDs: ${this.gold}`
+			this.rightLabel.string = `Name: ${this.userName} \nStay: ${this.action} Rounds \nSQUIDs: ${this.gold}`
 		}
     },
 	
@@ -55,13 +61,9 @@ export default class PunkInfo extends cc.Component {
 		else {
 			this.userName = info.name.substr(0,9)
 		}
-		const lang = cc.sys.localStorage.getItem('lang')
-		if (info.isMoving) {
-			this.action = (lang === 'zh'? '移动中' : 'Moving')
-		}
-		else {
-			this.action = (lang === 'zh'? '挖矿中' : 'Mining')
-		}
+		//cc.log(info)
+		//const lang = cc.sys.localStorage.getItem('lang')
+		this.action = Math.max(info.stayTime, 0)
 		this.gold = info.gold
 		this.hp = info.hp
 		this.evil = info.evil
@@ -69,9 +71,30 @@ export default class PunkInfo extends cc.Component {
 		this.setLabel()
     },
 	
-	setAttack (attackable) {
-		this.attackButton.interactable = attackable
+	setAttack () {
+		this.attackButton.interactable = true
     },
+	
+	setExpel () {
+		this.expelButton.node.zIndex = 2
+    },
+	
+	setCharge () {
+		this.chargeButton.interactable = true
+    },
+	
+	charge (e, msg) {
+		if (msg == '0') {
+			cc.log('false')
+			this.chargeButton.interactable = false
+			this.game.charge(this.id, false)
+		}
+		else {
+			cc.log('true')
+			this.expelButton.interactable = false
+			this.game.charge(this.id, true)
+		}
+	}
 	
 	async attack (e, msg) {
         this.attackButton.interactable = false
@@ -98,6 +121,8 @@ export default class PunkInfo extends cc.Component {
 
 	onLoad () {
 		this.attackButton.interactable = false
+		this.chargeButton.interactable = false
+		//this.expelButton.interactable = false
     },
 
     start () {

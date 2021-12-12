@@ -103,11 +103,11 @@ var Game = /** @class */ (function (_super) {
         _this.userName = 'vistor';
         _this.mode = "view";
         _this.isBusy = false;
-        _this.rogueLandAddress = '0xCaFf20f886248F6d8c0D7dF08A8c3E67C3Cfd3C2';
+        _this.rogueLandAddress = '0x373eB106CF011c0EcE12f4ecf345cE96351697F4';
         _this.rogueLandContract = null;
-        _this.buildingAddress = '0xcCbFb4740838365AfcB6AEC663C09652A859d219';
+        _this.buildingAddress = '0xd87e8aa40da922eb1a8f2eF13c5Ca06d74645F4f';
         _this.buildingContract = null;
-        _this.landAddress = '0xd4B4529cB66a3793fE2423E627Ba32ca1FEbD3b9';
+        _this.landAddress = '0x3bF771C9C29B03a3cb53b377A0c4797458787721';
         _this.landContract = null;
         _this.provider = null;
         _this.wallet = null;
@@ -183,8 +183,16 @@ var Game = /** @class */ (function (_super) {
                     case 1:
                         info = _a.sent();
                         newDialog.getComponent('PunkInfo').setInfo(info);
-                        if (id != this.id && this.t == this.playerInfo.t && Math.abs(x - this.playerInfo.x) <= 1 && Math.abs(y - this.playerInfo.y) <= 1 && !info.isMoving && !inHouse) {
-                            newDialog.getComponent('PunkInfo').setAttack(true);
+                        if (id != this.id && this.t == this.playerInfo.t && Math.abs(x - this.playerInfo.x) <= 1 && Math.abs(y - this.playerInfo.y) <= 1) {
+                            if (!inHouse) {
+                                newDialog.getComponent('PunkInfo').setAttack();
+                            }
+                            else if (info.stayTime > 5) {
+                                newDialog.getComponent('PunkInfo').setExpel();
+                            }
+                        }
+                        if (inHouse && info.stayTime > 5) {
+                            newDialog.getComponent('PunkInfo').setCharge();
                         }
                         return [2 /*return*/];
                 }
@@ -457,7 +465,7 @@ var Game = /** @class */ (function (_super) {
     };
     Game.prototype.leaveGame = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var rogueLandSigner, tx, e_2;
+            var rogueLandSigner, tx, e_2, lang;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -475,7 +483,14 @@ var Game = /** @class */ (function (_super) {
                         cc.log(e_2);
                         return [3 /*break*/, 4];
                     case 4:
-                        this.setDieMessage(this.userName, this.userName, this.gold);
+                        this.gold = 0;
+                        lang = cc.sys.localStorage.getItem('lang');
+                        if (lang === 'zh') {
+                            this.messageLabel.string = "\u9886\u53D6\u5956\u52B1\u6210\u529F\n" + this.messageLabel.string;
+                        }
+                        else {
+                            this.messageLabel.string = "Rewards claimed!\n" + this.messageLabel.string;
+                        }
                         return [2 /*return*/];
                 }
             });
@@ -504,9 +519,40 @@ var Game = /** @class */ (function (_super) {
             });
         });
     };
+    Game.prototype.fish = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var rogueLandSigner, tx, e_4, lang;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        rogueLandSigner = this.rogueLandContract.connect(this.wallet);
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, rogueLandSigner.fish(this.landPos.x, this.landPos.y)];
+                    case 2:
+                        tx = _a.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        e_4 = _a.sent();
+                        cc.log(e_4);
+                        return [3 /*break*/, 4];
+                    case 4:
+                        lang = cc.sys.localStorage.getItem('lang');
+                        if (lang === 'zh') {
+                            this.messageLabel.string = "\u5C1D\u8BD5\u6536\u6746\u4E2D\n" + this.messageLabel.string;
+                        }
+                        else {
+                            this.messageLabel.string = "drawing fishing rods...\n" + this.messageLabel.string;
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     Game.prototype.build = function (kind) {
         return __awaiter(this, void 0, void 0, function () {
-            var buildingSigner, tx, e_4;
+            var buildingSigner, tx, e_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -519,8 +565,8 @@ var Game = /** @class */ (function (_super) {
                         tx = _a.sent();
                         return [3 /*break*/, 4];
                     case 3:
-                        e_4 = _a.sent();
-                        cc.log(e_4);
+                        e_5 = _a.sent();
+                        cc.log(e_5);
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/];
                 }
@@ -529,7 +575,7 @@ var Game = /** @class */ (function (_super) {
     };
     Game.prototype.useHEP = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var rogueLandSigner, tx, e_5;
+            var rogueLandSigner, tx, e_6;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -543,8 +589,8 @@ var Game = /** @class */ (function (_super) {
                         tx = _a.sent();
                         return [3 /*break*/, 4];
                     case 3:
-                        e_5 = _a.sent();
-                        cc.log(e_5);
+                        e_6 = _a.sent();
+                        cc.log(e_6);
                         return [3 /*break*/, 4];
                     case 4:
                         //this.balance = this.balance - 2
@@ -558,9 +604,32 @@ var Game = /** @class */ (function (_super) {
             });
         });
     };
+    Game.prototype.charge = function (to, getOut) {
+        return __awaiter(this, void 0, void 0, function () {
+            var rogueLandSigner, tx, e_7;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        rogueLandSigner = this.rogueLandContract.connect(this.wallet);
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, rogueLandSigner.charge(this.id, to, getOut)];
+                    case 2:
+                        tx = _a.sent();
+                        return [3 /*break*/, 4];
+                    case 3:
+                        e_7 = _a.sent();
+                        cc.log(e_7);
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    };
     Game.prototype.attack = function (to, _seed, _name) {
         return __awaiter(this, void 0, void 0, function () {
-            var abiCoder, seedA, seedB, rogueLandSigner, tx, e_6, diceA, diceB, _damage;
+            var abiCoder, seedA, seedB, rogueLandSigner, tx, e_8, diceA, diceB, _damage;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -580,8 +649,8 @@ var Game = /** @class */ (function (_super) {
                         tx = _a.sent();
                         return [3 /*break*/, 4];
                     case 3:
-                        e_6 = _a.sent();
-                        cc.log(e_6);
+                        e_8 = _a.sent();
+                        cc.log(e_8);
                         return [3 /*break*/, 4];
                     case 4:
                         diceA = seedA.mod(100);
@@ -622,9 +691,10 @@ var Game = /** @class */ (function (_super) {
                     case 0: return [4 /*yield*/, this.rogueLandContract.getPunkInfo(id)];
                     case 1:
                         punkInfo = _a.sent();
+                        cc.log(punkInfo);
                         return [2 /*return*/, {
                                 name: punkInfo.name,
-                                isMoving: Number(punkInfo.isMoving),
+                                stayTime: Number(this.playerInfo.t) - Number(punkInfo.showTime),
                                 gold: ethers_umd_min_js_1.ethers.utils.formatEther(punkInfo.totalGold),
                                 hp: Number(punkInfo.hp),
                                 evil: Number(punkInfo.evil),
@@ -740,20 +810,21 @@ var Game = /** @class */ (function (_super) {
                                 if (gamemap[i] != 0) {
                                     //cc.log(x, y)
                                     this.setGameMap(x, y, gamemap[i]);
-                                    if (minimap[i] == this.id && gamemap[i] == 1 && this.playerInfo.t == this.t) {
+                                    if (minimap[i] == this.id && gamemap[i] >= 9 && gamemap[i] < 12 && this.playerInfo.t == this.t) {
                                         this.leaveButton.interactable = true;
                                     }
                                 }
                                 if (minimap[i] != 0 && !(this.mode == "schedule" && minimap[i] == this.id)) {
                                     //cc.log(minimap[i].movingPunk, x, y)
-                                    this.spawnNewPunk(x * 64, y * 64, minimap[i], gamemap[i] == 1);
+                                    this.spawnNewPunk(x * 64, y * 64, minimap[i], gamemap[i] >= 9 && gamemap[i] < 12);
+                                    //cc.log(gamemap[i])
                                     if (minimap[i] % 2 == 0) {
                                         this.setMiniMap(x, y, 4);
                                     }
                                     else {
                                         this.setMiniMap(x, y, 5);
                                     }
-                                    this.validToGo["x" + x + "y" + y] = (gamemap[i] == 1);
+                                    this.validToGo["x" + x + "y" + y] = (gamemap[i] >= 9 && gamemap[i] < 12);
                                 }
                                 else {
                                     this.validToGo["x" + x + "y" + y] = true;
@@ -1084,16 +1155,8 @@ var Game = /** @class */ (function (_super) {
         }
     };
     Game.prototype.setGameMap = function (x_, y_, kind) {
-        var gid = 0;
-        if (kind == 0) {
-            gid = 8;
-        }
-        else if (kind == 1) {
-            gid = 9;
-        }
-        else {
-            gid = kind - 1;
-        }
+        cc.log(x_, y_, kind);
+        gid = Number(kind) + 1;
         var x = x_ + 24;
         var y = y_ + 24;
         if (x >= 0 && x <= 48 && y >= 0 && y <= 48) {

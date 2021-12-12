@@ -1,6 +1,6 @@
 {
   "ver": "2.3.7",
-  "uuid": "01c78f50-5e0a-4f20-b1b7-90aff2dfc64d",
+  "uuid": "0e7b755a-04f3-4b4f-9ac7-b192277f5633",
   "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
@@ -12,11 +12,11 @@
   "height": 64,
   "platformSettings": {},
   "subMetas": {
-    "Mosaic stone ch16": {
+    "mine3": {
       "ver": "1.0.6",
-      "uuid": "a1d2072a-7996-421a-b54d-bd43cf5bbc88",
+      "uuid": "a72cb698-1da8-4468-ad1f-4e14ddc6afd0",
       "importer": "sprite-frame",
-      "rawTextureUuid": "01c78f50-5e0a-4f20-b1b7-90aff2dfc64d",
+      "rawTextureUuid": "0e7b755a-04f3-4b4f-9ac7-b192277f5633",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,

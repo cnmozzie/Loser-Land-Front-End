@@ -70,10 +70,12 @@ var PunkInfo = /** @class */ (function (_super) {
         _this.evil = 0;
         _this.seed = '';
         _this.userName = 'vistor';
-        _this.action = 'Unknown';
+        _this.action = 0;
         _this.leftLabel = null;
         _this.rightLabel = null;
         _this.attackButton = null;
+        _this.chargeButton = null;
+        _this.expelButton = null;
         _this.quitButton = null;
         return _this;
     }
@@ -87,11 +89,11 @@ var PunkInfo = /** @class */ (function (_super) {
         var lang = cc.sys.localStorage.getItem('lang');
         if (lang === 'zh') {
             this.leftLabel.string = "ID: " + (this.id - 1) + " \nHP: " + this.hp + " \n\u7B49\u7EA7: " + this.evil;
-            this.rightLabel.string = "\u6635\u79F0: " + this.userName + " \n\u72B6\u6001: " + this.action + " \n\u9C7F\u9C7C\u5E01: " + this.gold;
+            this.rightLabel.string = "\u6635\u79F0: " + this.userName + " \n\u505C\u7559: " + this.action + "\u56DE\u5408 \n\u9C7F\u9C7C\u5E01: " + this.gold;
         }
         else {
             this.leftLabel.string = "ID: " + (this.id - 1) + " \nHP: " + this.hp + " \nLevel: " + this.evil;
-            this.rightLabel.string = "Name: " + this.userName + " \nStatus: " + this.action + " \nSQUIDs: " + this.gold;
+            this.rightLabel.string = "Name: " + this.userName + " \nStay: " + this.action + " Rounds \nSQUIDs: " + this.gold;
         }
     };
     PunkInfo.prototype.setId = function (id) {
@@ -105,21 +107,35 @@ var PunkInfo = /** @class */ (function (_super) {
         else {
             this.userName = info.name.substr(0, 9);
         }
-        var lang = cc.sys.localStorage.getItem('lang');
-        if (info.isMoving) {
-            this.action = (lang === 'zh' ? '移动中' : 'Moving');
-        }
-        else {
-            this.action = (lang === 'zh' ? '挖矿中' : 'Mining');
-        }
+        //cc.log(info)
+        //const lang = cc.sys.localStorage.getItem('lang')
+        this.action = Math.max(info.stayTime, 0);
         this.gold = info.gold;
         this.hp = info.hp;
         this.evil = info.evil;
         this.seed = info.seed;
         this.setLabel();
     };
-    PunkInfo.prototype.setAttack = function (attackable) {
-        this.attackButton.interactable = attackable;
+    PunkInfo.prototype.setAttack = function () {
+        this.attackButton.interactable = true;
+    };
+    PunkInfo.prototype.setExpel = function () {
+        this.expelButton.node.zIndex = 2;
+    };
+    PunkInfo.prototype.setCharge = function () {
+        this.chargeButton.interactable = true;
+    };
+    PunkInfo.prototype.charge = function (e, msg) {
+        if (msg == '0') {
+            cc.log('false');
+            this.chargeButton.interactable = false;
+            this.game.charge(this.id, false);
+        }
+        else {
+            cc.log('true');
+            this.expelButton.interactable = false;
+            this.game.charge(this.id, true);
+        }
     };
     PunkInfo.prototype.attack = function (e, msg) {
         return __awaiter(this, void 0, void 0, function () {
@@ -154,6 +170,8 @@ var PunkInfo = /** @class */ (function (_super) {
     };
     PunkInfo.prototype.onLoad = function () {
         this.attackButton.interactable = false;
+        this.chargeButton.interactable = false;
+        //this.expelButton.interactable = false
     };
     PunkInfo.prototype.start = function () {
     };
@@ -166,6 +184,12 @@ var PunkInfo = /** @class */ (function (_super) {
     __decorate([
         property(cc.Button)
     ], PunkInfo.prototype, "attackButton", void 0);
+    __decorate([
+        property(cc.Button)
+    ], PunkInfo.prototype, "chargeButton", void 0);
+    __decorate([
+        property(cc.Button)
+    ], PunkInfo.prototype, "expelButton", void 0);
     __decorate([
         property(cc.Button)
     ], PunkInfo.prototype, "quitButton", void 0);
