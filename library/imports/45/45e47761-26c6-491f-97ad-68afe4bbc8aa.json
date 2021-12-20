@@ -3023,7 +3023,9 @@
     "buyButton": {
       "__id__": 50
     },
-    "fishButton": null,
+    "fishButton": {
+      "__id__": 38
+    },
     "_id": ""
   },
   {

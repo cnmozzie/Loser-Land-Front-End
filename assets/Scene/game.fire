@@ -3902,7 +3902,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 120,
+      "width": 140,
       "height": 40
     },
     "_anchorPoint": {
@@ -3971,7 +3971,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 120,
+      "width": 140,
       "height": 40
     },
     "_anchorPoint": {
@@ -4302,7 +4302,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 120,
+      "width": 140,
       "height": 40
     },
     "_anchorPoint": {
@@ -4371,7 +4371,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 120,
+      "width": 140,
       "height": 40
     },
     "_anchorPoint": {
@@ -4702,7 +4702,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 120,
+      "width": 140,
       "height": 40
     },
     "_anchorPoint": {
@@ -4771,7 +4771,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 120,
+      "width": 140,
       "height": 40
     },
     "_anchorPoint": {
@@ -4836,7 +4836,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 120,
+      "width": 140,
       "height": 40
     },
     "_anchorPoint": {
@@ -4888,8 +4888,8 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_string": "End Game",
-    "_N$string": "End Game",
+    "_string": "Claim Rewards",
+    "_N$string": "Claim Rewards",
     "_fontSize": 20,
     "_lineHeight": 40,
     "_enableWrapText": false,
@@ -4914,8 +4914,8 @@
       "__id__": 101
     },
     "_enabled": true,
-    "zh": "结束游戏",
-    "en": "End Game",
+    "zh": "领取奖励",
+    "en": "Claim Rewards",
     "_id": "3cnSfy45dIgJgMS5ECqK6q"
   },
   {
@@ -5102,7 +5102,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 120,
+      "width": 140,
       "height": 40
     },
     "_anchorPoint": {
@@ -5171,7 +5171,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 120,
+      "width": 140,
       "height": 40
     },
     "_anchorPoint": {

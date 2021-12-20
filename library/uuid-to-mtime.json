@@ -500,18 +500,18 @@
     "relativePath": "model\\primitives.fbx"
   },
   "29f52784-2fca-467b-92e7-8fd9ef8c57b7": {
-    "asset": 1639315987827,
-    "meta": 1639316022444,
+    "asset": 1639491236556,
+    "meta": 1639491276542,
     "relativePath": "Scene"
   },
   "4734c20c-0db8-4eb2-92ea-e692f4d70934": {
-    "asset": 1639315987811,
-    "meta": 1639316022447,
+    "asset": 1639491236580,
+    "meta": 1639491276550,
     "relativePath": "Script"
   },
   "7b81d4e8-ec84-4716-968d-500ac1d78a54": {
-    "asset": 1639315983744,
-    "meta": 1639316022464,
+    "asset": 1639491212975,
+    "meta": 1639491276553,
     "relativePath": "Texture"
   },
   "a8027877-d8d6-4645-97a0-52d4a0123dba": {
@@ -540,8 +540,8 @@
     "relativePath": "chest.prefab"
   },
   "0155f2be-7b43-43e0-9162-9b8ee4ee6c70": {
-    "asset": 1639315989453,
-    "meta": 1639316022435,
+    "asset": 1639491236335,
+    "meta": 1639491276519,
     "relativePath": "Contract"
   },
   "104a13d2-72d0-447c-a16e-c02e1d55a457": {
@@ -645,8 +645,8 @@
     "relativePath": "die_dialog.prefab"
   },
   "f8f40ae0-557e-458a-9a0f-453d8c799af5": {
-    "asset": 1639315987906,
-    "meta": 1639316022441,
+    "asset": 1639492888026,
+    "meta": 1639574883974,
     "relativePath": "Map"
   },
   "70da30a3-3312-4397-9c19-c4501f929bf8": {
@@ -711,337 +711,337 @@
   },
   "a3d7a44f-f81a-460e-959a-706f0c2cc700": {
     "asset": 1633771500503,
-    "meta": 1638023808033,
+    "meta": 1639491276863,
     "relativePath": "Map\\BloodStone.tsx"
   },
   "5b013a7d-f5c6-4407-acf8-bf47d11b863c": {
     "asset": 1633241517244,
-    "meta": 1638023808038,
+    "meta": 1639491276996,
     "relativePath": "Map\\blue-punk.tsx"
   },
   "c80e1e39-1bf1-4dcd-833b-4954064b1cee": {
     "asset": 1631440600926,
-    "meta": 1638023808045,
+    "meta": 1639491277025,
     "relativePath": "Map\\boundary.tsx"
   },
   "4b392bd8-0083-4922-bb12-ae8679000c16": {
     "asset": 1631440672607,
-    "meta": 1638023808098,
+    "meta": 1639491277048,
     "relativePath": "Map\\gold.tsx"
   },
   "8b5e132f-8308-4b30-9dca-d14bcd112816": {
     "asset": 1631450869767,
-    "meta": 1638023808107,
+    "meta": 1639491277066,
     "relativePath": "Map\\grass.tsx"
   },
   "922e47f4-fb8d-4eee-971a-59821f30330a": {
     "asset": 1633771540334,
-    "meta": 1638023808147,
+    "meta": 1639491277161,
     "relativePath": "Map\\LavaPlanet.tsx"
   },
   "0adc078c-81c5-4cda-b4a6-db8576d74cb8": {
     "asset": 1633771553099,
-    "meta": 1638023808157,
+    "meta": 1639491277171,
     "relativePath": "Map\\Mars.tsx"
   },
   "53abef29-d49c-4608-92ca-78e0acb8988b": {
     "asset": 1633771575177,
-    "meta": 1638023808162,
+    "meta": 1639491277211,
     "relativePath": "Map\\MineRocks.tsx"
   },
   "ea9de6f9-75bb-4d9f-9ff0-3aa00423f177": {
     "asset": 1633779196243,
-    "meta": 1638023808216,
+    "meta": 1639491277239,
     "relativePath": "Map\\MosaicStone.tsx"
   },
   "5cf6b828-ac4c-4ea1-9d53-32976c992c16": {
     "asset": 1633241585696,
-    "meta": 1638023808316,
+    "meta": 1639491278412,
     "relativePath": "Map\\minimap.tmx"
   },
   "4fc872cc-711e-48c9-84f6-7df6af353f2a": {
     "asset": 1633241529882,
-    "meta": 1638023808225,
+    "meta": 1639491277299,
     "relativePath": "Map\\red-punk.tsx"
   },
   "4602ddfa-7fa0-4490-bf9f-ae45c0cedcdb": {
     "asset": 1631440692816,
-    "meta": 1638023808239,
+    "meta": 1639491277307,
     "relativePath": "Map\\self.tsx"
   },
   "6923c692-133d-4d5e-840b-ef112b4745f0": {
     "asset": 1633771612784,
-    "meta": 1638023808278,
+    "meta": 1639491277312,
     "relativePath": "Map\\SnowPlanet.tsx"
   },
   "4823589d-3851-4e26-995d-9002c61713ba": {
-    "asset": 1639315987762,
-    "meta": 1639315991773,
+    "asset": 1639491236595,
+    "meta": 1639491276539,
     "relativePath": "info_dialog.prefab"
   },
   "43800e15-f174-4540-b829-f8445d099ea3": {
-    "asset": 1639302437936,
-    "meta": 1639316591317,
+    "asset": 1639491236299,
+    "meta": 1639491276852,
     "relativePath": "Contract\\Building.json"
   },
   "28be3bdb-ea43-4115-b7f6-f9c864cb35b6": {
-    "asset": 1639302437873,
-    "meta": 1639316591423,
+    "asset": 1639491236337,
+    "meta": 1639491276977,
     "relativePath": "Contract\\RogueLand.json"
   },
   "2c952cb0-cad5-447c-9042-8a815370562e": {
     "asset": 1633771098665,
-    "meta": 1639315991851,
+    "meta": 1639491277032,
     "relativePath": "Map\\Blood Stone CH16.png"
   },
   "0506fa0c-b8a8-466b-a02f-2790a9f271b2": {
     "asset": 1633241453215,
-    "meta": 1639315991880,
+    "meta": 1639491277037,
     "relativePath": "Map\\blue-punk.png"
   },
   "e2d6688b-8cd6-4e46-8e0c-a0007d3923cf": {
     "asset": 1631440177537,
-    "meta": 1639315991886,
+    "meta": 1639491277055,
     "relativePath": "Map\\boundary.png"
   },
   "0dcf9fef-513d-4e23-a49b-908d278bc6dd": {
-    "asset": 1639315987888,
-    "meta": 1639315991902,
+    "asset": 1639491236360,
+    "meta": 1639491277092,
     "relativePath": "Map\\house.tsx"
   },
   "f4649ff7-329c-4d21-92f4-762822104baf": {
-    "asset": 1639315986234,
-    "meta": 1639315991909,
+    "asset": 1639491236374,
+    "meta": 1639491277098,
     "relativePath": "Map\\house1.tsx"
   },
   "fe6eb046-5550-477e-8c87-1274c0ad21de": {
     "asset": 1631440243289,
-    "meta": 1639315991894,
+    "meta": 1639491277081,
     "relativePath": "Map\\gold.png"
   },
   "0b2c0bfe-6749-475d-97e6-693c504496b6": {
     "asset": 1631451250293,
-    "meta": 1639315991961,
+    "meta": 1639491277086,
     "relativePath": "Map\\grass.png"
   },
   "1ed5b1d5-0c86-4494-ae8b-8f0efc0a7eee": {
-    "asset": 1639315986230,
-    "meta": 1639315991968,
+    "asset": 1639491236365,
+    "meta": 1639491277128,
     "relativePath": "Map\\house1.png"
   },
   "0995056f-4b55-449a-8d01-dbb6f19fccaa": {
-    "asset": 1639315986241,
-    "meta": 1639315991980,
+    "asset": 1639491236393,
+    "meta": 1639491277111,
     "relativePath": "Map\\house2.tsx"
   },
   "cf5ae2d0-7e5b-4da2-99e7-bc1e0854cc06": {
-    "asset": 1639315986249,
-    "meta": 1639315991987,
+    "asset": 1639491236413,
+    "meta": 1639491277144,
     "relativePath": "Map\\house3.tsx"
   },
   "0a7843f9-32ee-46fc-a70e-c258bfb44590": {
-    "asset": 1639315986238,
-    "meta": 1639315991973,
+    "asset": 1639491236384,
+    "meta": 1639491277134,
     "relativePath": "Map\\house2.png"
   },
   "2fafdcaa-45fc-4fc8-89bc-38d26b11570d": {
-    "asset": 1639315986256,
-    "meta": 1639315991992,
+    "asset": 1639491236434,
+    "meta": 1639491277150,
     "relativePath": "Map\\land.tsx"
   },
   "6d85a526-ac1a-4852-abb6-28c33e1b707e": {
-    "asset": 1639315986253,
-    "meta": 1639315992035,
+    "asset": 1639491236424,
+    "meta": 1639491277177,
     "relativePath": "Map\\land.png"
   },
   "39916335-fe17-42f7-90b9-86b2302b6ebc": {
     "asset": 1633771400346,
-    "meta": 1639315992040,
+    "meta": 1639491277192,
     "relativePath": "Map\\Lava Planet CH16.png"
   },
   "63389602-fa96-4ef4-b4c2-727fe6d105f7": {
-    "asset": 1639315986263,
-    "meta": 1639315992049,
+    "asset": 1639491236450,
+    "meta": 1639491277182,
     "relativePath": "Map\\mine1.tsx"
   },
   "ebd6d02b-cf41-4517-a666-a41ff90985fe": {
-    "asset": 1639315986270,
-    "meta": 1639315992056,
+    "asset": 1639491236466,
+    "meta": 1639491277196,
     "relativePath": "Map\\mine2.tsx"
   },
   "d04917be-9a01-4d54-89ab-e491ec4c9ec7": {
-    "asset": 1639315986244,
-    "meta": 1639315992044,
+    "asset": 1639491236403,
+    "meta": 1639491277140,
     "relativePath": "Map\\house3.png"
   },
   "d0139970-7520-4b41-a581-9b5ac75ff62a": {
-    "asset": 1639315986276,
-    "meta": 1639315992090,
+    "asset": 1639491236484,
+    "meta": 1639491277201,
     "relativePath": "Map\\mine3.tsx"
   },
   "071dd31c-c710-421c-81f6-29020bfde2d0": {
     "asset": 1633771315275,
-    "meta": 1639315992085,
+    "meta": 1639491277187,
     "relativePath": "Map\\Mars CH16.png"
   },
   "a0f8df43-4e1e-481f-8688-84415d370b0a": {
-    "asset": 1639315987837,
-    "meta": 1639315992100,
+    "asset": 1639491236455,
+    "meta": 1639491277228,
     "relativePath": "Map\\mine2.png"
   },
   "0e7b755a-04f3-4b4f-9ac7-b192277f5633": {
-    "asset": 1639315987834,
-    "meta": 1639315992105,
+    "asset": 1639491236473,
+    "meta": 1639491277233,
     "relativePath": "Map\\mine3.png"
   },
   "954ab2d6-2af9-4311-898d-4c204f17527a": {
-    "asset": 1639315986284,
-    "meta": 1639315992115,
+    "asset": 1639491236505,
+    "meta": 1639491277243,
     "relativePath": "Map\\pool1.tsx"
   },
   "f515aaec-2f09-4c63-9b3a-69315dbfdc1a": {
-    "asset": 1639315986291,
-    "meta": 1639315992121,
+    "asset": 1639491236526,
+    "meta": 1639491277248,
     "relativePath": "Map\\pool2.tsx"
   },
   "2bdc9f0d-51b8-4a46-a9c2-71e4c15acc49": {
-    "asset": 1639315987840,
-    "meta": 1639315992110,
+    "asset": 1639491236440,
+    "meta": 1639491277224,
     "relativePath": "Map\\mine1.png"
   },
   "a5377cc5-a832-404f-9242-acca7f2f770e": {
-    "asset": 1639315986306,
-    "meta": 1639315992131,
+    "asset": 1639491236543,
+    "meta": 1639491277295,
     "relativePath": "Map\\pool3.tsx"
   },
   "d5c431ba-1c6b-407f-b367-e050ef40ec12": {
-    "asset": 1639315986228,
-    "meta": 1639315992171,
+    "asset": 1639491236344,
+    "meta": 1639491277303,
     "relativePath": "Map\\RedRubble.tsx"
   },
   "296b18bc-975e-4b27-840e-1f33bfd98017": {
-    "asset": 1639315986280,
-    "meta": 1639315992126,
+    "asset": 1639491236494,
+    "meta": 1639491277288,
     "relativePath": "Map\\pool1.jpg"
   },
   "a4ac4309-ee86-428d-b0d7-37566b253ee3": {
-    "asset": 1639315983831,
-    "meta": 1639315992201,
+    "asset": 1639318205598,
+    "meta": 1639491276613,
     "relativePath": "punk.prefab"
   },
   "eb2678ff-62d5-423c-8c54-627d6f4996b0": {
-    "asset": 1639315986288,
-    "meta": 1639315992193,
+    "asset": 1639491236516,
+    "meta": 1639491277279,
     "relativePath": "Map\\pool2.png"
   },
   "d4810586-0fdd-41b5-a9c2-0e8c4f1ce6e5": {
-    "asset": 1639315987830,
-    "meta": 1639315992205,
+    "asset": 1639491236533,
+    "meta": 1639491277283,
     "relativePath": "Map\\pool3.png"
   },
   "890ae953-864a-4231-b577-6eb965857876": {
     "asset": 1633241409307,
-    "meta": 1639315992209,
+    "meta": 1639491278273,
     "relativePath": "Map\\red-punk.png"
   },
   "5ab8ddfe-26c2-4fb6-a19d-14cad34fc694": {
     "asset": 1631454894000,
-    "meta": 1639315992213,
+    "meta": 1639491278245,
     "relativePath": "Map\\self.png"
   },
   "8ce79938-d098-4f80-a141-cdee1db7b8ba": {
-    "asset": 1639315983648,
-    "meta": 1639315993034,
+    "asset": 1639318205551,
+    "meta": 1639491278043,
     "relativePath": "Script\\Rank.ts"
   },
   "a554a785-7a9a-4a58-a1c9-535b3626efd1": {
-    "asset": 1639315983729,
-    "meta": 1639315993076,
+    "asset": 1639318205553,
+    "meta": 1639491278071,
     "relativePath": "Script\\Register.ts"
   },
   "c7975fd1-a6c1-4efc-a1cc-0f8c28e7e303": {
-    "asset": 1639315983880,
-    "meta": 1639315993249,
+    "asset": 1639318205601,
+    "meta": 1639491276635,
     "relativePath": "register_dialog.prefab"
   },
   "7d0e4df5-b396-46f3-bb06-87cd465a85b9": {
-    "asset": 1639315983602,
-    "meta": 1639315993257,
+    "asset": 1639318205541,
+    "meta": 1639491278077,
     "relativePath": "Scene\\welcome.fire"
   },
   "68ed6050-df26-4a1b-aaa5-00474e539e51": {
-    "asset": 1639315983746,
-    "meta": 1639315993330,
+    "asset": 1639318205589,
+    "meta": 1639491276532,
     "relativePath": "circle.prefab"
   },
   "537cb1be-c611-41d9-a925-07315a9fabc4": {
-    "asset": 1639315983504,
-    "meta": 1639315993335,
+    "asset": 1639318205334,
+    "meta": 1639491276858,
     "relativePath": "Map\\BigGrass.tsx"
   },
   "e29ae348-a2ee-4e8d-ac86-19dc6e87eac9": {
-    "asset": 1639315983420,
-    "meta": 1639315993375,
+    "asset": 1639318205281,
+    "meta": 1639491276768,
     "relativePath": "Contract\\LoserLand.json"
   },
   "3bbd354e-b1c9-4ee7-95d3-9619846fa6c6": {
-    "asset": 1639315983397,
-    "meta": 1639315993413,
+    "asset": 1639318205271,
+    "meta": 1639491276808,
     "relativePath": "Contract\\ERC20.json"
   },
   "7968235c-6180-4913-9da3-a30a6c9527f7": {
-    "asset": 1639315983742,
-    "meta": 1639315993499,
+    "asset": 1639318205586,
+    "meta": 1639491278294,
     "relativePath": "Texture\\circle.png"
   },
   "efad9448-2d2a-408b-b4de-55096194199f": {
-    "asset": 1639315983734,
-    "meta": 1639315993507,
+    "asset": 1639318205557,
+    "meta": 1639491278302,
     "relativePath": "Texture\\Squid Game Soldier Mask.png"
   },
   "863a031b-eef6-4e40-aa9b-93798d3d0d0a": {
-    "asset": 1639315983738,
-    "meta": 1639315993511,
+    "asset": 1639318205575,
+    "meta": 1639491278305,
     "relativePath": "Texture\\background.jpg"
   },
   "b95b684b-c515-456b-a790-3c838edce068": {
-    "asset": 1639315983586,
-    "meta": 1639315993517,
+    "asset": 1639318205394,
+    "meta": 1639491277105,
     "relativePath": "Map\\house.png"
   },
+  "2d2f792f-a40c-49bb-a189-ed176a246e49": {
+    "asset": 1639623944210,
+    "meta": 1639623944231,
+    "relativePath": "Scene\\game.fire"
+  },
+  "45e47761-26c6-491f-97ad-68afe4bbc8aa": {
+    "asset": 1639575094154,
+    "meta": 1639575094173,
+    "relativePath": "gold_layout.prefab"
+  },
   "3d8c7543-d447-4730-897b-36c9f6ed2592": {
-    "asset": 1639316292743,
-    "meta": 1639316294950,
+    "asset": 1639491367298,
+    "meta": 1639491369418,
     "relativePath": "Script\\Welcome.ts"
   },
   "e11a98c1-5e77-4937-92e7-a65a430ddb68": {
-    "asset": 1639316818961,
-    "meta": 1639316821802,
+    "asset": 1639491236349,
+    "meta": 1639492888113,
     "relativePath": "Map\\gamemap.tmx"
   },
-  "02631bfe-2098-4a21-83dd-703ea26c5e57": {
-    "asset": 1639317031478,
-    "meta": 1639317036404,
-    "relativePath": "Script\\Game.ts"
-  },
-  "2d2f792f-a40c-49bb-a189-ed176a246e49": {
-    "asset": 1639317672613,
-    "meta": 1639317672626,
-    "relativePath": "Scene\\game.fire"
-  },
-  "38d7ea77-3997-4033-8508-bb7ed8abcaa3": {
-    "asset": 1639317246085,
-    "meta": 1639317248027,
-    "relativePath": "Script\\PunkInfo.ts"
-  },
   "90db1c4e-fa78-400e-a169-f88138f07e2d": {
-    "asset": 1639317304156,
-    "meta": 1639317309616,
+    "asset": 1639575024967,
+    "meta": 1639575028751,
     "relativePath": "Script\\GoldDialog.ts"
   },
-  "45e47761-26c6-491f-97ad-68afe4bbc8aa": {
-    "asset": 1639317526480,
-    "meta": 1639317526494,
-    "relativePath": "gold_layout.prefab"
+  "38d7ea77-3997-4033-8508-bb7ed8abcaa3": {
+    "asset": 1639720996411,
+    "meta": 1639721767320,
+    "relativePath": "Script\\PunkInfo.ts"
+  },
+  "02631bfe-2098-4a21-83dd-703ea26c5e57": {
+    "asset": 1639722639922,
+    "meta": 1639722641945,
+    "relativePath": "Script\\Game.ts"
   }
 }

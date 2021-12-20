@@ -63,6 +63,7 @@ export default class GoldDialog extends cc.Component {
 		this.label.string = text
 		this.kind = kind
 		this.kindLabel.string = this.kindName(this.kind)
+		cc.log(this.kind)
 		if (kind >= 6 && kind < 9) {
 			this.fishButton.node.zIndex = 2
 		}

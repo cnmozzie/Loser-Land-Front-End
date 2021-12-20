@@ -75,10 +75,10 @@ var Welcome = /** @class */ (function (_super) {
         _this.username = '';
         _this.bindAddress = '';
         _this.privateKey = '';
-        _this.hepAddress = '0xe7ccd9b99f9d2e436f0dbf0c3eeda37b2a68085b';
-        _this.buildingAddress = '0xd87e8aa40da922eb1a8f2eF13c5Ca06d74645F4f';
-        _this.squidAddress = '0x7d94d8f87e4223459c4e2d5467f2a597a04352d6';
-        _this.rogueLandAddress = '0x373eB106CF011c0EcE12f4ecf345cE96351697F4';
+        _this.hepAddress = '0xfD83168291312A0800f44610974350C569d12e42';
+        _this.buildingAddress = '0x68F7ABa5112C5D122995fB33F175bD8Ef30FC774';
+        _this.squidAddress = '0xC9a9bE0f88b44889F30EA0978e984FB5a6eFE68b';
+        _this.rogueLandAddress = '0x29f47DE13118E1Bd8473F45B8F8436Fe17Ba545f';
         _this.provider = null;
         _this.wallet = null;
         _this.rogueLandContract = null;
@@ -365,7 +365,7 @@ var Welcome = /** @class */ (function (_super) {
                     case 1:
                         chainId = _a.sent();
                         cc.log("chain id", chainId);
-                        if (!(chainId == '0x61')) return [3 /*break*/, 4];
+                        if (!(chainId == '0x42')) return [3 /*break*/, 4];
                         return [4 /*yield*/, ethereum.request({
                                 method: 'eth_requestAccounts'
                             })];

@@ -9,13 +9,14 @@ export default class Game extends cc.Component {
 	
 	id: number = 0;
 	t: number = 0;
-	block: number = 0;
 	currentSchedule: number = 0;
 	toCommit: number = 0;
 	balance: number = 0;
 	gold: number = 0;
 	hp: number = 0;
 	hep: number = 0;
+	startBlock: number = 7549580;
+	currentBlock: number = 7549580;
 	endRound: number = 1320;
 	minimapSize: number = 51;
 	mapSize: number = 51;
@@ -24,11 +25,11 @@ export default class Game extends cc.Component {
 	userName: string = 'vistor';
 	mode: string = "view";
 	isBusy: bool = false;
-	rogueLandAddress: string = '0x373eB106CF011c0EcE12f4ecf345cE96351697F4';
+	rogueLandAddress: string = '0x29f47DE13118E1Bd8473F45B8F8436Fe17Ba545f';
 	rogueLandContract: any = null;
-	buildingAddress: string = '0xd87e8aa40da922eb1a8f2eF13c5Ca06d74645F4f';
+	buildingAddress: string = '0x68F7ABa5112C5D122995fB33F175bD8Ef30FC774';
 	buildingContract: any = null;
-	landAddress: string = '0x3bF771C9C29B03a3cb53b377A0c4797458787721';
+	landAddress: string = '0xd4B4529cB66a3793fE2423E627Ba32ca1FEbD3b9';
 	landContract: any = null;
 	provider: any = null;
 	wallet: any = null;
@@ -147,8 +148,8 @@ export default class Game extends cc.Component {
         this.node.addChild(newDialog);
 		newDialog.zIndex = 6;
         newDialog.setPosition(cc.v2(this.player.x, this.player.y));
-        cc.log(id, x, y, this.t)
-		cc.log(this.playerInfo)
+        //cc.log(id, x, y, this.t)
+		//cc.log(this.playerInfo)
 		newDialog.getComponent('PunkInfo').game = this;
 		newDialog.getComponent('PunkInfo').setId(id);
 		const info = await this.getPunkInfo(id);
@@ -175,7 +176,7 @@ export default class Game extends cc.Component {
 		// 在对话框脚本组件上保存 Game 对象的引用
 		newDialog.getComponent('GoldDialog').game = this;
 		const info = await this.buildingContract.landOf(this.landPos.x, this.landPos.y);
-		newDialog.getComponent('GoldDialog').setLabel({pos: this.landPos, block: this.block, land: info, player: this.playerAddress});
+		newDialog.getComponent('GoldDialog').setLabel({pos: this.landPos, block: this.currentBlock, land: info, player: this.playerAddress});
 		newDialog.on(cc.Node.EventType.TOUCH_START, function(event){cc.log('touched')}, this)
     },
 	
@@ -373,7 +374,14 @@ export default class Game extends cc.Component {
 			}
 		}
 		else {
-			this.text = `SQUID: ${this.gold} OKT: ${this.balance} HP: ${this.hp} HEP: ${this.hep}`
+			this.text = `SQUID: ${this.gold} OKT: ${this.balance} HP: ${this.hp} HEP: ${this.hep}\n`
+			let time = Math.ceil((500-((this.currentBlock - this.startBlock) % 500))*30/500)
+			if (lang === 'zh') {
+			    this.text += `距离下一回合还有${time}分钟`
+		    }
+			else {
+				this.text += `${time} minutes to the next round`
+			}
 			//this.text += `${this.endRound - this.t}回合后游戏结束`
 		}
 		this.label.string = this.text;
@@ -534,7 +542,8 @@ export default class Game extends cc.Component {
 	
 	async getPunkInfo (id) {
 		const punkInfo = await this.rogueLandContract.getPunkInfo(id)
-		cc.log(punkInfo)
+		this.currentBlock = punkInfo.blockNumber
+		//cc.log(punkInfo)
 		return  {
 			        name: punkInfo.name, 
 					stayTime: Number(this.playerInfo.t) - Number(punkInfo.showTime), 
@@ -547,7 +556,7 @@ export default class Game extends cc.Component {
     },
 	
 	async loadPunk () {
-        let punkId = JSON.parse(cc.sys.localStorage.getItem('myPunk'))
+		let punkId = JSON.parse(cc.sys.localStorage.getItem('myPunk'))
 		if (punkId > 0) {
 		  this.id = punkId
 		  let sprite = this.node.getChildByName('Player').getComponent(cc.Sprite)
@@ -559,14 +568,32 @@ export default class Game extends cc.Component {
             }
             sprite.spriteFrame = new cc.SpriteFrame(pic)
           });
+		  this.goViewMode()
 		}
 		else {
-			cc.log("no punk")
+			let deadInfo = await this.rogueLandContract.lastKilled(this.playerAddress)
+			const lang = cc.sys.localStorage.getItem('lang')
+		    if (lang === 'zh') {
+			    this.switchLabel.string = "观看模式"
+				this.messageLabel.string = `你被Punk ${deadInfo.A-1}在${deadInfo.t}回合于(${deadInfo.x},${deadInfo.y})处杀了\n` + this.messageLabel.string
+		    }
+		    else {
+			    this.switchLabel.string = "View Mode"
+				this.messageLabel.string = `You are killed by Punk ${deadInfo.A-1} at time ${deadInfo.t} on (${deadInfo.x},${deadInfo.y})\n` + this.messageLabel.string
+		    }
+			this.t = deadInfo.t
+			this.player.x = deadInfo.x * 64
+		    this.player.y = deadInfo.y * 64
+			this.mode = "schedule"
+			this.playerInfo.t = deadInfo.t
+			this.updateMap()
+			//this.goViewMode()
 		}
+		
+		
     },
 	
 	async getStatus () {
-
 		this.playerAddress = cc.sys.localStorage.getItem('address')
 		if (this.playerAddress == '') {
 			cc.log('visitor')
@@ -582,7 +609,6 @@ export default class Game extends cc.Component {
 		this.rogueLandContract = new ethers.Contract(this.rogueLandAddress, this.rogueLandJson.json.abi, this.provider)
 		this.buildingContract = new ethers.Contract(this.buildingAddress, this.buildingJson.json.abi, this.provider)
 		this.landContract = new ethers.Contract(this.landAddress, this.landJson.json.abi, this.provider)
-		this.goViewMode()
 		this.mapSize = 24
 		this.spawnNewCross(Number(this.mapSize)+1)
 		this.spawnNewCircle()
@@ -703,7 +729,7 @@ export default class Game extends cc.Component {
 		if (Math.abs(statusInfo.x) == 25 || Math.abs(statusInfo.y) == 25) {
 		    //this.leaveButton.interactable = true
 		}
-		this.block = myPunk.blockNumber
+		this.currentBlock = myPunk.blockNumber
 		const okt = await this.wallet.getBalance()
 		this.balance = Math.floor(ethers.utils.formatEther(okt)*10000)/10000
 		
@@ -959,14 +985,14 @@ export default class Game extends cc.Component {
 				this.landPos.x = Math.round((t.getLocation().x+this.player.x-windowSize.width/2)/64)
 				this.landPos.y = Math.round((t.getLocation().y+this.player.y-windowSize.height/2)/64)
 				this.spawnNewLandInfo()
-				cc.log(Math.floor(t.getLocation().x/64), Math.floor(t.getLocation().y/64))
+				//cc.log(Math.floor(t.getLocation().x/64), Math.floor(t.getLocation().y/64))
 			}
 		}
     },
 	
 	setGameMap(x_, y_, kind) {
-		cc.log(x_, y_, kind)
-		gid = Number(kind) + 1
+		//cc.log(x_, y_, kind)
+		let gid = Number(kind) + 1
 		let x = x_ + 24
 		let y = y_ + 24
 		if (x>=0 && x<=48 && y>=0 && y<=48) {
@@ -1013,7 +1039,8 @@ export default class Game extends cc.Component {
         // init logic
 		const lang = cc.sys.localStorage.getItem('lang')
 		this.messageLabel.string = (lang === 'zh'? '游戏消息\n' : 'Game Message\n')
-		this.loadPunk()
 		this.getStatus()
+		this.loadPunk()
+		
     }
 }

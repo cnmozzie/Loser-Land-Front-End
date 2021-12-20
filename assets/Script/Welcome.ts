@@ -14,10 +14,10 @@ export default class Welcome extends cc.Component {
 	username: string = '';
 	bindAddress: string = '';
 	privateKey: string = '';
-	hepAddress: string = '0xe7ccd9b99f9d2e436f0dbf0c3eeda37b2a68085b';
-	buildingAddress: string = '0xd87e8aa40da922eb1a8f2eF13c5Ca06d74645F4f';
-	squidAddress: string = '0x7d94d8f87e4223459c4e2d5467f2a597a04352d6';
-	rogueLandAddress: string = '0x373eB106CF011c0EcE12f4ecf345cE96351697F4';
+	hepAddress: string = '0xfD83168291312A0800f44610974350C569d12e42';
+	buildingAddress: string = '0x68F7ABa5112C5D122995fB33F175bD8Ef30FC774';
+	squidAddress: string = '0xC9a9bE0f88b44889F30EA0978e984FB5a6eFE68b';
+	rogueLandAddress: string = '0x29f47DE13118E1Bd8473F45B8F8436Fe17Ba545f';
 	provider: any = null;
 	wallet: any = null;
 	rogueLandContract: any = null;
@@ -270,7 +270,7 @@ export default class Welcome extends cc.Component {
       			method: 'eth_chainId',
       		})
     		cc.log("chain id", chainId)
-			if (chainId == '0x61') {
+			if (chainId == '0x42') {
 				await ethereum.request({ 
     				method: 'eth_requestAccounts' 
     			})

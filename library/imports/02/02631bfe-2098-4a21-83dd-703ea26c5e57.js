@@ -88,13 +88,14 @@ var Game = /** @class */ (function (_super) {
         var _this = _super !== null && _super.apply(this, arguments) || this;
         _this.id = 0;
         _this.t = 0;
-        _this.block = 0;
         _this.currentSchedule = 0;
         _this.toCommit = 0;
         _this.balance = 0;
         _this.gold = 0;
         _this.hp = 0;
         _this.hep = 0;
+        _this.startBlock = 7549580;
+        _this.currentBlock = 7549580;
         _this.endRound = 1320;
         _this.minimapSize = 51;
         _this.mapSize = 51;
@@ -103,11 +104,11 @@ var Game = /** @class */ (function (_super) {
         _this.userName = 'vistor';
         _this.mode = "view";
         _this.isBusy = false;
-        _this.rogueLandAddress = '0x373eB106CF011c0EcE12f4ecf345cE96351697F4';
+        _this.rogueLandAddress = '0x29f47DE13118E1Bd8473F45B8F8436Fe17Ba545f';
         _this.rogueLandContract = null;
-        _this.buildingAddress = '0xd87e8aa40da922eb1a8f2eF13c5Ca06d74645F4f';
+        _this.buildingAddress = '0x68F7ABa5112C5D122995fB33F175bD8Ef30FC774';
         _this.buildingContract = null;
-        _this.landAddress = '0x3bF771C9C29B03a3cb53b377A0c4797458787721';
+        _this.landAddress = '0xd4B4529cB66a3793fE2423E627Ba32ca1FEbD3b9';
         _this.landContract = null;
         _this.provider = null;
         _this.wallet = null;
@@ -175,8 +176,8 @@ var Game = /** @class */ (function (_super) {
                         this.node.addChild(newDialog);
                         newDialog.zIndex = 6;
                         newDialog.setPosition(cc.v2(this.player.x, this.player.y));
-                        cc.log(id, x, y, this.t);
-                        cc.log(this.playerInfo);
+                        //cc.log(id, x, y, this.t)
+                        //cc.log(this.playerInfo)
                         newDialog.getComponent('PunkInfo').game = this;
                         newDialog.getComponent('PunkInfo').setId(id);
                         return [4 /*yield*/, this.getPunkInfo(id)];
@@ -214,7 +215,7 @@ var Game = /** @class */ (function (_super) {
                         return [4 /*yield*/, this.buildingContract.landOf(this.landPos.x, this.landPos.y)];
                     case 1:
                         info = _a.sent();
-                        newDialog.getComponent('GoldDialog').setLabel({ pos: this.landPos, block: this.block, land: info, player: this.playerAddress });
+                        newDialog.getComponent('GoldDialog').setLabel({ pos: this.landPos, block: this.currentBlock, land: info, player: this.playerAddress });
                         newDialog.on(cc.Node.EventType.TOUCH_START, function (event) { cc.log('touched'); }, this);
                         return [2 /*return*/];
                 }
@@ -439,7 +440,14 @@ var Game = /** @class */ (function (_super) {
             }
         }
         else {
-            this.text = "SQUID: " + this.gold + " OKT: " + this.balance + " HP: " + this.hp + " HEP: " + this.hep;
+            this.text = "SQUID: " + this.gold + " OKT: " + this.balance + " HP: " + this.hp + " HEP: " + this.hep + "\n";
+            var time = Math.ceil((500 - ((this.currentBlock - this.startBlock) % 500)) * 30 / 500);
+            if (lang === 'zh') {
+                this.text += "\u8DDD\u79BB\u4E0B\u4E00\u56DE\u5408\u8FD8\u6709" + time + "\u5206\u949F";
+            }
+            else {
+                this.text += time + " minutes to the next round";
+            }
             //this.text += `${this.endRound - this.t}回合后游戏结束`
         }
         this.label.string = this.text;
@@ -691,7 +699,8 @@ var Game = /** @class */ (function (_super) {
                     case 0: return [4 /*yield*/, this.rogueLandContract.getPunkInfo(id)];
                     case 1:
                         punkInfo = _a.sent();
-                        cc.log(punkInfo);
+                        this.currentBlock = punkInfo.blockNumber;
+                        //cc.log(punkInfo)
                         return [2 /*return*/, {
                                 name: punkInfo.name,
                                 stayTime: Number(this.playerInfo.t) - Number(punkInfo.showTime),
@@ -707,25 +716,45 @@ var Game = /** @class */ (function (_super) {
     };
     Game.prototype.loadPunk = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var punkId, sprite_2, remoteUrl;
+            var punkId, sprite_2, remoteUrl, deadInfo, lang;
             return __generator(this, function (_a) {
-                punkId = JSON.parse(cc.sys.localStorage.getItem('myPunk'));
-                if (punkId > 0) {
-                    this.id = punkId;
-                    sprite_2 = this.node.getChildByName('Player').getComponent(cc.Sprite);
-                    remoteUrl = "https://www.losernft.org/ipfs/" + this.loserpunkJson.json[punkId - 1].hash;
-                    cc.assetManager.loadRemote(remoteUrl, { ext: '.png', cacheEnabled: true }, function (err, pic) {
-                        if (err) {
-                            cc.log('LoadNetImg load error,error:' + err);
-                            return;
+                switch (_a.label) {
+                    case 0:
+                        punkId = JSON.parse(cc.sys.localStorage.getItem('myPunk'));
+                        if (!(punkId > 0)) return [3 /*break*/, 1];
+                        this.id = punkId;
+                        sprite_2 = this.node.getChildByName('Player').getComponent(cc.Sprite);
+                        remoteUrl = "https://www.losernft.org/ipfs/" + this.loserpunkJson.json[punkId - 1].hash;
+                        cc.assetManager.loadRemote(remoteUrl, { ext: '.png', cacheEnabled: true }, function (err, pic) {
+                            if (err) {
+                                cc.log('LoadNetImg load error,error:' + err);
+                                return;
+                            }
+                            sprite_2.spriteFrame = new cc.SpriteFrame(pic);
+                        });
+                        this.goViewMode();
+                        return [3 /*break*/, 3];
+                    case 1: return [4 /*yield*/, this.rogueLandContract.lastKilled(this.playerAddress)];
+                    case 2:
+                        deadInfo = _a.sent();
+                        lang = cc.sys.localStorage.getItem('lang');
+                        if (lang === 'zh') {
+                            this.switchLabel.string = "观看模式";
+                            this.messageLabel.string = "\u4F60\u88ABPunk " + (deadInfo.A - 1) + "\u5728" + deadInfo.t + "\u56DE\u5408\u4E8E(" + deadInfo.x + "," + deadInfo.y + ")\u5904\u6740\u4E86\n" + this.messageLabel.string;
                         }
-                        sprite_2.spriteFrame = new cc.SpriteFrame(pic);
-                    });
+                        else {
+                            this.switchLabel.string = "View Mode";
+                            this.messageLabel.string = "You are killed by Punk " + (deadInfo.A - 1) + " at time " + deadInfo.t + " on (" + deadInfo.x + "," + deadInfo.y + ")\n" + this.messageLabel.string;
+                        }
+                        this.t = deadInfo.t;
+                        this.player.x = deadInfo.x * 64;
+                        this.player.y = deadInfo.y * 64;
+                        this.mode = "schedule";
+                        this.playerInfo.t = deadInfo.t;
+                        this.updateMap();
+                        _a.label = 3;
+                    case 3: return [2 /*return*/];
                 }
-                else {
-                    cc.log("no punk");
-                }
-                return [2 /*return*/];
             });
         });
     };
@@ -746,7 +775,6 @@ var Game = /** @class */ (function (_super) {
                 this.rogueLandContract = new ethers_umd_min_js_1.ethers.Contract(this.rogueLandAddress, this.rogueLandJson.json.abi, this.provider);
                 this.buildingContract = new ethers_umd_min_js_1.ethers.Contract(this.buildingAddress, this.buildingJson.json.abi, this.provider);
                 this.landContract = new ethers_umd_min_js_1.ethers.Contract(this.landAddress, this.landJson.json.abi, this.provider);
-                this.goViewMode();
                 this.mapSize = 24;
                 this.spawnNewCross(Number(this.mapSize) + 1);
                 this.spawnNewCircle();
@@ -886,7 +914,7 @@ var Game = /** @class */ (function (_super) {
                         if (Math.abs(statusInfo.x) == 25 || Math.abs(statusInfo.y) == 25) {
                             //this.leaveButton.interactable = true
                         }
-                        this.block = myPunk.blockNumber;
+                        this.currentBlock = myPunk.blockNumber;
                         return [4 /*yield*/, this.wallet.getBalance()];
                     case 3:
                         okt = _a.sent();
@@ -1150,13 +1178,13 @@ var Game = /** @class */ (function (_super) {
                 this.landPos.x = Math.round((t.getLocation().x + this.player.x - windowSize.width / 2) / 64);
                 this.landPos.y = Math.round((t.getLocation().y + this.player.y - windowSize.height / 2) / 64);
                 this.spawnNewLandInfo();
-                cc.log(Math.floor(t.getLocation().x / 64), Math.floor(t.getLocation().y / 64));
+                //cc.log(Math.floor(t.getLocation().x/64), Math.floor(t.getLocation().y/64))
             }
         }
     };
     Game.prototype.setGameMap = function (x_, y_, kind) {
-        cc.log(x_, y_, kind);
-        gid = Number(kind) + 1;
+        //cc.log(x_, y_, kind)
+        var gid = Number(kind) + 1;
         var x = x_ + 24;
         var y = y_ + 24;
         if (x >= 0 && x <= 48 && y >= 0 && y <= 48) {
@@ -1196,8 +1224,8 @@ var Game = /** @class */ (function (_super) {
         // init logic
         var lang = cc.sys.localStorage.getItem('lang');
         this.messageLabel.string = (lang === 'zh' ? '游戏消息\n' : 'Game Message\n');
-        this.loadPunk();
         this.getStatus();
+        this.loadPunk();
     };
     __decorate([
         property(cc.Label)
